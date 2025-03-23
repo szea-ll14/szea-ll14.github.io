@@ -5,19 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
-    <script src="main.js"></script>
     <!-- 頂点シェーダー -->
-    <script id="vertexShader" type="x-shader/x-vertex">
+    <script id="vertShader" type="x-shader/x-vertex">
       attribute vec3 position;
       void main(void){
         gl_Position = vec4(position, 1.0);
       }
     </script>
     <!-- フラグメントシェーダー -->
-    <script id="fragmentShader" type="x-shader/x-fragment">
+    <script id="fragShader" type="x-shader/x-fragment">
       precision mediump float;
       void main(void){
-        gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
+        gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
       }
     </script>
   </head>
@@ -97,7 +96,10 @@
         <td><button type="button" onclick="reset('zbasepos')">Reset</button></td>
       </tr>
     </table>
-    <div><button type="button" onclick="copy()">Copy</button></div>
-    <pre id="cmd">yeah</pre>
+    <div>
+      <button type="button" onclick="copy()">Copy</button>
+      <pre id="cmd">/kill @e</pre>
+    </div>
+    <script src="main.js"></script>
   </body>
 </html>

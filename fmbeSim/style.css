@@ -1,7 +1,18 @@
-* {
-  margin: auto;
+body {
   text-align: center;
 }
+table {
+  margin-left: auto;
+  margin-right: auto;
+}
+pre {
+  margin: 0;
+  border: #ddd 1pt solid;
+  border-radius: 5px;
+  padding: 8px;
+  background-color: #eee;
+}
 input[type=text] {
+  text-align: center;
   width: 4em;
 }
