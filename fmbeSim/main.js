@@ -57,18 +57,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // 描画する
   gl.drawArrays(gl.TRIANGLES, 0, 3);
   gl.flush();
+
+  const fmbeVarList = [
+    "xpos", "ypos", "zpos",
+    "xrot", "yrot", "zrot",
+    "scale", "xzscale", "yscale",
+    "xbasepos", "ybasepos", "zbasepos",
+  ]
+
+  for (const fmbeVar of fmbeVarList) {
+    document.getElementById(fmbeVar)
+  }
+
+  function reset(fmbeVar) {}
+
 });
-
-const fmbeVarList = [
-  "xpos", "ypos", "zpos",
-  "xrot", "yrot", "zrot",
-  "scale", "xzscale", "yscale",
-  "xbasepos", "ybasepos", "zbasepos",
-]
-
-for (const fmbeVar of fmbeVarList) {
-  document.getElementById(fmbeVar)
-}
-
-function resetVar() {}
-
