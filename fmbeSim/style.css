@@ -1,0 +1,7 @@
+* {
+  margin: auto;
+  text-align: center;
+}
+input[type=text] {
+  width: 4em;
+}
