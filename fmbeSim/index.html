@@ -8,8 +8,19 @@
     <!-- 頂点シェーダー -->
     <script id="vertShader" type="x-shader/x-vertex">
       attribute vec3 position;
+      uniform mat4 baseposMat;
+      uniform mat4 scaleMat;
+      uniform mat4 xrotMat;
+      uniform mat4 zrotMat;
+      uniform mat4 yrotMat;
+      uniform mat4 posMat;
+      uniform mat4 viewXrotMat;
+      uniform mat4 viewYrotMat;
+      uniform mat4 persMat;
       void main(void){
-        gl_Position = vec4(position, 1.0);
+        mat4 mMat = posMat * yrotMat * zrotMat * xrotMat * scaleMat * baseposMat;
+        mat4 pMat = persMat * viewYrotMat * viewXrotMat;
+        gl_Position = pMat * mMat * vec4(position, 1.0);
       }
     </script>
     <!-- フラグメントシェーダー -->
@@ -26,19 +37,19 @@
       <tr>
         <td>xpos</td>
         <td><input type="text" id="xposVal" value="0"/></td>
-        <td><input type="range" id="xpos" name="xpos" min="-5" max="5" value="0" step="0.01"/></td>
+        <td><input type="range" id="xpos" name="xpos" min="-80" max="80" value="0" step="0.1"/></td>
         <td><button type="button" onclick="reset('xpos')">Reset</button></td>
       </tr>
       <tr>
         <td>ypos</td>
         <td><input type="text" id="yposVal" value="0"/></td>
-        <td><input type="range" id="ypos" name="ypos" min="-5" max="5" value="0" step="0.01"/></td>
+        <td><input type="range" id="ypos" name="ypos" min="-80" max="80" value="0" step="0.1"/></td>
         <td><button type="button" onclick="reset('ypos')">Reset</button></td>
       </tr>
       <tr>
         <td>zpos</td>
         <td><input type="text" id="zposVal" value="0"/></td>
-        <td><input type="range" id="zpos" name="zpos" min="-5" max="5" value="0" step="0.01"/></td>
+        <td><input type="range" id="zpos" name="zpos" min="-80" max="80" value="0" step="0.1"/></td>
         <td><button type="button" onclick="reset('zpos')">Reset</button></td>
       </tr>
       <tr>
@@ -80,19 +91,19 @@
       <tr>
         <td>xbasepos</td>
         <td><input type="text" id="xbaseposVal" value="0"/></td>
-        <td><input type="range" id="xbasepos" name="xbasepos" min="-5" max="5" value="0" step="0.01"/></td>
+        <td><input type="range" id="xbasepos" name="xbasepos" min="-80" max="80" value="0" step="0.1"/></td>
         <td><button type="button" onclick="reset('xbasepos')">Reset</button></td>
       </tr>
       <tr>
         <td>ybasepos</td>
         <td><input type="text" id="ybaseposVal" value="0"/></td>
-        <td><input type="range" id="ybasepos" name="ybasepos" min="-5" max="5" value="0" step="0.01"/></td>
+        <td><input type="range" id="ybasepos" name="ybasepos" min="-80" max="80" value="0" step="0.1"/></td>
         <td><button type="button" onclick="reset('ybasepos')">Reset</button></td>
       </tr>
       <tr>
         <td>zbasepos</td>
         <td><input type="text" id="zbaseposVal" value="0"/></td>
-        <td><input type="range" id="zbasepos" name="zbasepos" min="-5" max="5" value="0" step="0.01"/></td>
+        <td><input type="range" id="zbasepos" name="zbasepos" min="-80" max="80" value="0" step="0.1"/></td>
         <td><button type="button" onclick="reset('zbasepos')">Reset</button></td>
       </tr>
     </table>
