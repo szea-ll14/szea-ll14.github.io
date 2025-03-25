@@ -20,6 +20,55 @@ function tMat(mat) {
   ];
 }
 
+// 数値を文字列化: 指数表記ではなく整数・小数で
+function num2str(num) {
+  // 実数以外は思考放棄
+  if (!Number.isFinite(num)) return "";
+  // 文字列化
+  const strRaw = String(num);
+  // 指数表記じゃないならそのまま返す
+  if (!strRaw.includes("e")) return String(num)
+
+  // 符号・仮数整数部・仮数小数部・指数に分解
+  let [_, sgn, manInt, manFrac, exp] = strRaw.match(
+    /^(-?)(\d*)(?:\.(\d*))?e([+-]\d+)$/
+  );
+  if (!manFrac) { // nullらせない
+    manFrac = "";
+  }
+  exp = Number(exp);
+
+  if (exp > 0) { // e+
+    manFrac = manFrac.padEnd(exp, "0");
+    manInt = manInt + manFrac.slice(0, exp);
+    manFrac = manFrac.slice(exp);
+  } else if (exp < 0) { // e-
+    manInt = manInt.padStart(1 - exp, "0");
+    manFrac = manInt.slice(0 + exp) + manFrac;
+    manInt = manInt.slice(0, 0 + exp);
+  }
+
+  // 小数点が要れば付けて返す
+  return sgn + manInt + (manFrac ? "." + manFrac : "");
+}
+
+// deg2rad
+const deg = Math.PI / 180;
+
+
+
+
+
+// カメラの角度
+const viewXrot = 0, viewYrot = 0;
+
+// コマンド
+const cmd = document.getElementById("cmd");
+// コピー
+const cmdBtn = document.getElementById("cmdBtn");
+// 変数全指定
+const cmdFull = document.getElementById("cmdFull");
+
 // FMBE変数データ
 let varData = {
   xpos: {name: "xpos", value: 0, init: 0},
@@ -35,16 +84,90 @@ let varData = {
   ybasepos: {name: "ybasepos", value: 0, init: 0},
   zbasepos: {name: "zbasepos", value: 0, init: 0},
 };
+for (const varDatum of Object.values(varData)) {
+  // 入力欄
+  varDatum.inputN = document.getElementById(varDatum.name + "N");
+  // スライダー
+  varDatum.inputR = document.getElementById(varDatum.name + "R");
+}
 
-// degree2radian
-const deg = Math.PI / 180;
-// 
-const viewXrot = 0, viewYrot = 0;
+
+
+
+
+// コマンドコピー
+let cmdBtnTimeoutID;
+function copy() {
+  navigator.clipboard.writeText(
+    cmd.textContent
+  );
+  cmdBtn.textContent = "Copied!";
+  clearTimeout(cmdBtnTimeoutID);
+  cmdBtnTimeoutID = setTimeout(() => {
+    cmdBtn.textContent = "Copy";
+  }, 1000);
+}
+
+// コマンド設定
+function setCmd() {
+  let molang = "";
+  for (const varDatum of Object.values(varData)) {
+    if (
+      !cmdFull.checked &&
+      (varDatum.value === varDatum.init)
+    ) continue;
+    molang += `v.${varDatum.name}=${num2str(varDatum.value)}; `;
+  }
+  cmd.textContent = `/playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 " ${molang}" setValue`;
+}
+setCmd();
+
+// 値セット
+function set(varName, value, {skipN = false, skipR = false} = {}) {
+  const varDatum = varData[varName];
+
+  let valueFixed = Number(value);
+  if (!Number.isFinite(valueFixed)) {
+    valueFixed = varDatum.init;
+  }
+
+  varDatum.value = valueFixed;
+  if (!skipN) {
+    varDatum.inputN.value = valueFixed;
+  }
+  if (!skipR) {
+    varDatum.inputR.value = valueFixed;
+  }
+  setCmd();
+}
+
+// 値リセット
+function reset(varName) {
+  set(varName, varData[varName].init);
+}
+
+for (const varDatum of Object.values(varData)) {
+  // 変更時処理
+  varDatum.inputN.oninput = e => {
+    set(e.target.id.slice(0, -1), e.target.value, {skipN: true});
+  };
+  varDatum.inputN.onchange = e => {
+    set(e.target.id.slice(0, -1), e.target.value);
+  };
+  varDatum.inputR.oninput = e => {
+    set(e.target.id.slice(0, -1), e.target.value, {skipR: true});
+  };
+}
+
+
+
 
 
 // WebGLコンテキストを取得
 const canvas = document.getElementById("canvas");
 const gl = canvas.getContext("webgl");
+
+
 
 
 
@@ -64,6 +187,8 @@ gl.compileShader(fragShader);
 
 
 
+
+
 // プログラムオブジェクトを作成
 const prg = gl.createProgram();
 
@@ -79,7 +204,9 @@ gl.useProgram(prg);
 
 
 
-// 3つの頂点の座標を定義する
+
+
+// 頂点座標を定義
 const blockVertexPos = [
   // above
   // below
@@ -102,6 +229,8 @@ gl.bufferData(gl.ARRAY_BUFFER,
 const positionLocation = gl.getAttribLocation(prg, 'position');
 gl.enableVertexAttribArray(positionLocation);
 gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
+
+
 
 
 
@@ -168,8 +297,6 @@ let persMat = [
 //   0  0 1 -1  0 0  0 1  0 0 1 -50
 //   0  0 0  1] 0 0 -1 0] 0 0 0   1]
 
-
-
 // uniform変数に行列を設定
 gl.uniformMatrix4fv(
   gl.getUniformLocation(prg, "baseposMat"),
@@ -201,26 +328,12 @@ gl.uniformMatrix4fv(
 
 
 
+
+
 // 描画する
 gl.drawArrays(gl.TRIANGLES, 0, 3);
 gl.flush();
 
 
 
-for (const varDatum of Object.values(varData)) {
-  // テキスト変えたとき
-  // スライダー掴んでるとき
-  // スライダー離したとき
-  document.getElementById(varDatum)
-}
 
-function reset(varName) {
-  varData[varName].value = varData[varName].init;
-  set(varName);
-}
-
-function set(varName) {
-  document.getElementById(varName).value
-  = document.getElementById(varName + "Val").value
-  = varData[varName].value;
-}

@@ -11,8 +11,9 @@ pre {
   border-radius: 5px;
   padding: 8px;
   background-color: #eee;
+  white-space: pre-wrap;
 }
-input[type=text] {
+input[type=number] {
   text-align: center;
   width: 4em;
 }
