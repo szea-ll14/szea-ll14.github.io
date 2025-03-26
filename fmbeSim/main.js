@@ -60,7 +60,7 @@ const deg = Math.PI / 180;
 
 
 // カメラの角度
-const viewXrot = 0, viewYrot = 0;
+let viewPitch = 0, viewYaw = 0;
 
 // コマンド
 const cmd = document.getElementById("cmd");
@@ -109,6 +109,7 @@ function copy() {
 }
 
 // コマンド設定
+setCmd();
 function setCmd() {
   let molang = "";
   for (const varDatum of Object.values(varData)) {
@@ -120,7 +121,6 @@ function setCmd() {
   }
   cmd.textContent = `/playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 " ${molang}" setValue`;
 }
-setCmd();
 
 // 値セット
 function set(varName, value, {skipN = false, skipR = false} = {}) {
@@ -139,6 +139,7 @@ function set(varName, value, {skipN = false, skipR = false} = {}) {
     varDatum.inputR.value = valueFixed;
   }
   setCmd();
+  draw();
 }
 
 // 値リセット
@@ -167,14 +168,6 @@ for (const varDatum of Object.values(varData)) {
 const canvas = document.getElementById("canvas");
 const gl = canvas.getContext("webgl");
 
-
-
-
-
-// canvasを初期化
-gl.clearColor(0.1, 0.1, 0.1, 1.0);
-gl.clear(gl.COLOR_BUFFER_BIT);
-
 // シェーダーをコンパイル
 const vertSource = document.getElementById("vertShader").textContent;
 const vertShader = gl.createShader(gl.VERTEX_SHADER);
@@ -184,10 +177,6 @@ const fragSource = document.getElementById("fragShader").textContent;
 const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
 gl.shaderSource(fragShader, fragSource);
 gl.compileShader(fragShader);
-
-
-
-
 
 // プログラムオブジェクトを作成
 const prg = gl.createProgram();
@@ -202,138 +191,282 @@ gl.linkProgram(prg);
 // プログラムオブジェクトを有効化
 gl.useProgram(prg);
 
+// カリング・深度テストを有効化
+// gl.enable(gl.CULL_FACE);
+gl.enable(gl.DEPTH_TEST);
+gl.depthFunc(gl.LEQUAL);
 
 
 
 
-// 頂点座標を定義
-const blockVertexPos = [
+
+// カメラ回転
+let preOfsX = 0, preOfsY = 0;
+let mouse = false, touch = false;
+
+canvas.onmousedown = e => {// マウス押したとき
+  if (e.which != 1) return;
+  mouse = true;
+  setupViewRot(e.offsetX, e.offsetY);
+};
+
+canvas.onmousemove = e => {// ドラッグ時
+  if (!mouse) return;
+  viewRot(e.offsetX, e.offsetY);
+  draw();
+};
+
+canvas.onmouseup = e => {// マウス離したとき
+  if (e.which == 1) mouse = false;
+};
+
+canvas.onmouseleave = e => {// カーソル外出たとき
+  if (e.which == 1) mouse = false;
+};
+
+canvas.ontouchstart = e => {// 画面押したとき
+  touch = false;
+  if (e.touches.length != 1) return;
+  touch = true;
+  const rect = canvas.getBoundingClientRect();
+  setupViewRot(
+    e.touches[0].clientX - rect.left,
+    e.touches[0].clientY - rect.top
+  );
+}
+
+canvas.ontouchmove = e => {// ドラッグ時
+  if (e.cancelable) e.preventDefault();
+  if (!touch) return;
+  const rect = canvas.getBoundingClientRect();
+  viewRot(
+    e.touches[0].clientX - rect.left,
+    e.touches[0].clientY - rect.top
+  );
+  draw();
+}
+
+canvas.ontouchend = e => {// 画面離したとき
+  touch = false;
+}
+
+function setupViewRot(ofsX, ofsY) {
+  preOfsX = ofsX;
+  preOfsY = ofsY;
+}
+
+function viewRot(ofsX, ofsY) {
+  viewYaw += ofsX - preOfsX;
+  viewPitch += ofsY - preOfsY;
+  viewYaw %= 360;
+  if (viewPitch < -90) viewPitch = -90;
+  if (viewPitch > 90) viewPitch = 90;
+  preOfsX = ofsX;
+  preOfsY = ofsY;
+}
+
+
+
+
+// 頂点情報
+// ブロック/位置
+const blockPos = [
   // above
   // below
   // left
   // front
   // right
   // back
-  0.0, 0.8, 0.0,
-  -0.8, -0.8, 0.0,
-  0.8, -0.8, 0.0
+  // 仮
+  1, -0.5, 0,
+  0,  0.5, 0,
+  0, -0.5, 1
 ];
 
-// 頂点バッファを生成
-const vbo = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-gl.bufferData(gl.ARRAY_BUFFER,
-  new Float32Array(blockVertexPos), gl.STATIC_DRAW);
-
-// Positionのロケーションを取得し、バッファを割り当てる
-const positionLocation = gl.getAttribLocation(prg, 'position');
-gl.enableVertexAttribArray(positionLocation);
-gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
-
-
-
-
-
-// 行列
-// FMBEによる変形
-let baseposMat = [
-  1, 0, 0, varData.xbasepos.value / 16,
-  0, 1, 0, varData.ybasepos.value / 16,
-  0, 0, 1, varData.zbasepos.value / 16,
-  0, 0, 0, 1
+// ブロック/インデックス
+const blockIndex = [
+  // above
+  // below
+  // left
+  // front
+  // right
+  // back
+  // 仮
+  1, 0, 0, 1,
+  0, 1, 0, 1,
+  0, 0, 1, 1
 ];
-let scaleMat = [
-  varData.scale.value * varData.xzscale.value, 0, 0, 0,
-  0, varData.scale.value * varData.yscale.value, 0, 0,
-  0, 0, varData.scale.value * varData.xzscale.value, 0,
-  0, 0, 0, 1
+
+// ブロック/テクスチャ座標
+const blockUv = [
+  // above
+  // below
+  // left
+  // front
+  // right
+  // back
+  // 仮
+  1, 0, 0, 1,
+  0, 1, 0, 1,
+  0, 0, 1, 1
 ];
-let xrotMat = [
-  1, 0, 0, 0,
-  0, Math.cos(varData.xrot.value * deg), -Math.sin(varData.xrot.value * deg), 0,
-  0, Math.sin(varData.xrot.value * deg), Math.cos(varData.xrot.value * deg), 0,
-  0, 0, 0, 1
+
+// ブロック/色
+const blockColor = [
+  // above
+  // below
+  // left
+  // front
+  // right
+  // back
+  // 仮
+  1, 0, 0, 1,
+  0, 1, 0, 1,
+  0, 0, 1, 1
 ];
-let zrotMat = [
-  Math.cos(varData.zrot.value * deg), Math.sin(varData.zrot.value * deg), 0, 0,
-  -Math.sin(varData.zrot.value * deg), Math.cos(varData.zrot.value * deg), 0, 0,
-  0, 0, 1, 0,
-  0, 0, 0, 1
+
+// 軸/位置
+const axisPos = [
+  0, 0, 0,
+  1, 0, 0,
+  0, 0, 0,
+  0, 1, 0,
+  0, 0, 0,
+  0, 0, 1
 ];
-let yrotMat = [
-  Math.cos(varData.yrot.value * deg), 0, -Math.sin(varData.yrot.value * deg), 0,
-  0, 1, 0, 0,
-  Math.sin(varData.yrot.value * deg), 0, Math.cos(varData.yrot.value * deg), 0,
-  0, 0, 0, 1
+
+// 軸/色
+const axisColor = [
+  1, 0, 0, 1,
+  0, 1, 0, 1,
+  0, 0, 1, 1
 ];
-let posMat = [
-  1, 0, 0, varData.xpos.value / 16,
-  0, 1, 0, varData.ypos.value / 16,
-  0, 0, 1, varData.zpos.value / 16,
-  0, 0, 0, 1
+
+// 原点/位置
+const originPos = [
+  0, 0, 0
 ];
-// カメラの角度
-let viewXrotMat = [
-  1, 0, 0, 0,
-  0, Math.cos(viewXrot * deg), -Math.sin(viewXrot * deg), 0,
-  0, Math.sin(viewXrot * deg), Math.cos(viewXrot * deg), 0,
-  0, 0, 0, 1
+
+// 原点/色
+const originColor = [
+  0.5, 0.5, 0.5, 1
 ];
-let viewYrotMat = [
-  Math.cos(viewYrot * deg), 0, Math.sin(viewYrot * deg), 0,
-  0, 1, 0, 0,
-  -Math.sin(viewYrot * deg), 0, Math.cos(viewYrot * deg), 0,
-  0, 0, 0, 1
-];
-// 透視投影
-let persMat = [
-  10, 0, 0, 0,
-  0, 10, 0, 0,
-  0, 0, 1, -49,
-  0, 0, -1, 50
-];
-// [10  0 0  0 [1 0  0 0 [1 0 0   0
-//   0 10 0  0  0 1  0 0  0 1 0   0
-//   0  0 1 -1  0 0  0 1  0 0 1 -50
-//   0  0 0  1] 0 0 -1 0] 0 0 0   1]
-
-// uniform変数に行列を設定
-gl.uniformMatrix4fv(
-  gl.getUniformLocation(prg, "baseposMat"),
-  false, tMat(baseposMat));
-gl.uniformMatrix4fv(
-  gl.getUniformLocation(prg, "scaleMat"),
-  false, tMat(scaleMat));
-gl.uniformMatrix4fv(
-  gl.getUniformLocation(prg, "xrotMat"),
-  false, tMat(xrotMat));
-gl.uniformMatrix4fv(
-  gl.getUniformLocation(prg, "zrotMat"),
-  false, tMat(zrotMat));
-gl.uniformMatrix4fv(
-  gl.getUniformLocation(prg, "yrotMat"),
-  false, tMat(yrotMat));
-gl.uniformMatrix4fv(
-  gl.getUniformLocation(prg, "posMat"),
-  false, tMat(posMat));
-gl.uniformMatrix4fv(
-  gl.getUniformLocation(prg, "viewXrotMat"),
-  false, tMat(viewXrotMat));
-gl.uniformMatrix4fv(
-  gl.getUniformLocation(prg, "viewYrotMat"),
-  false, tMat(viewYrotMat));
-gl.uniformMatrix4fv(
-  gl.getUniformLocation(prg, "persMat"),
-  false, tMat(persMat));
 
 
 
 
 
-// 描画する
-gl.drawArrays(gl.TRIANGLES, 0, 3);
-gl.flush();
+// 描画
+draw();
+function draw() {
+
+  // canvasを初期化
+  gl.clearColor(0.1, 0.1, 0.1, 1.0);
+  gl.clearDepth(1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 
 
 
+
+  // 頂点バッファを生成し、割り当てる
+  // 位置
+  const blockPosVbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, blockPosVbo);
+  gl.bufferData(gl.ARRAY_BUFFER,
+    new Float32Array(blockPos), gl.STATIC_DRAW);
+
+  const blockPosLoc = gl.getAttribLocation(prg, 'position');
+  gl.enableVertexAttribArray(blockPosLoc);
+  gl.vertexAttribPointer(blockPosLoc, 3, gl.FLOAT, false, 0, 0);
+
+  // 色
+  const blockColorVbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, blockColorVbo);
+  gl.bufferData(gl.ARRAY_BUFFER,
+    new Float32Array(blockColor), gl.STATIC_DRAW);
+
+  const blockColorLoc = gl.getAttribLocation(prg, 'color');
+  gl.enableVertexAttribArray(blockColorLoc);
+  gl.vertexAttribPointer(blockColorLoc, 4, gl.FLOAT, false, 0, 0);
+
+
+
+
+
+  // 行列
+  // FMBEによる変形
+  let mMat = [ // basepos
+    1, 0, 0, varData.xbasepos.value / 16,
+    0, 1, 0, varData.ybasepos.value / 16,
+    0, 0, 1, varData.zbasepos.value / 16,
+    0, 0, 0, 1
+  ];
+  mMat = mulMat([ // scale
+    varData.scale.value * varData.xzscale.value, 0, 0, 0,
+    0, varData.scale.value * varData.yscale.value, 0, 0,
+    0, 0, varData.scale.value * varData.xzscale.value, 0,
+    0, 0, 0, 1
+  ], mMat);
+  mMat = mulMat([ // xrot
+    1, 0, 0, 0,
+    0, Math.cos(varData.xrot.value * deg), -Math.sin(varData.xrot.value * deg), 0,
+    0, Math.sin(varData.xrot.value * deg), Math.cos(varData.xrot.value * deg), 0,
+    0, 0, 0, 1
+  ], mMat);
+  mMat = mulMat([ // zrot
+    Math.cos(varData.zrot.value * deg), Math.sin(varData.zrot.value * deg), 0, 0,
+    -Math.sin(varData.zrot.value * deg), Math.cos(varData.zrot.value * deg), 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1
+  ], mMat);
+  mMat = mulMat([ // yrot
+    Math.cos(varData.yrot.value * deg), 0, -Math.sin(varData.yrot.value * deg), 0,
+    0, 1, 0, 0,
+    Math.sin(varData.yrot.value * deg), 0, Math.cos(varData.yrot.value * deg), 0,
+    0, 0, 0, 1
+  ], mMat);
+  mMat = mulMat([ // pos
+    1, 0, 0, varData.xpos.value / 16,
+    0, 1, 0, varData.ypos.value / 16 + 0.5,
+    0, 0, 1, varData.zpos.value / 16,
+    0, 0, 0, 1
+  ], mMat);
+  // カメラの角度・透視投影
+  let vpMat = [ // viewYaw
+    Math.cos(viewYaw * deg), 0, Math.sin(viewYaw * deg), 0,
+    0, 1, 0, 0,
+    -Math.sin(viewYaw * deg), 0, Math.cos(viewYaw * deg), 0,
+    0, 0, 0, 1
+  ];
+  vpMat = mulMat([ // viewPitch
+    1, 0, 0, 0,
+    0, Math.cos(viewPitch * deg), -Math.sin(viewPitch * deg), 0,
+    0, Math.sin(viewPitch * deg), Math.cos(viewPitch * deg), 0,
+    0, 0, 0, 1
+  ], vpMat);
+  vpMat = mulMat([ // perspective
+    10, 0, 0, 0,
+    0, 10, 0, 0,
+    0, 0, 1, -49,
+    0, 0, -1, 50
+  ], vpMat);
+  // [10  0 0  0 [1 0  0 0 [1 0 0   0
+  //   0 10 0  0  0 1  0 0  0 1 0   0
+  //   0  0 1 -1  0 0  0 1  0 0 1 -50
+  //   0  0 0  1] 0 0 -1 0] 0 0 0   1]
+
+  // uniform変数に行列を設定
+  gl.uniformMatrix4fv(
+    gl.getUniformLocation(prg, "mvpMat"),
+    false, tMat(mulMat(vpMat, mMat)));
+
+
+
+
+
+  // 描画する
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  gl.flush();
+
+}

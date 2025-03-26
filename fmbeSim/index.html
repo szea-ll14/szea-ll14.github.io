@@ -8,26 +8,25 @@
     <!-- 頂点シェーダー -->
     <script id="vertShader" type="x-shader/x-vertex">
       attribute vec3 position;
-      uniform mat4 baseposMat;
-      uniform mat4 scaleMat;
-      uniform mat4 xrotMat;
-      uniform mat4 zrotMat;
-      uniform mat4 yrotMat;
-      uniform mat4 posMat;
-      uniform mat4 viewXrotMat;
-      uniform mat4 viewYrotMat;
-      uniform mat4 persMat;
+      attribute vec4 color;
+
+      uniform mat4 mvpMat;
+
+      varying vec4 vColor;
+
       void main(void){
-        mat4 mMat = posMat * yrotMat * zrotMat * xrotMat * scaleMat * baseposMat;
-        mat4 pMat = persMat * viewYrotMat * viewXrotMat;
-        gl_Position = pMat * mMat * vec4(position, 1.0);
+        vColor = color;
+        gl_Position = mvpMat * vec4(position, 1.0);
       }
     </script>
     <!-- フラグメントシェーダー -->
     <script id="fragShader" type="x-shader/x-fragment">
       precision mediump float;
+
+      varying vec4 vColor;
+
       void main(void){
-        gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
+        gl_FragColor = vColor;
       }
     </script>
   </head>
