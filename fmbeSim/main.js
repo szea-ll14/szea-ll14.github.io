@@ -60,7 +60,7 @@ const deg = Math.PI / 180;
 
 
 // カメラの角度
-let viewPitch = 0, viewYaw = 0;
+let viewPitch = 15, viewYaw = -10;
 
 // コマンド
 const cmd = document.getElementById("cmd");
@@ -192,7 +192,7 @@ gl.linkProgram(prg);
 gl.useProgram(prg);
 
 // カリング・深度テストを有効化
-// gl.enable(gl.CULL_FACE);
+gl.enable(gl.CULL_FACE);
 gl.enable(gl.DEPTH_TEST);
 gl.depthFunc(gl.LEQUAL);
 
@@ -268,88 +268,156 @@ function viewRot(ofsX, ofsY) {
 
 
 
+
 // 頂点情報
 // ブロック/位置
 const blockPos = [
-  // above
-  // below
-  // left
-  // front
-  // right
-  // back
-  // 仮
-  1, -0.5, 0,
-  0,  0.5, 0,
-  0, -0.5, 1
-];
-
-// ブロック/インデックス
-const blockIndex = [
-  // above
-  // below
-  // left
-  // front
-  // right
-  // back
-  // 仮
-  1, 0, 0, 1,
-  0, 1, 0, 1,
-  0, 0, 1, 1
-];
-
-// ブロック/テクスチャ座標
-const blockUv = [
-  // above
-  // below
-  // left
-  // front
-  // right
-  // back
-  // 仮
-  1, 0, 0, 1,
-  0, 1, 0, 1,
-  0, 0, 1, 1
+  -0.5, -0.5, -0.5,
+   0.5, -0.5, -0.5,
+  -0.5, -0.5,  0.5,
+   0.5, -0.5,  0.5,
+  -0.5,  0.5, -0.5,
+   0.5,  0.5, -0.5,
+  -0.5,  0.5,  0.5,
+   0.5,  0.5,  0.5,
 ];
 
 // ブロック/色
 const blockColor = [
-  // above
-  // below
-  // left
-  // front
-  // right
-  // back
-  // 仮
+  0, 0, 0, 1,
   1, 0, 0, 1,
+  0, 0, 1, 1,
+  1, 0, 1, 1,
   0, 1, 0, 1,
-  0, 0, 1, 1
+  1, 1, 0, 1,
+  0, 1, 1, 1,
+  1, 1, 1, 1,
+];
+
+// ブロック/テクスチャ座標
+const blockUv = [
+  // 上
+  // 下
+  // 右
+  // 前
+  // 左
+  // 後
+];
+
+// ブロック/インデックス
+const blockIndex = [
+  4, 6, 5, // 上
+  5, 6, 7, 
+  0, 1, 2, // 下
+  2, 1, 3, 
+  4, 0, 6, // 右
+  6, 0, 2, 
+  6, 2, 7, // 前
+  7, 2, 3, 
+  7, 3, 5, // 左
+  5, 3, 1, 
+  5, 1, 4, // 後
+  4, 1, 0,
 ];
 
 // 軸/位置
 const axisPos = [
   0, 0, 0,
-  1, 0, 0,
+  5, 0, 0,
   0, 0, 0,
-  0, 1, 0,
+  0, 5, 0,
   0, 0, 0,
-  0, 0, 1
+  0, 0, 5,
+  -5, 0, -4.5,
+   5, 0, -4.5,
+  -5, 0, -3.5,
+   5, 0, -3.5,
+  -5, 0, -2.5,
+   5, 0, -2.5,
+  -5, 0, -1.5,
+   5, 0, -1.5,
+  -5, 0, -0.5,
+   5, 0, -0.5,
+  -5, 0,  0.5,
+   5, 0,  0.5,
+  -5, 0,  1.5,
+   5, 0,  1.5,
+  -5, 0,  2.5,
+   5, 0,  2.5,
+  -5, 0,  3.5,
+   5, 0,  3.5,
+  -5, 0,  4.5,
+   5, 0,  4.5,
+  -4.5, 0, -5,
+  -4.5, 0,  5,
+  -3.5, 0, -5,
+  -3.5, 0,  5,
+  -2.5, 0, -5,
+  -2.5, 0,  5,
+  -1.5, 0, -5,
+  -1.5, 0,  5,
+  -0.5, 0, -5,
+  -0.5, 0,  5,
+   0.5, 0, -5,
+   0.5, 0,  5,
+   1.5, 0, -5,
+   1.5, 0,  5,
+   2.5, 0, -5,
+   2.5, 0,  5,
+   3.5, 0, -5,
+   3.5, 0,  5,
+   4.5, 0, -5,
+   4.5, 0,  5,
 ];
 
 // 軸/色
 const axisColor = [
   1, 0, 0, 1,
+  1, 0, 0, 1,
   0, 1, 0, 1,
-  0, 0, 1, 1
-];
-
-// 原点/位置
-const originPos = [
-  0, 0, 0
-];
-
-// 原点/色
-const originColor = [
-  0.5, 0.5, 0.5, 1
+  0, 1, 0, 1,
+  0, 0, 1, 1,
+  0, 0, 1, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
+  .4, .4, .4, 1,
 ];
 
 
@@ -359,41 +427,6 @@ const originColor = [
 // 描画
 draw();
 function draw() {
-
-  // canvasを初期化
-  gl.clearColor(0.1, 0.1, 0.1, 1.0);
-  gl.clearDepth(1.0);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-
-
-
-
-  // 頂点バッファを生成し、割り当てる
-  // 位置
-  const blockPosVbo = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, blockPosVbo);
-  gl.bufferData(gl.ARRAY_BUFFER,
-    new Float32Array(blockPos), gl.STATIC_DRAW);
-
-  const blockPosLoc = gl.getAttribLocation(prg, 'position');
-  gl.enableVertexAttribArray(blockPosLoc);
-  gl.vertexAttribPointer(blockPosLoc, 3, gl.FLOAT, false, 0, 0);
-
-  // 色
-  const blockColorVbo = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, blockColorVbo);
-  gl.bufferData(gl.ARRAY_BUFFER,
-    new Float32Array(blockColor), gl.STATIC_DRAW);
-
-  const blockColorLoc = gl.getAttribLocation(prg, 'color');
-  gl.enableVertexAttribArray(blockColorLoc);
-  gl.vertexAttribPointer(blockColorLoc, 4, gl.FLOAT, false, 0, 0);
-
-
-
-
-
   // 行列
   // FMBEによる変形
   let mMat = [ // basepos
@@ -446,27 +479,103 @@ function draw() {
     0, 0, 0, 1
   ], vpMat);
   vpMat = mulMat([ // perspective
-    10, 0, 0, 0,
-    0, 10, 0, 0,
-    0, 0, 1, -49,
-    0, 0, -1, 50
+    4, 0, 0, 0,
+    0, 4, 0, 0,
+    0, 0, -1, 19,
+    0, 0, -1, 20
   ], vpMat);
-  // [10  0 0  0 [1 0  0 0 [1 0 0   0
-  //   0 10 0  0  0 1  0 0  0 1 0   0
-  //   0  0 1 -1  0 0  0 1  0 0 1 -50
-  //   0  0 0  1] 0 0 -1 0] 0 0 0   1]
+  // [4 0 0  0 [1 0  0 0 [1 0 0   0
+  //  0 4 0  0  0 1  0 0  0 1 0   0
+  //  0 0 1 -1  0 0  0 1  0 0 1 -20
+  //  0 0 0  1] 0 0 -1 0] 0 0 0   1]
 
-  // uniform変数に行列を設定
+
+
+
+
+  // canvasを初期化
+  gl.clearColor(0.1, 0.1, 0.1, 1.0);
+  gl.clearDepth(1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+
+
+
+
+  // ブロックを描画
+  // VBOを生成し、割り当てる
+  // 位置
+  const blockPosVbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, blockPosVbo);
+  gl.bufferData(gl.ARRAY_BUFFER,
+    new Float32Array(blockPos), gl.STATIC_DRAW);
+
+  const blockPosLoc = gl.getAttribLocation(prg, 'position');
+  gl.enableVertexAttribArray(blockPosLoc);
+  gl.vertexAttribPointer(blockPosLoc, 3, gl.FLOAT, false, 0, 0);
+
+  // 色
+  const blockColorVbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, blockColorVbo);
+  gl.bufferData(gl.ARRAY_BUFFER,
+    new Float32Array(blockColor), gl.STATIC_DRAW);
+
+  const blockColorLoc = gl.getAttribLocation(prg, 'color');
+  gl.enableVertexAttribArray(blockColorLoc);
+  gl.vertexAttribPointer(blockColorLoc, 4, gl.FLOAT, false, 0, 0);
+
+  // IBOを生成し、割り当てる
+  let ibo = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
+    new Int16Array(blockIndex), gl.STATIC_DRAW);
+
+  // 変形行列
   gl.uniformMatrix4fv(
     gl.getUniformLocation(prg, "mvpMat"),
     false, tMat(mulMat(vpMat, mMat)));
 
+  // 描画
+  gl.drawElements(gl.TRIANGLES, blockIndex.length, gl.UNSIGNED_SHORT, 0);
 
 
 
 
-  // 描画する
-  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  // 軸を描画
+  // VBOを生成し、割り当てる
+  // 位置
+  const axisPosVbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, axisPosVbo);
+  gl.bufferData(gl.ARRAY_BUFFER,
+    new Float32Array(axisPos), gl.STATIC_DRAW);
+
+  const axisPosLoc = gl.getAttribLocation(prg, 'position');
+  gl.enableVertexAttribArray(axisPosLoc);
+  gl.vertexAttribPointer(axisPosLoc, 3, gl.FLOAT, false, 0, 0);
+
+  // 色
+  const axisColorVbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, axisColorVbo);
+  gl.bufferData(gl.ARRAY_BUFFER,
+    new Float32Array(axisColor), gl.STATIC_DRAW);
+
+  const axisColorLoc = gl.getAttribLocation(prg, 'color');
+  gl.enableVertexAttribArray(axisColorLoc);
+  gl.vertexAttribPointer(axisColorLoc, 4, gl.FLOAT, false, 0, 0);
+
+  // 変形行列
+  gl.uniformMatrix4fv(
+    gl.getUniformLocation(prg, "mvpMat"),
+    false, tMat(vpMat));
+
+  // 描画
+  gl.drawArrays(gl.LINES, 0, axisPos.length / 3);
+
+
+
+
+
+  // 描画
   gl.flush();
-
 }
