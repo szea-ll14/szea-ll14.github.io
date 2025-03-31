@@ -31,11 +31,8 @@ function num2str(num) {
 
   // 符号・仮数整数部・仮数小数部・指数に分解
   let [_, sgn, manInt, manFrac, exp] = strRaw.match(
-    /^(-?)(\d*)(?:\.(\d*))?e([+-]\d+)$/
+    /^(-?)(\d*)\.?(\d*)e([+-]\d+)$/
   );
-  if (!manFrac) { // nullらせない
-    manFrac = "";
-  }
   exp = Number(exp);
 
   if (exp > 0) { // e+
@@ -58,9 +55,6 @@ const deg = Math.PI / 180;
 
 
 
-
-// カメラの角度
-let viewPitch = 15, viewYaw = -10;
 
 // コマンド
 const cmd = document.getElementById("cmd");
@@ -196,11 +190,16 @@ gl.enable(gl.CULL_FACE);
 gl.enable(gl.DEPTH_TEST);
 gl.depthFunc(gl.LEQUAL);
 
+// canvas初期化設定
+gl.clearColor(.1, .1, .1, 1);
+gl.clearDepth(1);
+
 
 
 
 
 // カメラ回転
+let viewPitch = 15, viewYaw = -10;
 let preOfsX = 0, preOfsY = 0;
 let mouse = false, touch = false;
 
@@ -269,156 +268,157 @@ function viewRot(ofsX, ofsY) {
 
 
 
-// 頂点情報
-// ブロック/位置
-const blockPos = [
-  -0.5, -0.5, -0.5,
-   0.5, -0.5, -0.5,
-  -0.5, -0.5,  0.5,
-   0.5, -0.5,  0.5,
-  -0.5,  0.5, -0.5,
-   0.5,  0.5, -0.5,
-  -0.5,  0.5,  0.5,
-   0.5,  0.5,  0.5,
-];
-
-// ブロック/色
-const blockColor = [
-  0, 0, 0, 1,
-  1, 0, 0, 1,
-  0, 0, 1, 1,
-  1, 0, 1, 1,
-  0, 1, 0, 1,
-  1, 1, 0, 1,
-  0, 1, 1, 1,
-  1, 1, 1, 1,
-];
-
-// ブロック/テクスチャ座標
-const blockUv = [
+// 頂点情報/ブロック
+const blockVert = new Float32Array([
+  // 位置:vec3, 色:vec3, UV:vec2  
   // 上
+  -.5,  .5, -.5,  0, 1, 0,  .25,  0,
+  -.5,  .5,  .5,  0, 1, 1,  .25, .5,
+   .5,  .5, -.5,  1, 1, 0,   .5,  0,
+   .5,  .5,  .5,  1, 1, 1,   .5, .5,
   // 下
+  -.5, -.5, -.5,  0, 0, 0,   .5,  0,
+   .5, -.5, -.5,  1, 0, 0,  .75,  0,
+  -.5, -.5,  .5,  0, 0, 1,   .5, .5,
+   .5, -.5,  .5,  1, 0, 1,  .75, .5,
   // 右
+  -.5,  .5, -.5,  0, 1, 0,    0, .5,
+  -.5, -.5, -.5,  0, 0, 0,    0,  1,
+  -.5,  .5,  .5,  0, 1, 1,  .25, .5,
+  -.5, -.5,  .5,  0, 0, 1,  .25,  1,
   // 前
+  -.5,  .5,  .5,  0, 1, 1,  .25, .5,
+  -.5, -.5,  .5,  0, 0, 1,  .25,  1,
+   .5,  .5,  .5,  1, 1, 1,   .5, .5,
+   .5, -.5,  .5,  1, 0, 1,   .5,  1,
   // 左
+   .5,  .5,  .5,  1, 1, 1,   .5, .5,
+   .5, -.5,  .5,  1, 0, 1,   .5,  1,
+   .5,  .5, -.5,  1, 1, 0,  .75, .5,
+   .5, -.5, -.5,  1, 0, 0,  .75,  1,
   // 後
-];
+   .5,  .5, -.5,  1, 1, 0,  .75, .5,
+   .5, -.5, -.5,  1, 0, 0,  .75,  1,
+  -.5,  .5, -.5,  0, 1, 0,    1, .5,
+  -.5, -.5, -.5,  0, 0, 0,    1,  1,
+]);
 
 // ブロック/インデックス
-const blockIndex = [
-  4, 6, 5, // 上
-  5, 6, 7, 
-  0, 1, 2, // 下
-  2, 1, 3, 
-  4, 0, 6, // 右
-  6, 0, 2, 
-  6, 2, 7, // 前
-  7, 2, 3, 
-  7, 3, 5, // 左
-  5, 3, 1, 
-  5, 1, 4, // 後
-  4, 1, 0,
-];
+const blockIndex = new Int16Array([
+   0,  1,  2, // 上
+   2,  1,  3, 
+   4,  5,  6, // 下
+   6,  5,  7, 
+   8,  9, 10, // 右
+  10,  9, 11, 
+  12, 13, 14, // 前
+  14, 13, 15, 
+  16, 17, 18, // 左
+  18, 17, 19, 
+  20, 21, 22, // 後
+  22, 21, 23,
+]);
 
 // 軸/位置
-const axisPos = [
-  0, 0, 0,
-  5, 0, 0,
-  0, 0, 0,
-  0, 5, 0,
-  0, 0, 0,
-  0, 0, 5,
-  -5, 0, -4.5,
-   5, 0, -4.5,
-  -5, 0, -3.5,
-   5, 0, -3.5,
-  -5, 0, -2.5,
-   5, 0, -2.5,
-  -5, 0, -1.5,
-   5, 0, -1.5,
-  -5, 0, -0.5,
-   5, 0, -0.5,
-  -5, 0,  0.5,
-   5, 0,  0.5,
-  -5, 0,  1.5,
-   5, 0,  1.5,
-  -5, 0,  2.5,
-   5, 0,  2.5,
-  -5, 0,  3.5,
-   5, 0,  3.5,
-  -5, 0,  4.5,
-   5, 0,  4.5,
-  -4.5, 0, -5,
-  -4.5, 0,  5,
-  -3.5, 0, -5,
-  -3.5, 0,  5,
-  -2.5, 0, -5,
-  -2.5, 0,  5,
-  -1.5, 0, -5,
-  -1.5, 0,  5,
-  -0.5, 0, -5,
-  -0.5, 0,  5,
-   0.5, 0, -5,
-   0.5, 0,  5,
-   1.5, 0, -5,
-   1.5, 0,  5,
-   2.5, 0, -5,
-   2.5, 0,  5,
-   3.5, 0, -5,
-   3.5, 0,  5,
-   4.5, 0, -5,
-   4.5, 0,  5,
-];
+const axisVert = new Float32Array([
+  // 位置:vec3, 色:vec3
+  // xyz軸
+  0, 0, 0,  1, 0, 0,
+  5, 0, 0,  1, 0, 0,
+  0, 0, 0,  0, 1, 0,
+  0, 5, 0,  0, 1, 0,
+  0, 0, 0,  0, 0, 1,
+  0, 0, 5,  0, 0, 1,
+  // xz平面
+  -5, 0, -4.5,  .4, .4, .4,
+   5, 0, -4.5,  .4, .4, .4,
+  -5, 0, -3.5,  .4, .4, .4,
+   5, 0, -3.5,  .4, .4, .4,
+  -5, 0, -2.5,  .4, .4, .4,
+   5, 0, -2.5,  .4, .4, .4,
+  -5, 0, -1.5,  .4, .4, .4,
+   5, 0, -1.5,  .4, .4, .4,
+  -5, 0, -0.5,  .4, .4, .4,
+   5, 0, -0.5,  .4, .4, .4,
+  -5, 0,  0.5,  .4, .4, .4,
+   5, 0,  0.5,  .4, .4, .4,
+  -5, 0,  1.5,  .4, .4, .4,
+   5, 0,  1.5,  .4, .4, .4,
+  -5, 0,  2.5,  .4, .4, .4,
+   5, 0,  2.5,  .4, .4, .4,
+  -5, 0,  3.5,  .4, .4, .4,
+   5, 0,  3.5,  .4, .4, .4,
+  -5, 0,  4.5,  .4, .4, .4,
+   5, 0,  4.5,  .4, .4, .4,
+  -4.5, 0, -5,  .4, .4, .4,
+  -4.5, 0,  5,  .4, .4, .4,
+  -3.5, 0, -5,  .4, .4, .4,
+  -3.5, 0,  5,  .4, .4, .4,
+  -2.5, 0, -5,  .4, .4, .4,
+  -2.5, 0,  5,  .4, .4, .4,
+  -1.5, 0, -5,  .4, .4, .4,
+  -1.5, 0,  5,  .4, .4, .4,
+  -0.5, 0, -5,  .4, .4, .4,
+  -0.5, 0,  5,  .4, .4, .4,
+   0.5, 0, -5,  .4, .4, .4,
+   0.5, 0,  5,  .4, .4, .4,
+   1.5, 0, -5,  .4, .4, .4,
+   1.5, 0,  5,  .4, .4, .4,
+   2.5, 0, -5,  .4, .4, .4,
+   2.5, 0,  5,  .4, .4, .4,
+   3.5, 0, -5,  .4, .4, .4,
+   3.5, 0,  5,  .4, .4, .4,
+   4.5, 0, -5,  .4, .4, .4,
+   4.5, 0,  5,  .4, .4, .4,
+]);
 
-// 軸/色
-const axisColor = [
-  1, 0, 0, 1,
-  1, 0, 0, 1,
-  0, 1, 0, 1,
-  0, 1, 0, 1,
-  0, 0, 1, 1,
-  0, 0, 1, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-  .4, .4, .4, 1,
-];
+
+
+
+
+// シェーダー内の変数の場所を取得
+const posLoc = gl.getAttribLocation(prg, 'position');
+const colorLoc = gl.getAttribLocation(prg, 'color');
+const uvLoc = gl.getAttribLocation(prg, 'uv');
+const normalLoc = gl.getAttribLocation(prg, 'normal');
+const texLoadedLoc = gl.getUniformLocation(prg, "texLoaded");
+const mvpMatLoc = gl.getUniformLocation(prg, "mvpMat");
+gl.enableVertexAttribArray(posLoc);
+gl.enableVertexAttribArray(colorLoc);
+
+// ブロックのVBOを生成
+const blockVbo = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, blockVbo);
+gl.bufferData(gl.ARRAY_BUFFER, blockVert, gl.STATIC_DRAW);
+
+// ブロックのIBOを生成
+const blockIbo = gl.createBuffer();
+gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, blockIbo);
+gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, blockIndex, gl.STATIC_DRAW);
+
+// 軸のVBOを生成
+const axisVbo = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, axisVbo);
+gl.bufferData(gl.ARRAY_BUFFER, axisVert, gl.STATIC_DRAW);
+
+
+
+
+
+// ブロックテクスチャ
+let texLoaded = false;
+const img = new Image();
+img.src = "./alex.png";
+let tex = gl.createTexture();
+/*
+img.onload = () => {
+  texLoaded = true;
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+  gl.generateMipmap(gl.TEXTURE_2D);
+  draw();
+};
+*/
 
 
 
@@ -494,8 +494,6 @@ function draw() {
 
 
   // canvasを初期化
-  gl.clearColor(0.1, 0.1, 0.1, 1.0);
-  gl.clearDepth(1.0);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 
@@ -503,37 +501,24 @@ function draw() {
 
 
   // ブロックを描画
-  // VBOを生成し、割り当てる
-  // 位置
-  const blockPosVbo = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, blockPosVbo);
-  gl.bufferData(gl.ARRAY_BUFFER,
-    new Float32Array(blockPos), gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ARRAY_BUFFER, blockVbo);
+  gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 0);
+  gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 
-  const blockPosLoc = gl.getAttribLocation(prg, 'position');
-  gl.enableVertexAttribArray(blockPosLoc);
-  gl.vertexAttribPointer(blockPosLoc, 3, gl.FLOAT, false, 0, 0);
+  // テクスチャ
+  gl.uniform1i(texLoadedLoc, texLoaded);
 
-  // 色
-  const blockColorVbo = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, blockColorVbo);
-  gl.bufferData(gl.ARRAY_BUFFER,
-    new Float32Array(blockColor), gl.STATIC_DRAW);
+  if (texLoaded) {
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.uniform1i(uTexture, 0);
+  }
 
-  const blockColorLoc = gl.getAttribLocation(prg, 'color');
-  gl.enableVertexAttribArray(blockColorLoc);
-  gl.vertexAttribPointer(blockColorLoc, 4, gl.FLOAT, false, 0, 0);
-
-  // IBOを生成し、割り当てる
-  let ibo = gl.createBuffer();
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
-    new Int16Array(blockIndex), gl.STATIC_DRAW);
+  // インデックス
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, blockIbo);
 
   // 変形行列
-  gl.uniformMatrix4fv(
-    gl.getUniformLocation(prg, "mvpMat"),
-    false, tMat(mulMat(vpMat, mMat)));
+  gl.uniformMatrix4fv(mvpMatLoc, false, tMat(mulMat(vpMat, mMat)));
 
   // 描画
   gl.drawElements(gl.TRIANGLES, blockIndex.length, gl.UNSIGNED_SHORT, 0);
@@ -543,34 +528,15 @@ function draw() {
 
 
   // 軸を描画
-  // VBOを生成し、割り当てる
-  // 位置
-  const axisPosVbo = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, axisPosVbo);
-  gl.bufferData(gl.ARRAY_BUFFER,
-    new Float32Array(axisPos), gl.STATIC_DRAW);
-
-  const axisPosLoc = gl.getAttribLocation(prg, 'position');
-  gl.enableVertexAttribArray(axisPosLoc);
-  gl.vertexAttribPointer(axisPosLoc, 3, gl.FLOAT, false, 0, 0);
-
-  // 色
-  const axisColorVbo = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, axisColorVbo);
-  gl.bufferData(gl.ARRAY_BUFFER,
-    new Float32Array(axisColor), gl.STATIC_DRAW);
-
-  const axisColorLoc = gl.getAttribLocation(prg, 'color');
-  gl.enableVertexAttribArray(axisColorLoc);
-  gl.vertexAttribPointer(axisColorLoc, 4, gl.FLOAT, false, 0, 0);
+  gl.bindBuffer(gl.ARRAY_BUFFER, axisVbo);
+  gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+  gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 
   // 変形行列
-  gl.uniformMatrix4fv(
-    gl.getUniformLocation(prg, "mvpMat"),
-    false, tMat(vpMat));
+  gl.uniformMatrix4fv(mvpMatLoc, false, tMat(vpMat));
 
   // 描画
-  gl.drawArrays(gl.LINES, 0, axisPos.length / 3);
+  gl.drawArrays(gl.LINES, 0, axisVert.length / 6);
 
 
 
