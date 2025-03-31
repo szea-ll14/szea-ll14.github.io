@@ -10,13 +10,35 @@ function mulMat(matL, matR) {
   return rtn;
 }
 
-// 行列の転置
+// 転置行列
 function tMat(mat) {
   return [
     mat[0], mat[4], mat[ 8], mat[12],
     mat[1], mat[5], mat[ 9], mat[13],
     mat[2], mat[6], mat[10], mat[14],
     mat[3], mat[7], mat[11], mat[15],
+  ];
+}
+
+// 余因子行列
+function adjMat(mat) {
+  return [
+    mat[5]*(mat[10]*mat[15] - mat[11]*mat[14]) + mat[6]*(mat[11]*mat[13] - mat[9]*mat[15]) + mat[7]*(mat[9]*mat[14] - mat[10]*mat[13]),
+    mat[1]*(mat[11]*mat[14] - mat[10]*mat[15]) + mat[2]*(mat[9]*mat[15] - mat[11]*mat[13]) + mat[3]*(mat[10]*mat[13] - mat[9]*mat[14]),
+    mat[1]*(mat[6]*mat[15] - mat[7]*mat[14]) + mat[2]*(mat[7]*mat[13] - mat[5]*mat[15]) + mat[3]*(mat[5]*mat[14] - mat[6]*mat[13]),
+    mat[1]*(mat[7]*mat[10] - mat[6]*mat[11]) + mat[2]*(mat[5]*mat[11] - mat[7]*mat[9]) + mat[3]*(mat[6]*mat[9] - mat[5]*mat[10]),
+    mat[4]*(mat[11]*mat[14] - mat[10]*mat[15]) + mat[6]*(mat[8]*mat[15] - mat[11]*mat[12]) + mat[7]*(mat[10]*mat[12] - mat[8]*mat[14]),
+    mat[0]*(mat[10]*mat[15] - mat[11]*mat[14]) + mat[2]*(mat[11]*mat[12] - mat[8]*mat[15]) + mat[3]*(mat[8]*mat[14] - mat[10]*mat[12]),
+    mat[0]*(mat[7]*mat[14] - mat[6]*mat[15]) + mat[2]*(mat[4]*mat[15] - mat[7]*mat[12]) + mat[3]*(mat[6]*mat[12] - mat[4]*mat[14]),
+    mat[0]*(mat[6]*mat[11] - mat[7]*mat[10]) + mat[2]*(mat[7]*mat[8] - mat[4]*mat[11]) + mat[3]*(mat[4]*mat[10] - mat[6]*mat[8]),
+    mat[4]*(mat[9]*mat[15] - mat[11]*mat[13]) + mat[5]*(mat[11]*mat[12] - mat[8]*mat[15]) + mat[7]*(mat[8]*mat[13] - mat[9]*mat[12]),
+    mat[0]*(mat[11]*mat[13] - mat[9]*mat[15]) + mat[1]*(mat[8]*mat[15] - mat[11]*mat[12]) + mat[3]*(mat[9]*mat[12] - mat[8]*mat[13]),
+    mat[0]*(mat[5]*mat[15] - mat[7]*mat[13]) + mat[1]*(mat[7]*mat[12] - mat[4]*mat[15]) + mat[3]*(mat[4]*mat[13] - mat[5]*mat[12]),
+    mat[0]*(mat[7]*mat[9] - mat[5]*mat[11]) + mat[1]*(mat[4]*mat[11] - mat[7]*mat[8]) + mat[3]*(mat[5]*mat[8] - mat[4]*mat[9]),
+    mat[4]*(mat[10]*mat[13] - mat[9]*mat[14])  + mat[5]*(mat[8]*mat[14] - mat[10]*mat[12]) + mat[6]*(mat[9]*mat[12] - mat[8]*mat[13]),
+    mat[0]*(mat[9]*mat[14] - mat[10]*mat[13]) + mat[1]*(mat[10]*mat[12] - mat[8]*mat[14]) + mat[2]*(mat[8]*mat[13] - mat[9]*mat[12]),
+    mat[0]*(mat[6]*mat[13] - mat[5]*mat[14]) + mat[1]*(mat[4]*mat[14] - mat[6]*mat[12]) + mat[2]*(mat[5]*mat[12] - mat[4]*mat[13]),
+    mat[0]*(mat[5]*mat[10] - mat[6]*mat[9]) + mat[1]*(mat[6]*mat[8] - mat[4]*mat[10]) + mat[2]*(mat[4]*mat[9] - mat[5]*mat[8])
   ];
 }
 
@@ -270,37 +292,37 @@ function viewRot(ofsX, ofsY) {
 
 // 頂点情報/ブロック
 const blockVert = new Float32Array([
-  // 位置:vec3, 色:vec3, UV:vec2  
+  // 位置:vec3, 色:vec3, UV:vec2, 法線:vec3
   // 上
-  -.5,  .5, -.5,  0, 1, 0,  .25,  0,
-  -.5,  .5,  .5,  0, 1, 1,  .25, .5,
-   .5,  .5, -.5,  1, 1, 0,   .5,  0,
-   .5,  .5,  .5,  1, 1, 1,   .5, .5,
+  -.5,  .5, -.5,  0, 1, 0,  .25,  0,  0, 1, 0,
+  -.5,  .5,  .5,  0, 1, 1,  .25, .5,  0, 1, 0,
+   .5,  .5, -.5,  1, 1, 0,   .5,  0,  0, 1, 0,
+   .5,  .5,  .5,  1, 1, 1,   .5, .5,  0, 1, 0,
   // 下
-  -.5, -.5, -.5,  0, 0, 0,   .5,  0,
-   .5, -.5, -.5,  1, 0, 0,  .75,  0,
-  -.5, -.5,  .5,  0, 0, 1,   .5, .5,
-   .5, -.5,  .5,  1, 0, 1,  .75, .5,
+  -.5, -.5, -.5,  0, 0, 0,   .5,  0,  0, -1, 0,
+   .5, -.5, -.5,  1, 0, 0,  .75,  0,  0, -1, 0,
+  -.5, -.5,  .5,  0, 0, 1,   .5, .5,  0, -1, 0,
+   .5, -.5,  .5,  1, 0, 1,  .75, .5,  0, -1, 0,
   // 右
-  -.5,  .5, -.5,  0, 1, 0,    0, .5,
-  -.5, -.5, -.5,  0, 0, 0,    0,  1,
-  -.5,  .5,  .5,  0, 1, 1,  .25, .5,
-  -.5, -.5,  .5,  0, 0, 1,  .25,  1,
+  -.5,  .5, -.5,  0, 1, 0,    0, .5,  -1, 0, 0,
+  -.5, -.5, -.5,  0, 0, 0,    0,  1,  -1, 0, 0,
+  -.5,  .5,  .5,  0, 1, 1,  .25, .5,  -1, 0, 0,
+  -.5, -.5,  .5,  0, 0, 1,  .25,  1,  -1, 0, 0,
   // 前
-  -.5,  .5,  .5,  0, 1, 1,  .25, .5,
-  -.5, -.5,  .5,  0, 0, 1,  .25,  1,
-   .5,  .5,  .5,  1, 1, 1,   .5, .5,
-   .5, -.5,  .5,  1, 0, 1,   .5,  1,
+  -.5,  .5,  .5,  0, 1, 1,  .25, .5,  0, 0, 1,
+  -.5, -.5,  .5,  0, 0, 1,  .25,  1,  0, 0, 1,
+   .5,  .5,  .5,  1, 1, 1,   .5, .5,  0, 0, 1,
+   .5, -.5,  .5,  1, 0, 1,   .5,  1,  0, 0, 1,
   // 左
-   .5,  .5,  .5,  1, 1, 1,   .5, .5,
-   .5, -.5,  .5,  1, 0, 1,   .5,  1,
-   .5,  .5, -.5,  1, 1, 0,  .75, .5,
-   .5, -.5, -.5,  1, 0, 0,  .75,  1,
+   .5,  .5,  .5,  1, 1, 1,   .5, .5,  1, 0, 0,
+   .5, -.5,  .5,  1, 0, 1,   .5,  1,  1, 0, 0,
+   .5,  .5, -.5,  1, 1, 0,  .75, .5,  1, 0, 0,
+   .5, -.5, -.5,  1, 0, 0,  .75,  1,  1, 0, 0,
   // 後
-   .5,  .5, -.5,  1, 1, 0,  .75, .5,
-   .5, -.5, -.5,  1, 0, 0,  .75,  1,
-  -.5,  .5, -.5,  0, 1, 0,    1, .5,
-  -.5, -.5, -.5,  0, 0, 0,    1,  1,
+   .5,  .5, -.5,  1, 1, 0,  .75, .5,  0, 0, -1,
+   .5, -.5, -.5,  1, 0, 0,  .75,  1,  0, 0, -1,
+  -.5,  .5, -.5,  0, 1, 0,    1, .5,  0, 0, -1,
+  -.5, -.5, -.5,  0, 0, 0,    1,  1,  0, 0, -1,
 ]);
 
 // ブロック/インデックス
@@ -383,8 +405,11 @@ const uvLoc = gl.getAttribLocation(prg, 'uv');
 const normalLoc = gl.getAttribLocation(prg, 'normal');
 const texLoadedLoc = gl.getUniformLocation(prg, "texLoaded");
 const mvpMatLoc = gl.getUniformLocation(prg, "mvpMat");
+const texLoc = gl.getUniformLocation(prg, "tex");
 gl.enableVertexAttribArray(posLoc);
 gl.enableVertexAttribArray(colorLoc);
+gl.enableVertexAttribArray(uvLoc);
+gl.enableVertexAttribArray(normalLoc);
 
 // ブロックのVBOを生成
 const blockVbo = gl.createBuffer();
@@ -409,16 +434,17 @@ gl.bufferData(gl.ARRAY_BUFFER, axisVert, gl.STATIC_DRAW);
 let texLoaded = false;
 const img = new Image();
 img.src = "./alex.png";
-let tex = gl.createTexture();
-/*
+const tex = gl.createTexture();
 img.onload = () => {
   texLoaded = true;
   gl.bindTexture(gl.TEXTURE_2D, tex);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
   gl.generateMipmap(gl.TEXTURE_2D);
+  //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.activeTexture(gl.TEXTURE0);
   draw();
 };
-*/
 
 
 
@@ -502,16 +528,19 @@ function draw() {
 
   // ブロックを描画
   gl.bindBuffer(gl.ARRAY_BUFFER, blockVbo);
-  gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 0);
-  gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+  gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 0);
+  gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+  gl.vertexAttribPointer(uvLoc, 2, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 6 * Float32Array.BYTES_PER_ELEMENT);
+  gl.vertexAttribPointer(normalLoc, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 8 * Float32Array.BYTES_PER_ELEMENT);
+  
+  gl.enableVertexAttribArray(uvLoc);
+  gl.enableVertexAttribArray(normalLoc);
 
   // テクスチャ
   gl.uniform1i(texLoadedLoc, texLoaded);
-
   if (texLoaded) {
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.uniform1i(uTexture, 0);
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.uniform1i(texLoc, 0);
   }
 
   // インデックス
@@ -531,6 +560,12 @@ function draw() {
   gl.bindBuffer(gl.ARRAY_BUFFER, axisVbo);
   gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
   gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+  
+  gl.disableVertexAttribArray(uvLoc);
+  gl.disableVertexAttribArray(normalLoc);
+
+  // テクスチャはないよ
+  gl.uniform1i(texLoadedLoc, 0);
 
   // 変形行列
   gl.uniformMatrix4fv(mvpMatLoc, false, tMat(vpMat));
