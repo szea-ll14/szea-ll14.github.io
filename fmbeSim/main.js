@@ -404,12 +404,11 @@ const colorLoc = gl.getAttribLocation(prg, 'color');
 const uvLoc = gl.getAttribLocation(prg, 'uv');
 const normalLoc = gl.getAttribLocation(prg, 'normal');
 const texLoadedLoc = gl.getUniformLocation(prg, "texLoaded");
-const mvpMatLoc = gl.getUniformLocation(prg, "mvpMat");
 const texLoc = gl.getUniformLocation(prg, "tex");
+const mvpMatLoc = gl.getUniformLocation(prg, "mvpMat");
+const mAdjMatLoc = gl.getUniformLocation(prg, "mAdjMat");
 gl.enableVertexAttribArray(posLoc);
 gl.enableVertexAttribArray(colorLoc);
-gl.enableVertexAttribArray(uvLoc);
-gl.enableVertexAttribArray(normalLoc);
 
 // ブロックのVBOを生成
 const blockVbo = gl.createBuffer();
@@ -532,15 +531,14 @@ function draw() {
   gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
   gl.vertexAttribPointer(uvLoc, 2, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 6 * Float32Array.BYTES_PER_ELEMENT);
   gl.vertexAttribPointer(normalLoc, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 8 * Float32Array.BYTES_PER_ELEMENT);
-  
-  gl.enableVertexAttribArray(uvLoc);
-  gl.enableVertexAttribArray(normalLoc);
 
-  // テクスチャ
+  // テクスチャあるかもよ
   gl.uniform1i(texLoadedLoc, texLoaded);
   if (texLoaded) {
     gl.bindTexture(gl.TEXTURE_2D, tex);
     gl.uniform1i(texLoc, 0);
+    gl.enableVertexAttribArray(uvLoc);
+    gl.enableVertexAttribArray(normalLoc);
   }
 
   // インデックス
@@ -548,6 +546,7 @@ function draw() {
 
   // 変形行列
   gl.uniformMatrix4fv(mvpMatLoc, false, tMat(mulMat(vpMat, mMat)));
+  gl.uniformMatrix4fv(mAdjMatLoc, false, adjMat(mMat));
 
   // 描画
   gl.drawElements(gl.TRIANGLES, blockIndex.length, gl.UNSIGNED_SHORT, 0);
@@ -560,12 +559,11 @@ function draw() {
   gl.bindBuffer(gl.ARRAY_BUFFER, axisVbo);
   gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
   gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-  
-  gl.disableVertexAttribArray(uvLoc);
-  gl.disableVertexAttribArray(normalLoc);
 
   // テクスチャはないよ
-  gl.uniform1i(texLoadedLoc, 0);
+  gl.uniform1i(texLoadedLoc, 0);  
+  gl.disableVertexAttribArray(uvLoc);
+  gl.disableVertexAttribArray(normalLoc);
 
   // 変形行列
   gl.uniformMatrix4fv(mvpMatLoc, false, tMat(vpMat));

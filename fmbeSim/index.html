@@ -13,23 +13,30 @@
       attribute vec3 normal;
       uniform bool texLoaded;
       uniform mat4 mvpMat;
+      uniform mat4 mAdjMat;
 
       varying vec3 vColor;
       varying vec2 vUv;
       varying float diff;
 
       float atan2(in float y, in float x){
-        return x == 0.0 ? sign(y)*radians(90.) : atan(y, x);
+        return x == 0. ? sign(y)*radians(90.) : atan(y, x);
       }
 
       void main(void) {
         gl_Position = mvpMat * vec4(position, 1.0);
         vColor = color;
-        if (!texLoaded) {
-          vUv = vec2(0., 0.);
-        } else {
+        if (texLoaded) {
           vUv = uv;
-          diff = 1.;
+          vec4 normalM = mAdjMat * vec4(normal, 0.);
+          float r = length(normalM);
+          if (r < .001) {
+            diff = 1.;
+          } else {
+            diff = .713
+                 + .272 * normalM.y / r
+                 + .098 * (normalM.z * normalM.z - normalM.x * normalM.x) / r / r;
+          }
         }
       }
     </script>
