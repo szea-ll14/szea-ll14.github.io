@@ -113,7 +113,7 @@ for (const varDatum of Object.values(varData)) {
 
 // コマンドコピー
 let cmdBtnTimeoutID;
-function copy() {
+cmdBtn.onclick = () => {
   navigator.clipboard.writeText(
     cmd.textContent
   );
@@ -220,8 +220,9 @@ gl.clearDepth(1);
 
 
 
-// カメラ回転
+// カメラ回転・スケール
 let viewPitch = 15, viewYaw = -10;
+let viewScale = 0;
 let preOfsX = 0, preOfsY = 0;
 let mouse = false, touch = false;
 
@@ -230,19 +231,21 @@ canvas.onmousedown = e => {// マウス押したとき
   mouse = true;
   setupViewRot(e.offsetX, e.offsetY);
 };
-
 canvas.onmousemove = e => {// ドラッグ時
   if (!mouse) return;
   viewRot(e.offsetX, e.offsetY);
   draw();
 };
-
 canvas.onmouseup = e => {// マウス離したとき
   if (e.which == 1) mouse = false;
 };
-
 canvas.onmouseleave = e => {// カーソル外出たとき
   if (e.which == 1) mouse = false;
+};
+
+canvas.onwheel = e => {
+  viewScale -= e.deltaY / 1024;
+  draw();
 };
 
 canvas.ontouchstart = e => {// 画面押したとき
@@ -255,7 +258,6 @@ canvas.ontouchstart = e => {// 画面押したとき
     e.touches[0].clientY - rect.top
   );
 }
-
 canvas.ontouchmove = e => {// ドラッグ時
   if (e.cancelable) e.preventDefault();
   if (!touch) return;
@@ -266,7 +268,6 @@ canvas.ontouchmove = e => {// ドラッグ時
   );
   draw();
 }
-
 canvas.ontouchend = e => {// 画面離したとき
   touch = false;
 }
@@ -286,8 +287,8 @@ function viewRot(ofsX, ofsY) {
   preOfsY = ofsY;
 }
 
-let aspect = 1;
 // ウィンドウサイズ変更時
+let aspect = 1;
 window.onresize = () => {
   canvas.width = canvas.clientWidth;
   aspect = 300 / canvas.clientWidth;
@@ -522,8 +523,8 @@ function draw() {
     0, 0, -1, 20
   ], vpMat);
   vpMat = mulMat([ // アス比
-    aspect, 0, 0, 0,
-    0, 1, 0, 0,
+    aspect * 2 ** viewScale, 0, 0, 0,
+    0, 2 ** viewScale, 0, 0,
     0, 0, 1, 0,
     0, 0, 0, 1
   ], vpMat);
