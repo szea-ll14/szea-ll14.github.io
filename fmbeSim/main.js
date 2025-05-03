@@ -286,6 +286,18 @@ function viewRot(ofsX, ofsY) {
   preOfsY = ofsY;
 }
 
+let aspect = 1;
+// ウィンドウサイズ変更時
+window.onresize = () => {
+  canvas.width = canvas.clientWidth;
+  aspect = 300 / canvas.clientWidth;
+  gl.viewport(0, 0, canvas.clientWidth, 300);
+  draw();
+};
+canvas.width = canvas.clientWidth;
+aspect = 300 / canvas.clientWidth;
+gl.viewport(0, 0, canvas.clientWidth, 300);
+
 
 
 
@@ -508,6 +520,12 @@ function draw() {
     0, 4, 0, 0,
     0, 0, -1, 19,
     0, 0, -1, 20
+  ], vpMat);
+  vpMat = mulMat([ // アス比
+    aspect, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1
   ], vpMat);
   // [4 0 0  0 [1 0  0 0 [1 0 0   0
   //  0 4 0  0  0 1  0 0  0 1 0   0
