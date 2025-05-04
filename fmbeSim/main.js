@@ -221,9 +221,8 @@ gl.clearDepth(1);
 
 
 // カメラ回転・スケール
-let viewPitch = 15, viewYaw = -10;
-let viewScale = 0;
-let preOfsX = 0, preOfsY = 0;
+let viewPitch = 15, viewYaw = -10, viewScale = 0;
+let preOfsX = 0, preOfsY = 0, preDist = 0;
 let mouse = false, touch = false;
 
 canvas.onmousedown = e => {// マウス押したとき
@@ -243,40 +242,53 @@ canvas.onmouseleave = e => {// カーソル外出たとき
   if (e.which == 1) mouse = false;
 };
 
-canvas.onwheel = e => {
+canvas.onwheel = e => {//ホイール回したとき
   viewScale -= e.deltaY / 1024;
   draw();
 };
 
 canvas.ontouchstart = e => {// 画面押したとき
-  touch = false;
-  if (e.touches.length != 1) return;
-  touch = true;
-  const rect = canvas.getBoundingClientRect();
-  setupViewRot(
-    e.touches[0].clientX - rect.left,
-    e.touches[0].clientY - rect.top
-  );
+  touch = e.touches.length;
+  if (touch == 1) {
+    const rect = canvas.getBoundingClientRect();
+    setupViewRot(
+      e.touches[0].clientX - rect.left,
+      e.touches[0].clientY - rect.top
+    );
+  } else if (touch == 2) {
+    setupViewScale(
+      e.touches[0].clientX,
+      e.touches[0].clientY,
+      e.touches[1].clientX,
+      e.touches[1].clientY
+    );
+  }
 }
 canvas.ontouchmove = e => {// ドラッグ時
   if (e.cancelable) e.preventDefault();
-  if (!touch) return;
-  const rect = canvas.getBoundingClientRect();
-  viewRot(
-    e.touches[0].clientX - rect.left,
-    e.touches[0].clientY - rect.top
-  );
-  draw();
+  if (touch == 1) {
+    const rect = canvas.getBoundingClientRect();
+    viewRot(
+      e.touches[0].clientX - rect.left,
+      e.touches[0].clientY - rect.top
+    );
+    draw();
+  } else if (touch == 2) {
+    viewScale(
+      e.touches[0].clientX,
+      e.touches[0].clientY,
+      e.touches[1].clientX,
+      e.touches[1].clientY
+    );
+    draw();
+  }
 }
-canvas.ontouchend = e => {// 画面離したとき
-  touch = false;
-}
+canvas.ontouchend = canvas.ontouchstart; // 画面離したとき
 
 function setupViewRot(ofsX, ofsY) {
   preOfsX = ofsX;
   preOfsY = ofsY;
 }
-
 function viewRot(ofsX, ofsY) {
   viewYaw += ofsX - preOfsX;
   viewPitch += ofsY - preOfsY;
@@ -285,6 +297,15 @@ function viewRot(ofsX, ofsY) {
   if (viewPitch > 90) viewPitch = 90;
   preOfsX = ofsX;
   preOfsY = ofsY;
+}
+
+function setupViewScale(ofsX0, ofsY0, ofsX1, ofsY1) {
+  preDist = ((ofsX0 - ofsX1) ** 2 + (ofsY0 - ofsY1) ** 2) ** .5;
+}
+function viewScale(ofsX0, ofsY0, ofsX1, ofsY1) {
+  let dist = ((ofsX0 - ofsX1) ** 2 + (ofsY0 - ofsY1) ** 2) ** .5;
+  viewScale += dist - preDist;
+  preDist = dist;
 }
 
 // ウィンドウサイズ変更時
