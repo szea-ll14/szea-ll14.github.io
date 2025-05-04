@@ -304,7 +304,7 @@ function setupViewScale(ofsX0, ofsY0, ofsX1, ofsY1) {
 }
 function changeViewScale(ofsX0, ofsY0, ofsX1, ofsY1) {
   let dist = ((ofsX0 - ofsX1) ** 2 + (ofsY0 - ofsY1) ** 2) ** .5;
-  viewScale += (dist - preDist) / 1024;
+  viewScale += (dist - preDist) / 128;
   preDist = dist;
 }
 
