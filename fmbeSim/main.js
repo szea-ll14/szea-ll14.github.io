@@ -232,7 +232,7 @@ canvas.onmousedown = e => {// マウス押したとき
 };
 canvas.onmousemove = e => {// ドラッグ時
   if (!mouse) return;
-  viewRot(e.offsetX, e.offsetY);
+  changeViewRot(e.offsetX, e.offsetY);
   draw();
 };
 canvas.onmouseup = e => {// マウス離したとき
@@ -268,13 +268,13 @@ canvas.ontouchmove = e => {// ドラッグ時
   if (e.cancelable) e.preventDefault();
   if (touch == 1) {
     const rect = canvas.getBoundingClientRect();
-    viewRot(
+    changeViewRot(
       e.touches[0].clientX - rect.left,
       e.touches[0].clientY - rect.top
     );
     draw();
   } else if (touch == 2) {
-    viewScale(
+    changeViewScale(
       e.touches[0].clientX,
       e.touches[0].clientY,
       e.touches[1].clientX,
@@ -289,7 +289,7 @@ function setupViewRot(ofsX, ofsY) {
   preOfsX = ofsX;
   preOfsY = ofsY;
 }
-function viewRot(ofsX, ofsY) {
+function changeViewRot(ofsX, ofsY) {
   viewYaw += ofsX - preOfsX;
   viewPitch += ofsY - preOfsY;
   viewYaw %= 360;
@@ -302,7 +302,7 @@ function viewRot(ofsX, ofsY) {
 function setupViewScale(ofsX0, ofsY0, ofsX1, ofsY1) {
   preDist = ((ofsX0 - ofsX1) ** 2 + (ofsY0 - ofsY1) ** 2) ** .5;
 }
-function viewScale(ofsX0, ofsY0, ofsX1, ofsY1) {
+function changeViewScale(ofsX0, ofsY0, ofsX1, ofsY1) {
   let dist = ((ofsX0 - ofsX1) ** 2 + (ofsY0 - ofsY1) ** 2) ** .5;
   viewScale += dist - preDist;
   preDist = dist;
