@@ -428,23 +428,49 @@ const texLoadedLoc = gl.getUniformLocation(prg, "texLoaded");
 const texLoc = gl.getUniformLocation(prg, "tex");
 const mvpMatLoc = gl.getUniformLocation(prg, "mvpMat");
 const mAdjMatLoc = gl.getUniformLocation(prg, "mAdjMat");
-gl.enableVertexAttribArray(posLoc);
-gl.enableVertexAttribArray(colorLoc);
 
-// ブロックのVBOを生成
-const blockVbo = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, blockVbo);
-gl.bufferData(gl.ARRAY_BUFFER, blockVert, gl.STATIC_DRAW);
+// ブロックのVAOを生成
+const blockVao = gl.createVertexArray();
+{
+  gl.bindVertexArray(blockVao);
 
-// ブロックのIBOを生成
-const blockIbo = gl.createBuffer();
-gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, blockIbo);
-gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, blockIndex, gl.STATIC_DRAW);
+  // ブロックのVBOを生成
+  const vbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+  gl.bufferData(gl.ARRAY_BUFFER, blockVert, gl.STATIC_DRAW);
+  gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 0);
+  gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+  gl.vertexAttribPointer(uvLoc, 2, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 6 * Float32Array.BYTES_PER_ELEMENT);
+  gl.vertexAttribPointer(normalLoc, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 8 * Float32Array.BYTES_PER_ELEMENT);
+  gl.enableVertexAttribArray(posLoc);
+  gl.enableVertexAttribArray(colorLoc);
+  gl.enableVertexAttribArray(uvLoc);
+  gl.enableVertexAttribArray(normalLoc);
+  
+  // ブロックのIBOを生成
+  const ibo = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, blockIndex, gl.STATIC_DRAW);
 
-// 軸のVBOを生成
-const axisVbo = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, axisVbo);
-gl.bufferData(gl.ARRAY_BUFFER, axisVert, gl.STATIC_DRAW);
+  gl.bindVertexArray(null);
+}
+
+// 軸のVAOを生成
+const axisVao = gl.createVertexArray();
+{
+  gl.bindVertexArray(axisVao);
+
+  // 軸のVBOを生成
+  const vbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+  gl.bufferData(gl.ARRAY_BUFFER, axisVert, gl.STATIC_DRAW);
+  gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+  gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+  gl.enableVertexAttribArray(posLoc);
+  gl.enableVertexAttribArray(colorLoc);
+  
+  gl.bindVertexArray(null);
+}
 
 
 
@@ -460,9 +486,9 @@ img.onload = () => {
   gl.bindTexture(gl.TEXTURE_2D, tex);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
   gl.generateMipmap(gl.TEXTURE_2D);
-  //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
   gl.activeTexture(gl.TEXTURE0);
+  gl.uniform1i(texLoc, 0);
   draw();
 };
 
@@ -530,10 +556,10 @@ function draw() {
     0, 0, -1, 19,
     0, 0, -1, 20
   ], vpMat);
-  // [4 0 0  0 [1 0  0 0 [1 0 0   0
-  //  0 4 0  0  0 1  0 0  0 1 0   0
-  //  0 0 1 -1  0 0  0 1  0 0 1 -20
-  //  0 0 0  1] 0 0 -1 0] 0 0 0   1]
+  // [a*vS  0 0 0 [1 0 0  0 [1 0  0 0 [1 0 0   0
+  //     0 vS 0 0  0 1 0  0  0 1  0 0  0 1 0   0
+  //     0  0 1 0  0 0 1 -1  0 0  0 1  0 0 1 -20
+  //     0  0 0 1] 0 0 0  1] 0 0 -1 0] 0 0 0   1]
 
 
 
@@ -546,50 +572,27 @@ function draw() {
 
 
 
-  // ブロックを描画
-  gl.bindBuffer(gl.ARRAY_BUFFER, blockVbo);
-  gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 0);
-  gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-  gl.vertexAttribPointer(uvLoc, 2, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 6 * Float32Array.BYTES_PER_ELEMENT);
-  gl.vertexAttribPointer(normalLoc, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 8 * Float32Array.BYTES_PER_ELEMENT);
-
-  // テクスチャあるかもよ
+  // ブロックのVBO
+  gl.bindVertexArray(blockVao);
+  // テクスチャがあれば使う
   gl.uniform1i(texLoadedLoc, texLoaded);
-  if (texLoaded) {
-    gl.bindTexture(gl.TEXTURE_2D, tex);
-    gl.uniform1i(texLoc, 0);
-    gl.enableVertexAttribArray(uvLoc);
-    gl.enableVertexAttribArray(normalLoc);
-  }
-
-  // インデックス
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, blockIbo);
-
   // 変形行列
   gl.uniformMatrix4fv(mvpMatLoc, false, tMat(mulMat(vpMat, mMat)));
   gl.uniformMatrix4fv(mAdjMatLoc, false, adjMat(mMat));
-
-  // 描画
+  // ブロックを描画
   gl.drawElements(gl.TRIANGLES, blockIndex.length, gl.UNSIGNED_SHORT, 0);
 
 
 
 
 
-  // 軸を描画
-  gl.bindBuffer(gl.ARRAY_BUFFER, axisVbo);
-  gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-  gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-
+  // 軸のVBO
+  gl.bindVertexArray(axisVao);
   // テクスチャはないよ
-  gl.uniform1i(texLoadedLoc, 0);  
-  gl.disableVertexAttribArray(uvLoc);
-  gl.disableVertexAttribArray(normalLoc);
-
+  gl.uniform1i(texLoadedLoc, 0);
   // 変形行列
   gl.uniformMatrix4fv(mvpMatLoc, false, tMat(vpMat));
-
-  // 描画
+  // 軸を描画
   gl.drawArrays(gl.LINES, 0, axisVert.length / 6);
 
 
