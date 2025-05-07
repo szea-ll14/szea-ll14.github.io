@@ -7,17 +7,18 @@
     <link rel="stylesheet" href="style.css">
     <!-- 頂点シェーダー -->
     <script id="vertShader" type="x-shader/x-vertex">
-      attribute vec3 position;
-      attribute vec3 color;
-      attribute vec2 uv;
-      attribute vec3 normal;
+      #version 300 es
+      in vec3 position;
+      in vec3 color;
+      in vec2 uv;
+      in vec3 normal;
       uniform bool texLoaded;
       uniform mat4 mvpMat;
       uniform mat4 mAdjMat;
 
-      varying vec3 vColor;
-      varying vec2 vUv;
-      varying float diff;
+      out vec3 vColor;
+      out vec2 vUv;
+      out float diff;
 
       float atan2(in float y, in float x){
         return x == 0. ? sign(y)*radians(90.) : atan(y, x);
@@ -42,18 +43,20 @@
     </script>
     <!-- フラグメントシェーダー -->
     <script id="fragShader" type="x-shader/x-fragment">
+      #version 300 es
       precision mediump float;
       uniform bool texLoaded;
       uniform sampler2D tex;
-      varying vec3 vColor;
-      varying vec2 vUv;
-      varying float diff;
+      in vec3 vColor;
+      in vec2 vUv;
+      in float diff;
+      out vec4 fragColor;
 
       void main(void) {
         if (!texLoaded) {
-          gl_FragColor = vec4(vColor, 1.);
+          fragColor = vec4(vColor, 1.);
         } else {
-          gl_FragColor = texture2D(tex, vUv) * vec4(vec3(diff) , 1.);
+          fragColor = texture(tex, vUv) * vec4(vec3(diff) , 1.);
         }
       }
     </script>

@@ -9,7 +9,6 @@ function mulMat(matL, matR) {
   }
   return rtn;
 }
-
 // 転置行列
 function tMat(mat) {
   return [
@@ -19,7 +18,6 @@ function tMat(mat) {
     mat[3], mat[7], mat[11], mat[15],
   ];
 }
-
 // 余因子行列
 function adjMat(mat) {
   return [
@@ -41,7 +39,6 @@ function adjMat(mat) {
     mat[0]*(mat[5]*mat[10] - mat[6]*mat[9]) + mat[1]*(mat[6]*mat[8] - mat[4]*mat[10]) + mat[2]*(mat[4]*mat[9] - mat[5]*mat[8])
   ];
 }
-
 // 数値を文字列化: 指数表記ではなく整数・小数で
 function num2str(num) {
   // 実数以外は思考放棄
@@ -70,7 +67,6 @@ function num2str(num) {
   // 小数点が要れば付けて返す
   return sgn + manInt + (manFrac ? "." + manFrac : "");
 }
-
 // deg2rad
 const deg = Math.PI / 180;
 
@@ -84,7 +80,6 @@ const cmd = document.getElementById("cmd");
 const cmdBtn = document.getElementById("cmdBtn");
 // 変数全指定
 const cmdFull = document.getElementById("cmdFull");
-
 // FMBE変数データ
 let varData = {
   xpos: {name: "xpos", value: 0, init: 0},
@@ -123,7 +118,6 @@ cmdBtn.onclick = () => {
     cmdBtn.textContent = "Copy";
   }, 1000);
 }
-
 // コマンド設定
 setCmd();
 function setCmd() {
@@ -137,7 +131,6 @@ function setCmd() {
   }
   cmd.textContent = `/playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 " ${molang}" setValue`;
 }
-
 // 値セット
 function set(varName, value, {skipN = false, skipR = false} = {}) {
   const varDatum = varData[varName];
@@ -157,14 +150,12 @@ function set(varName, value, {skipN = false, skipR = false} = {}) {
   setCmd();
   draw();
 }
-
 // 値リセット
 function reset(varName) {
   set(varName, varData[varName].init);
 }
-
+// 値変更
 for (const varDatum of Object.values(varData)) {
-  // 変更時処理
   varDatum.inputN.oninput = e => {
     set(e.target.id.slice(0, -1), e.target.value, {skipN: true});
   };
@@ -182,14 +173,14 @@ for (const varDatum of Object.values(varData)) {
 
 // WebGLコンテキストを取得
 const canvas = document.getElementById("canvas");
-const gl = canvas.getContext("webgl");
+const gl = canvas.getContext("webgl2");
 
 // シェーダーをコンパイル
-const vertSource = document.getElementById("vertShader").textContent;
+const vertSource = document.getElementById("vertShader").textContent.trim();
 const vertShader = gl.createShader(gl.VERTEX_SHADER);
 gl.shaderSource(vertShader, vertSource);
 gl.compileShader(vertShader);
-const fragSource = document.getElementById("fragShader").textContent;
+const fragSource = document.getElementById("fragShader").textContent.trim();
 const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
 gl.shaderSource(fragShader, fragSource);
 gl.compileShader(fragShader);
@@ -221,7 +212,7 @@ gl.clearDepth(1);
 
 
 // カメラ回転・スケール
-let viewPitch = 15, viewYaw = -10, viewScale = 0;
+let viewPitch = 15, viewYaw = -10, viewScale = 2;
 let preOfsX = 0, preOfsY = 0, preDist = 0;
 let mouse = false, touch = false;
 
@@ -241,7 +232,6 @@ canvas.onmouseup = e => {// マウス離したとき
 canvas.onmouseleave = e => {// カーソル外出たとき
   if (e.which == 1) mouse = false;
 };
-
 canvas.onwheel = e => {//ホイール回したとき
   viewScale -= e.deltaY / 1024;
   draw();
@@ -298,7 +288,6 @@ function changeViewRot(ofsX, ofsY) {
   preOfsX = ofsX;
   preOfsY = ofsY;
 }
-
 function setupViewScale(ofsX0, ofsY0, ofsX1, ofsY1) {
   preDist = ((ofsX0 - ofsX1) ** 2 + (ofsY0 - ofsY1) ** 2) ** .5;
 }
@@ -324,7 +313,7 @@ gl.viewport(0, 0, canvas.clientWidth, 300);
 
 
 
-// 頂点情報/ブロック
+// 頂点情報 : ブロック
 const blockVert = new Float32Array([
   // 位置:vec3, 色:vec3, UV:vec2, 法線:vec3
   // 上
@@ -358,8 +347,7 @@ const blockVert = new Float32Array([
   -.5,  .5, -.5,  0, 1, 0,    1, .5,  0, 0, -1,
   -.5, -.5, -.5,  0, 0, 0,    1,  1,  0, 0, -1,
 ]);
-
-// ブロック/インデックス
+// インデックス : ブロック
 const blockIndex = new Int16Array([
    0,  1,  2, // 上
    2,  1,  3, 
@@ -374,8 +362,7 @@ const blockIndex = new Int16Array([
   20, 21, 22, // 後
   22, 21, 23,
 ]);
-
-// 軸/位置
+// 頂点情報 : 軸
 const axisVert = new Float32Array([
   // 位置:vec3, 色:vec3
   // xyz軸
@@ -538,16 +525,10 @@ function draw() {
     0, 0, 0, 1
   ], vpMat);
   vpMat = mulMat([ // perspective
-    4, 0, 0, 0,
-    0, 4, 0, 0,
-    0, 0, -1, 19,
-    0, 0, -1, 20
-  ], vpMat);
-  vpMat = mulMat([ // アス比
     aspect * 2 ** viewScale, 0, 0, 0,
     0, 2 ** viewScale, 0, 0,
-    0, 0, 1, 0,
-    0, 0, 0, 1
+    0, 0, -1, 19,
+    0, 0, -1, 20
   ], vpMat);
   // [4 0 0  0 [1 0  0 0 [1 0 0   0
   //  0 4 0  0  0 1  0 0  0 1 0   0
