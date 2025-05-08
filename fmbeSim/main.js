@@ -303,15 +303,16 @@ function changeViewScale(ofsX0, ofsY0, ofsX1, ofsY1) {
 // ウィンドウサイズ変更時
 let aspect = 1;
 window.onresize = () => {
-  canvas.width = canvas.clientWidth;
-  aspect = 300 / canvas.clientWidth;
-  gl.viewport(0, 0, canvas.clientWidth, 300);
+  resize();
   draw();
 };
-canvas.width = canvas.clientWidth;
-aspect = 300 / canvas.clientWidth;
-gl.viewport(0, 0, canvas.clientWidth, 300);
-
+function resize() {
+  canvas.width = canvas.clientWidth * window.devicePixelRatio;
+  canvas.height = canvas.clientHeight * window.devicePixelRatio;
+  aspect = 300 / canvas.clientWidth;
+  gl.viewport(0, 0, canvas.width, canvas.height);
+}
+resize();
 
 
 
