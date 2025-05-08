@@ -78,7 +78,7 @@ const deg = Math.PI / 180;
 const cmd = document.getElementById("cmd");
 // コピー
 const cmdBtn = document.getElementById("cmdBtn");
-// 変数全指定
+// 変数全指定トグル
 const cmdFull = document.getElementById("cmdFull");
 // FMBE変数データ
 let varData = {
@@ -101,6 +101,9 @@ for (const varDatum of Object.values(varData)) {
   // スライダー
   varDatum.inputR = document.getElementById(varDatum.name + "R");
 }
+// ブロック選択
+const blockTex = document.getElementById("blockTex");
+
 
 
 
@@ -478,17 +481,39 @@ const axisVao = gl.createVertexArray();
 
 // ブロックテクスチャ
 let texLoaded = false;
-const img = new Image();
-img.src = "./alex.png";
-const tex = gl.createTexture();
-img.onload = () => {
-  texLoaded = true;
+const texEnum = Object.freeze({
+  diamond_block: 0,
+  0: "diamond_block",
+  curved_pumpkin: 1,
+  1: "curved_pumpkin",
+  cartography_table: 2,
+  2: "cartography_table",
+  chain_command_block: 3,
+  3: "chain_command_block",
+  alex: 4,
+  4: "alex",
+});
+function imgOnloaded(img, imgNum){
+  console.log(imgArray);
+  gl.activeTexture(gl.TEXTURE0 + imgNum);
+  const tex = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, tex);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
   gl.generateMipmap(gl.TEXTURE_2D);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  gl.activeTexture(gl.TEXTURE0);
-  gl.uniform1i(texLoc, 0);
+  if (imgNum == 0) {
+    texLoaded = true;
+    gl.uniform1i(texLoc, 0);
+    draw();
+  }
+}
+const imgArray = [new Image(), new Image(), new Image(), new Image(), new Image()];
+imgArray.forEach((img, imgNum) => {
+  img.src = `./${texEnum[imgNum]}.png`;
+  img.onload = () => imgOnloaded(img, imgNum);
+});
+blockTex.onchange = e => {
+  gl.uniform1i(texLoc, texEnum[e.target.value]);
   draw();
 };
 

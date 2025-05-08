@@ -20,7 +20,7 @@
       out vec2 vUv;
       out float diff;
 
-      float atan2(in float y, in float x){
+      float atan2(in float y, in float x) {
         return x == 0. ? sign(y)*radians(90.) : atan(y, x);
       }
 
@@ -63,6 +63,16 @@
   </head>
   <body>
     <div><canvas id="canvas" width=300 height=300></canvas></div>
+    <div>
+      Block : 
+      <select id="blockTex">
+        <option value="diamond_block">Diamond Block</option>
+        <option value="curved_pumpkin">Curved Pumpkin</option>
+        <option value="cartography_table">Cartography Table</option>
+        <option value="chain_command_block">Chain Command Block</option>
+        <option value="alex">Alex Head Block</option>
+      </select>
+    </div>
     <table>
       <tr>
         <td>xpos</td>
@@ -139,7 +149,7 @@
     </table>
     <div>
       <button id="cmdBtn" type="button">Copy</button><label><input id="cmdFull" type="checkbox" oninput="setCmd()">Full</label>
-      <pre id="cmd">/kill @e</pre>
+      <pre id="cmd">/?</pre>
     </div>
     <script src="main.js"></script>
     <div><a href="https://github.com/szea-ll14/szea-ll14.github.io/tree/main/fmbeSim">なかみ</a></div>
