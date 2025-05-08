@@ -111,7 +111,7 @@ const blockTex = document.getElementById("blockTex");
 
 // コマンドコピー
 let cmdBtnTimeoutID;
-cmdBtn.onclick = () => {
+cmdBtn.addEventListener("click", () => {
   navigator.clipboard.writeText(
     cmd.textContent
   );
@@ -120,11 +120,11 @@ cmdBtn.onclick = () => {
   cmdBtnTimeoutID = setTimeout(() => {
     cmdBtn.textContent = "Copy";
   }, 1000);
-}
+});
 // コマンド設定
 setCmd();
 function setCmd() {
-  let molang = "";
+  let molang = " ";
   for (const varDatum of Object.values(varData)) {
     if (
       !cmdFull.checked &&
@@ -132,7 +132,8 @@ function setCmd() {
     ) continue;
     molang += `v.${varDatum.name}=${num2str(varDatum.value)}; `;
   }
-  cmd.textContent = `/playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 " ${molang}" setValue`;
+  if (molang === " ") molang = "";
+  cmd.textContent = `playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 "${molang}" setValue`;
 }
 // 値セット
 function set(varName, value, {skipN = false, skipR = false} = {}) {
@@ -159,15 +160,15 @@ function reset(varName) {
 }
 // 値変更
 for (const varDatum of Object.values(varData)) {
-  varDatum.inputN.oninput = e => {
+  varDatum.inputN.addEventListener("input", e => {
     set(e.target.id.slice(0, -1), e.target.value, {skipN: true});
-  };
-  varDatum.inputN.onchange = e => {
+  });
+  varDatum.inputN.addEventListener("change", e => {
     set(e.target.id.slice(0, -1), e.target.value);
-  };
-  varDatum.inputR.oninput = e => {
+  });
+  varDatum.inputR.addEventListener("input", e => {
     set(e.target.id.slice(0, -1), e.target.value, {skipR: true});
-  };
+  });
 }
 
 
@@ -219,28 +220,29 @@ let viewPitch = 15, viewYaw = -10, viewScale = 2;
 let preOfsX = 0, preOfsY = 0, preDist = 0;
 let mouse = false, touch = false;
 
-canvas.onmousedown = e => {// マウス押したとき
-  if (e.which != 1) return;
+canvas.addEventListener("mousedown", e => {// マウス押したとき
+  if (e.button != 0) return;
   mouse = true;
   setupViewRot(e.offsetX, e.offsetY);
-};
-canvas.onmousemove = e => {// ドラッグ時
+});
+canvas.addEventListener("mousemove", e => {// ドラッグ時
   if (!mouse) return;
   changeViewRot(e.offsetX, e.offsetY);
   draw();
-};
-canvas.onmouseup = e => {// マウス離したとき
-  if (e.which == 1) mouse = false;
-};
-canvas.onmouseleave = e => {// カーソル外出たとき
-  if (e.which == 1) mouse = false;
-};
-canvas.onwheel = e => {//ホイール回したとき
+});
+canvas.addEventListener("mouseup", e => {// マウス離したとき
+  if (e.button == 0) mouse = false;
+});
+canvas.addEventListener("mouseleave", e => {// カーソル外出たとき
+  if (e.button == 0) mouse = false;
+});
+canvas.addEventListener("wheel", e => {//ホイール回したとき
+  if (e.cancelable) e.preventDefault();
   viewScale -= e.deltaY / 1024;
   draw();
-};
+}, {passive: false});
 
-canvas.ontouchstart = e => {// 画面押したとき
+canvas.addEventListener("touchstart", e => {// 画面押したとき
   touch = e.touches.length;
   if (touch == 1) {
     const rect = canvas.getBoundingClientRect();
@@ -256,8 +258,8 @@ canvas.ontouchstart = e => {// 画面押したとき
       e.touches[1].clientY
     );
   }
-}
-canvas.ontouchmove = e => {// ドラッグ時
+});
+canvas.addEventListener("touchmove", e => {// ドラッグ時
   if (e.cancelable) e.preventDefault();
   if (touch == 1) {
     const rect = canvas.getBoundingClientRect();
@@ -275,8 +277,24 @@ canvas.ontouchmove = e => {// ドラッグ時
     );
     draw();
   }
-}
-canvas.ontouchend = canvas.ontouchstart; // 画面離したとき
+}, {passive: false});
+canvas.addEventListener("touchend", e => {// 画面離したとき
+  touch = e.touches.length;
+  if (touch == 1) {
+    const rect = canvas.getBoundingClientRect();
+    setupViewRot(
+      e.touches[0].clientX - rect.left,
+      e.touches[0].clientY - rect.top
+    );
+  } else if (touch == 2) {
+    setupViewScale(
+      e.touches[0].clientX,
+      e.touches[0].clientY,
+      e.touches[1].clientX,
+      e.touches[1].clientY
+    );
+  }
+});
 
 function setupViewRot(ofsX, ofsY) {
   preOfsX = ofsX;
@@ -302,10 +320,10 @@ function changeViewScale(ofsX0, ofsY0, ofsX1, ofsY1) {
 
 // ウィンドウサイズ変更時
 let aspect = 1;
-window.onresize = () => {
+window.addEventListener("resize", () => {
   resize();
   draw();
-};
+});
 function resize() {
   canvas.width = canvas.clientWidth * window.devicePixelRatio;
   canvas.height = canvas.clientHeight * window.devicePixelRatio;
@@ -511,12 +529,14 @@ function imgOnloaded(img, imgNum){
 const imgArray = [new Image(), new Image(), new Image(), new Image(), new Image()];
 imgArray.forEach((img, imgNum) => {
   img.src = `./${texEnum[imgNum]}.png`;
-  img.onload = () => imgOnloaded(img, imgNum);
+  img.addEventListener("load", () => {
+    imgOnloaded(img, imgNum)
+  });
 });
-blockTex.onchange = e => {
+blockTex.addEventListener("change", e => {
   gl.uniform1i(texLoc, texEnum[e.target.value]);
   draw();
-};
+});
 
 
 
