@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>回転</title>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      color-scheme: light dark;
+    }
+    h1 {
+      margin: 32px 0;
+      border-bottom: solid 1px #8888;
+      border-left: solid 6px #e6fd;
+      padding-left: 10px;
+    }
+    h2 {
+      margin: 28px 0;
+      border-left: solid 3px #e6fd;
+      padding-left: 10px;
+    }
+    #tocButton {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1001;
+      width: 2em;
+      height: 2em;
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      transition: background-color 0.1s ease;
+      border-radius: 3px;
+      font-size: 16pt;
+    }
+    #tocButton:hover {
+      background-color: #8884;
+    }
+    #toc {
+      position: fixed;
+      top: 0;
+      right: max(-20em, -100%);
+      width: min(20em, 100%);
+      height: 100%;
+      border-left: solid 1px #8888;
+      transition: right 0.2s ease;
+      z-index: 1000;
+      overflow-y: auto;
+      background-color: light-dark(#f8f8f8, #181818);
+    }
+    #toc.active {
+      right: 0pt;
+    }
+  </style>
+  <!-- KaTeXを持ってくる -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css"
+    integrity="sha384-5TcZemv2l/9On385z///+d7MSYlvIEw9FuZTIdZ14vJLqWphw7e7ZPuOiCHJcFCP" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"
+    integrity="sha384-cMkvdD8LoxVzGF/RPUKAcvmm49FQ0oxwDF3BGKtDXcEc+T1b2N+teh/OJfpU0jr6"
+    crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh"
+    crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <button id="tocButton">☰</button>
+  <div id="content">
+    よみこみちう...
+  </div>
+  <aside id="toc"></aside>
+
+  <script type="module">
+    // micromarkを持ってくる
+    import {micromark} from 'https://esm.sh/micromark@3?bundle';
+    import {gfm, gfmHtml} from 'https://esm.sh/micromark-extension-gfm@3'
+
+    // 要素
+    const content = document.getElementById("content");
+    const toc = document.getElementById("toc");
+    const tocButton = document.getElementById('tocButton');
+
+
+    // index.mdを持ってくる
+    fetch("index.md")
+      .then(response => {
+        // index.mdのテキストを取る
+        if (!response.ok) {
+          throw new Error('ファイルの読み込みに失敗しました');
+        }
+        return response.text();
+      })
+      .then(text => {
+        // テキストを表示する
+        content.innerHTML = text;
+
+        // KaTeXを使う
+        renderMathInElement(content, {
+          // 区切り文字
+          delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "$", right: "$", display: false},
+          ],
+
+          // マクロ
+          macros: {
+            "\\sign": "\\mathop{\\mathrm{sign}}",
+            "\\iu": "\\mathrm{i}",
+            "\\ju": "\\mathrm{j}",
+            "\\ku": "\\mathrm{k}",
+          }
+        });
+
+        // micromarkを使う
+        content.innerHTML = micromark(content.innerHTML, 'utf8', {
+          allowDangerousHtml: true,
+          extensions: [gfm()],
+          htmlExtensions: [gfmHtml()]
+        });
+
+        // 目次作る
+        const matches = document.querySelectorAll("h1, h2");
+        let innerToc = "";
+        matches.forEach((element, index) => {
+          element.id = index;
+          switch (element.tagName) {
+            case "H1":
+              innerToc += `- [${element.innerHTML}](#${index})\n`;
+              break;
+            case "H2":
+              innerToc += `  - [${element.innerHTML}](#${index})\n`;
+              break;
+          }
+        });
+        // toc.innerHTML = innerToc;
+        toc.innerHTML = micromark(innerToc, 'utf8', {
+          allowDangerousHtml: true,
+          extensions: [gfm()],
+          htmlExtensions: [gfmHtml()]
+        });
+
+      })
+      .catch(error => {
+        console.error(error);
+      });
+
+    tocButton.addEventListener("click", () => {
+      if (toc.classList.contains("active")) {
+        toc.classList.remove("active");
+      } else {
+        toc.classList.add("active");
+      }
+      
+    });
+  </script>
+</body>
+
+</html>
