@@ -82,18 +82,18 @@
     const tocButton = document.getElementById('tocButton');
 
 
-    // index.mdを持ってくる
-    fetch("index.md")
+    // Markdownファイルを持ってくる
+    fetch("rotation-3d.md")
       .then(response => {
-        // index.mdのテキストを取る
+        // Markdownファイルのテキストを取る
         if (!response.ok) {
-          throw new Error('ファイルの読み込みに失敗しました');
+          throw new Error("ファイル読込失敗！");
         }
         return response.text();
       })
       .then(text => {
         // テキストを表示する
-        content.innerHTML = text;
+        content.innerHTML = text.substring(text.indexOf("\n"));
 
         // KaTeXを使う
         renderMathInElement(content, {

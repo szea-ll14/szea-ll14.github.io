@@ -1,13 +1,10 @@
-$$
-\def\sign{\mathop{\mathrm{sign}}}
-\def\iu{\mathrm{i}}
-\def\ju{\mathrm{j}}
-\def\ku{\mathrm{k}}
-$$
+$ \newcommand{\sign}{\mathop{\mathrm{sign}}} \newcommand{\iu}{\mathrm{i}} \newcommand{\ju}{\mathrm{j}} \newcommand{\ku}{\mathrm{k}} $
 
-# 回転
+# 回転の表現方法
 ## 回転
-長さと向きを保存する線形変換が回転。
+回転は長さ・角度・向きを保存する線形変換である。原点を中心として、点やモノを
+
+広義の回転として、
 
 ## 座標系
 座標軸（左手系・右手系）：右手系
@@ -28,11 +25,9 @@ $$
 $ 3\times3 $ 行列で表現する。
 
 ## 回転の計算
-点 $ \mathrm{P}(x,\ y,\ z) $ に $ \bm{R} $ の回転を作用した点 $ \mathrm{P}'(x',\ y',\ z') $ は、点を $ 1\times3 $ 行列（3次列ベクトル）
-$$ \bm{p} = \begin{bmatrix} x \\ y \\ z \end{bmatrix},\ \bm{p}' = \begin{bmatrix} x' \\ y' \\ z' \end{bmatrix} $$
-で表して行列の積を用いて
+点 $ \mathrm{P}(\bm{p} = \begin{bmatrix} x & y & z \end{bmatrix}^\mathsf{T}) $ に $ \bm{R} $ の回転を作用した点 $ \mathrm{P}'(\bm{p}' = \begin{bmatrix} x' & y' & z' \end{bmatrix}^\mathsf{T}) $ は、行列の積を用いて下式で表される。
 $$ \bm{p}' = \bm{R}\bm{p} $$
-と計算できる。成分表示すると
+成分表示すると
 $$ \begin{split}
 \begin{bmatrix} x' \\ y' \\ z' \end{bmatrix}
 &= \begin{bmatrix} r_{11} & r_{12} & r_{13} \\ r_{21} & r_{22} & r_{23} \\ r_{31} & r_{32} & r_{33} \end{bmatrix} \begin{bmatrix} x \\ y \\ z \end{bmatrix} \\
