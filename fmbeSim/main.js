@@ -112,7 +112,7 @@ const blockTexture = document.getElementById("blockTexture");
 
 
 // コマンドコピー
-let cmdResetTimeoutID;
+let cmdCopyTimeoutID;
 cmdCopy.addEventListener("click", () => {
   navigator.clipboard.writeText(
     cmd.textContent
@@ -519,7 +519,6 @@ const texEnum = Object.freeze({
   4: "alex",
 });
 function imgOnloaded(img, imgNum){
-  console.log(imgArray);
   gl.activeTexture(gl.TEXTURE0 + imgNum);
   const tex = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, tex);
