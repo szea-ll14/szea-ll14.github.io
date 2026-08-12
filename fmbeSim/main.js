@@ -191,18 +191,20 @@ const prg = gl.createProgram();
   const vertShader = gl.createShader(gl.VERTEX_SHADER);
   gl.shaderSource(vertShader, vertSource);
   gl.compileShader(vertShader);
-  if (!gl.getShaderParameter(vertShader, gl.COMPILE_STATUS)) {
-    const log = gl.getShaderInfoLog(vertShader);
-    gl.deleteShader(vertShader);
-    throw Error(`頂点シェーダーのコンパイルに失敗しました：${log}`);
-  }
-
   const fragSource = document.getElementById("fragShader").textContent.trim();
   const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
   gl.shaderSource(fragShader, fragSource);
   gl.compileShader(fragShader);
+
+  if (!gl.getShaderParameter(vertShader, gl.COMPILE_STATUS)) {
+    const log = gl.getShaderInfoLog(vertShader);
+    gl.deleteShader(vertShader);
+    gl.deleteShader(fragShader);
+    throw Error(`頂点シェーダーのコンパイルに失敗しました：${log}`);
+  }
   if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS)) {
     const log = gl.getShaderInfoLog(fragShader);
+    gl.deleteShader(vertShader);
     gl.deleteShader(fragShader);
     throw Error(`フラグメントシェーダーのコンパイルに失敗しました：${log}`);
   }
