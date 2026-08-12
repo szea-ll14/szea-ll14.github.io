@@ -178,26 +178,47 @@ for (const varDatum of Object.values(varData)) {
 // WebGLコンテキストを取得
 const canvas = document.getElementById("canvas");
 const gl = canvas.getContext("webgl2");
-
-// シェーダーをコンパイル
-const vertSource = document.getElementById("vertShader").textContent.trim();
-const vertShader = gl.createShader(gl.VERTEX_SHADER);
-gl.shaderSource(vertShader, vertSource);
-gl.compileShader(vertShader);
-const fragSource = document.getElementById("fragShader").textContent.trim();
-const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-gl.shaderSource(fragShader, fragSource);
-gl.compileShader(fragShader);
+if (!gl) {
+  throw Error("ブラウザがWebGL2に対応していません");
+}
 
 // プログラムオブジェクトを作成
 const prg = gl.createProgram();
 
-// シェーダーをリンク
-gl.attachShader(prg, vertShader);
-gl.deleteShader(vertShader);
-gl.attachShader(prg, fragShader);
-gl.deleteShader(fragShader);
-gl.linkProgram(prg);
+{
+  // シェーダーをコンパイル
+  const vertSource = document.getElementById("vertShader").textContent.trim();
+  const vertShader = gl.createShader(gl.VERTEX_SHADER);
+  gl.shaderSource(vertShader, vertSource);
+  gl.compileShader(vertShader);
+  if (!gl.getShaderParameter(vertShader, gl.COMPILE_STATUS)) {
+    const log = gl.getShaderInfoLog(vertShader);
+    gl.deleteShader(vertShader);
+    throw Error(`頂点シェーダーのコンパイルに失敗しました：${log}`);
+  }
+
+  const fragSource = document.getElementById("fragShader").textContent.trim();
+  const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(fragShader, fragSource);
+  gl.compileShader(fragShader);
+  if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS)) {
+    const log = gl.getShaderInfoLog(fragShader);
+    gl.deleteShader(fragShader);
+    throw Error(`フラグメントシェーダーのコンパイルに失敗しました：${log}`);
+  }
+
+  // シェーダーをリンク
+  gl.attachShader(prg, vertShader);
+  gl.deleteShader(vertShader);
+  gl.attachShader(prg, fragShader);
+  gl.deleteShader(fragShader);
+  gl.linkProgram(prg);
+  if (!gl.getProgramParameter(prg, gl.LINK_STATUS)) {
+    const log = gl.getProgramInfoLog(prg);
+    gl.deleteProgram(prg);
+    throw Error(`プログラムのリンクに失敗しました：${log}`);
+  }
+}
 
 // プログラムオブジェクトを有効化
 gl.useProgram(prg);
