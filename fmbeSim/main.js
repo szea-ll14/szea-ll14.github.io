@@ -77,7 +77,7 @@ const deg = Math.PI / 180;
 // コマンド
 const cmd = document.getElementById("cmd");
 // コピー
-const cmdBtn = document.getElementById("cmdBtn");
+const cmdCopy = document.getElementById("cmdCopy");
 // 変数全指定トグル
 const cmdFull = document.getElementById("cmdFull");
 // FMBE変数データ
@@ -97,12 +97,14 @@ let varData = {
 };
 for (const varDatum of Object.values(varData)) {
   // 入力欄
-  varDatum.inputN = document.getElementById(varDatum.name + "N");
+  varDatum.input = document.getElementById(varDatum.name + "Input");
   // スライダー
-  varDatum.inputR = document.getElementById(varDatum.name + "R");
+  varDatum.slider = document.getElementById(varDatum.name + "Slider");
+  // ボタン
+  varDatum.reset = document.getElementById(varDatum.name + "Reset");
 }
 // ブロック選択
-const blockTex = document.getElementById("blockTex");
+const blockTexture = document.getElementById("blockTexture");
 
 
 
@@ -110,15 +112,15 @@ const blockTex = document.getElementById("blockTex");
 
 
 // コマンドコピー
-let cmdBtnTimeoutID;
-cmdBtn.addEventListener("click", () => {
+let cmdResetTimeoutID;
+cmdCopy.addEventListener("click", () => {
   navigator.clipboard.writeText(
     cmd.textContent
   );
-  cmdBtn.textContent = "Copied!";
-  clearTimeout(cmdBtnTimeoutID);
-  cmdBtnTimeoutID = setTimeout(() => {
-    cmdBtn.textContent = "Copy";
+  cmdCopy.textContent = "Copied!";
+  clearTimeout(cmdCopyTimeoutID);
+  cmdCopyTimeoutID = setTimeout(() => {
+    cmdCopy.textContent = "Copy";
   }, 1000);
 });
 // コマンド設定
@@ -135,6 +137,7 @@ function setCmd() {
   if (molang === " ") molang = "";
   cmd.textContent = `playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 "${molang}" setValue`;
 }
+cmdFull.addEventListener("input", e => {setCmd()})
 // 値セット
 function set(varName, value, {skipN = false, skipR = false} = {}) {
   const varDatum = varData[varName];
@@ -146,10 +149,10 @@ function set(varName, value, {skipN = false, skipR = false} = {}) {
 
   varDatum.value = valueFixed;
   if (!skipN) {
-    varDatum.inputN.value = valueFixed;
+    varDatum.input.value = valueFixed;
   }
   if (!skipR) {
-    varDatum.inputR.value = valueFixed;
+    varDatum.slider.value = valueFixed;
   }
   setCmd();
   draw();
@@ -160,14 +163,17 @@ function reset(varName) {
 }
 // 値変更
 for (const varDatum of Object.values(varData)) {
-  varDatum.inputN.addEventListener("input", e => {
+  varDatum.input.addEventListener("input", e => {
     set(e.target.id.slice(0, -1), e.target.value, {skipN: true});
   });
-  varDatum.inputN.addEventListener("change", e => {
+  varDatum.input.addEventListener("change", e => {
     set(e.target.id.slice(0, -1), e.target.value);
   });
-  varDatum.inputR.addEventListener("input", e => {
+  varDatum.slider.addEventListener("input", e => {
     set(e.target.id.slice(0, -1), e.target.value, {skipR: true});
+  });
+  varDatum.reset.addEventListener("click", e => {
+    reset(varDatum.name);
   });
 }
 
@@ -533,7 +539,7 @@ imgArray.forEach((img, imgNum) => {
     imgOnloaded(img, imgNum)
   });
 });
-blockTex.addEventListener("change", e => {
+blockTexture.addEventListener("change", e => {
   gl.uniform1i(texLoc, texEnum[e.target.value]);
   draw();
 });
