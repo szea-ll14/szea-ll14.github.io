@@ -139,7 +139,7 @@ function setCmd() {
 }
 cmdFull.addEventListener("input", e => {setCmd()})
 // 値セット
-function set(varName, value, {skipN = false, skipR = false} = {}) {
+function set(varName, value, {skipInput = false, skipSlider = false} = {}) {
   const varDatum = varData[varName];
 
   let valueFixed = Number(value);
@@ -148,10 +148,10 @@ function set(varName, value, {skipN = false, skipR = false} = {}) {
   }
 
   varDatum.value = valueFixed;
-  if (!skipN) {
+  if (!skipInput) {
     varDatum.input.value = valueFixed;
   }
-  if (!skipR) {
+  if (!skipSlider) {
     varDatum.slider.value = valueFixed;
   }
   setCmd();
@@ -164,13 +164,13 @@ function reset(varName) {
 // 値変更
 for (const varDatum of Object.values(varData)) {
   varDatum.input.addEventListener("input", e => {
-    set(e.target.id.slice(0, -1), e.target.value, {skipN: true});
+    set(e.target.id.slice(0, -1), e.target.value, {skipInput: true});
   });
   varDatum.input.addEventListener("change", e => {
     set(e.target.id.slice(0, -1), e.target.value);
   });
   varDatum.slider.addEventListener("input", e => {
-    set(e.target.id.slice(0, -1), e.target.value, {skipR: true});
+    set(e.target.id.slice(0, -1), e.target.value, {skipSlider: true});
   });
   varDatum.reset.addEventListener("click", e => {
     reset(varDatum.name);
