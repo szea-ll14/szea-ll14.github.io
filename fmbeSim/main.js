@@ -551,7 +551,7 @@ let items = {
 }
 let nowItemName = "diamond_block"
 
-// 画像読み込みが完了したらテクスチャを生成
+// テクスチャを生成
 function imgOnloaded(name, item) {
   gl.activeTexture(gl.TEXTURE0 + item.number);
   const tex = gl.createTexture();
@@ -565,9 +565,15 @@ function imgOnloaded(name, item) {
   }
 }
 for (const [name, item] of Object.entries(items)) {
+  // 画像読み込み
   item.image.src = `./${name}.png`;
+  // 完了したらテクスチャを生成
   item.image.addEventListener("load", () => {
     imgOnloaded(name, item);
+  });
+  // 失敗したらログ
+  item.image.addEventListener("error", e => {
+    console.warn(`画像 ${name} の読み込みに失敗しました`);
   });
 }
 
@@ -575,10 +581,6 @@ for (const [name, item] of Object.entries(items)) {
 blockTex.addEventListener("change", e => {
   nowItemName = e.target.value;
   draw();
-});
-// 画像読み込み失敗ログ
-blockTex.addEventListener("error", e => {
-  console.warn(`画像 ${name} の読み込みに失敗しました`);
 });
 // 警告消し用テクスチャ
 {
