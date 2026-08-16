@@ -184,26 +184,49 @@ for (const varDatum of Object.values(varData)) {
 // WebGLコンテキストを取得
 const canvas = document.getElementById("canvas");
 const gl = canvas.getContext("webgl2");
-
-// シェーダーをコンパイル
-const vertSource = document.getElementById("vertShader").textContent.trim();
-const vertShader = gl.createShader(gl.VERTEX_SHADER);
-gl.shaderSource(vertShader, vertSource);
-gl.compileShader(vertShader);
-const fragSource = document.getElementById("fragShader").textContent.trim();
-const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-gl.shaderSource(fragShader, fragSource);
-gl.compileShader(fragShader);
+if (!gl) {
+  throw Error("ブラウザがWebGL2に対応していません");
+}
 
 // プログラムオブジェクトを作成
 const prg = gl.createProgram();
 
-// シェーダーをリンク
-gl.attachShader(prg, vertShader);
-gl.deleteShader(vertShader);
-gl.attachShader(prg, fragShader);
-gl.deleteShader(fragShader);
-gl.linkProgram(prg);
+{
+  // シェーダーをコンパイル
+  const vertSource = document.getElementById("vertShader").textContent.trim();
+  const vertShader = gl.createShader(gl.VERTEX_SHADER);
+  gl.shaderSource(vertShader, vertSource);
+  gl.compileShader(vertShader);
+  const fragSource = document.getElementById("fragShader").textContent.trim();
+  const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(fragShader, fragSource);
+  gl.compileShader(fragShader);
+
+  if (!gl.getShaderParameter(vertShader, gl.COMPILE_STATUS)) {
+    const log = gl.getShaderInfoLog(vertShader);
+    gl.deleteShader(vertShader);
+    gl.deleteShader(fragShader);
+    throw Error(`頂点シェーダーのコンパイルに失敗しました：${log}`);
+  }
+  if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS)) {
+    const log = gl.getShaderInfoLog(fragShader);
+    gl.deleteShader(vertShader);
+    gl.deleteShader(fragShader);
+    throw Error(`フラグメントシェーダーのコンパイルに失敗しました：${log}`);
+  }
+
+  // シェーダーをリンク
+  gl.attachShader(prg, vertShader);
+  gl.deleteShader(vertShader);
+  gl.attachShader(prg, fragShader);
+  gl.deleteShader(fragShader);
+  gl.linkProgram(prg);
+  if (!gl.getProgramParameter(prg, gl.LINK_STATUS)) {
+    const log = gl.getProgramInfoLog(prg);
+    gl.deleteProgram(prg);
+    throw Error(`プログラムのリンクに失敗しました：${log}`);
+  }
+}
 
 // プログラムオブジェクトを有効化
 gl.useProgram(prg);
@@ -505,44 +528,73 @@ const axisVao = gl.createVertexArray();
 
 
 // ブロックテクスチャ
-let texLoaded = false;
-const texEnum = Object.freeze({
-  diamond_block: 0,
-  0: "diamond_block",
-  curved_pumpkin: 1,
-  1: "curved_pumpkin",
-  cartography_table: 2,
-  2: "cartography_table",
-  chain_command_block: 3,
-  3: "chain_command_block",
-  alex: 4,
-  4: "alex",
-});
-function imgOnloaded(img, imgNum){
-  gl.activeTexture(gl.TEXTURE0 + imgNum);
+let items = {
+  diamond_block: {
+    number: 1,
+    image: new Image(),
+    loaded: false,
+  },
+  curved_pumpkin: {
+    number: 2,
+    image: new Image(),
+    loaded: false,
+  },
+  cartography_table: {
+    number: 3,
+    image: new Image(),
+    loaded: false,
+  },
+  chain_command_block: {
+    number: 4,
+    image: new Image(),
+    loaded: false,
+  },
+  alex: {
+    number: 5,
+    image: new Image(),
+    loaded: false,
+  },
+}
+let nowItemName = "diamond_block"
+
+// テクスチャを生成
+function imgOnloaded(name, item) {
+  gl.activeTexture(gl.TEXTURE0 + item.number);
   const tex = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, tex);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, item.image);
   gl.generateMipmap(gl.TEXTURE_2D);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  if (imgNum == 0) {
-    texLoaded = true;
-    gl.uniform1i(texLoc, 0);
+  item.loaded = true;
+  if (nowItemName == name) {
     draw();
   }
 }
-const imgArray = [new Image(), new Image(), new Image(), new Image(), new Image()];
-imgArray.forEach((img, imgNum) => {
-  img.src = `./${texEnum[imgNum]}.png`;
-  img.addEventListener("load", () => {
-    imgOnloaded(img, imgNum)
+for (const [name, item] of Object.entries(items)) {
+  // 画像読み込み
+  item.image.src = `./${name}.png`;
+  // 完了したらテクスチャを生成
+  item.image.addEventListener("load", () => {
+    imgOnloaded(name, item);
   });
-});
-blockTexture.addEventListener("change", e => {
-  gl.uniform1i(texLoc, texEnum[e.target.value]);
+  // 失敗したらログ
+  item.image.addEventListener("error", e => {
+    console.warn(`画像 ${name} の読み込みに失敗しました`);
+  });
+}
+
+// ブロック変更時の処理
+blockTex.addEventListener("change", e => {
+  nowItemName = e.target.value;
   draw();
 });
-
+// 警告消し用テクスチャ
+{
+  gl.activeTexture(gl.TEXTURE0);
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+}
 
 
 
@@ -626,7 +678,8 @@ function draw() {
   // ブロックのVBO
   gl.bindVertexArray(blockVao);
   // テクスチャがあれば使う
-  gl.uniform1i(texLoadedLoc, texLoaded);
+  gl.uniform1i(texLoc, items[nowItemName].number * items[nowItemName].loaded);
+  gl.uniform1i(texLoadedLoc, items[nowItemName].loaded);
   // 変形行列
   gl.uniformMatrix4fv(mvpMatLoc, false, tMat(mulMat(vpMat, mMat)));
   gl.uniformMatrix4fv(mAdjMatLoc, false, adjMat(mMat));
