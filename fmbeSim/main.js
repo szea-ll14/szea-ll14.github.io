@@ -522,45 +522,71 @@ const axisVao = gl.createVertexArray();
 
 
 // ブロックテクスチャ
-let texLoaded = false;
-const texEnum = Object.freeze({
-  diamond_block: 0,
-  0: "diamond_block",
-  curved_pumpkin: 1,
-  1: "curved_pumpkin",
-  cartography_table: 2,
-  2: "cartography_table",
-  chain_command_block: 3,
-  3: "chain_command_block",
-  alex: 4,
-  4: "alex",
-});
-function imgOnloaded(img, imgNum){
-  console.log(imgArray);
-  gl.activeTexture(gl.TEXTURE0 + imgNum);
+let items = {
+  diamond_block: {
+    number: 1,
+    image: new Image(),
+    loaded: false,
+  },
+  curved_pumpkin: {
+    number: 2,
+    image: new Image(),
+    loaded: false,
+  },
+  cartography_table: {
+    number: 3,
+    image: new Image(),
+    loaded: false,
+  },
+  chain_command_block: {
+    number: 4,
+    image: new Image(),
+    loaded: false,
+  },
+  alex: {
+    number: 5,
+    image: new Image(),
+    loaded: false,
+  },
+}
+let nowItemName = "diamond_block"
+
+// 画像読み込みが完了したらテクスチャを生成
+function imgOnloaded(name, item) {
+  gl.activeTexture(gl.TEXTURE0 + item.number);
   const tex = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, tex);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, item.image);
   gl.generateMipmap(gl.TEXTURE_2D);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  if (imgNum == 0) {
-    texLoaded = true;
-    gl.uniform1i(texLoc, 0);
+  item.loaded = true;
+  if (nowItemName == name) {
     draw();
   }
 }
-const imgArray = [new Image(), new Image(), new Image(), new Image(), new Image()];
-imgArray.forEach((img, imgNum) => {
-  img.src = `./${texEnum[imgNum]}.png`;
-  img.addEventListener("load", () => {
-    imgOnloaded(img, imgNum)
+for (const [name, item] of Object.entries(items)) {
+  item.image.src = `./${name}.png`;
+  item.image.addEventListener("load", () => {
+    imgOnloaded(name, item);
   });
-});
+}
+
+// ブロック変更時の処理
 blockTex.addEventListener("change", e => {
-  gl.uniform1i(texLoc, texEnum[e.target.value]);
+  nowItemName = e.target.value;
   draw();
 });
-
+// 画像読み込み失敗ログ
+blockTex.addEventListener("error", e => {
+  console.warn(`画像 ${name} の読み込みに失敗しました`);
+});
+// 警告消し用テクスチャ
+{
+  gl.activeTexture(gl.TEXTURE0);
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+}
 
 
 
@@ -644,7 +670,8 @@ function draw() {
   // ブロックのVBO
   gl.bindVertexArray(blockVao);
   // テクスチャがあれば使う
-  gl.uniform1i(texLoadedLoc, texLoaded);
+  gl.uniform1i(texLoc, items[nowItemName].number * items[nowItemName].loaded);
+  gl.uniform1i(texLoadedLoc, items[nowItemName].loaded);
   // 変形行列
   gl.uniformMatrix4fv(mvpMatLoc, false, tMat(mulMat(vpMat, mMat)));
   gl.uniformMatrix4fv(mAdjMatLoc, false, adjMat(mMat));
