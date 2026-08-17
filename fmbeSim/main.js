@@ -21,22 +21,22 @@ function tMat(mat) {
 // 余因子行列
 function adjMat(mat) {
   return [
-    mat[5]*(mat[10]*mat[15] - mat[11]*mat[14]) + mat[6]*(mat[11]*mat[13] - mat[9]*mat[15]) + mat[7]*(mat[9]*mat[14] - mat[10]*mat[13]),
-    mat[1]*(mat[11]*mat[14] - mat[10]*mat[15]) + mat[2]*(mat[9]*mat[15] - mat[11]*mat[13]) + mat[3]*(mat[10]*mat[13] - mat[9]*mat[14]),
-    mat[1]*(mat[6]*mat[15] - mat[7]*mat[14]) + mat[2]*(mat[7]*mat[13] - mat[5]*mat[15]) + mat[3]*(mat[5]*mat[14] - mat[6]*mat[13]),
-    mat[1]*(mat[7]*mat[10] - mat[6]*mat[11]) + mat[2]*(mat[5]*mat[11] - mat[7]*mat[9]) + mat[3]*(mat[6]*mat[9] - mat[5]*mat[10]),
-    mat[4]*(mat[11]*mat[14] - mat[10]*mat[15]) + mat[6]*(mat[8]*mat[15] - mat[11]*mat[12]) + mat[7]*(mat[10]*mat[12] - mat[8]*mat[14]),
-    mat[0]*(mat[10]*mat[15] - mat[11]*mat[14]) + mat[2]*(mat[11]*mat[12] - mat[8]*mat[15]) + mat[3]*(mat[8]*mat[14] - mat[10]*mat[12]),
-    mat[0]*(mat[7]*mat[14] - mat[6]*mat[15]) + mat[2]*(mat[4]*mat[15] - mat[7]*mat[12]) + mat[3]*(mat[6]*mat[12] - mat[4]*mat[14]),
-    mat[0]*(mat[6]*mat[11] - mat[7]*mat[10]) + mat[2]*(mat[7]*mat[8] - mat[4]*mat[11]) + mat[3]*(mat[4]*mat[10] - mat[6]*mat[8]),
-    mat[4]*(mat[9]*mat[15] - mat[11]*mat[13]) + mat[5]*(mat[11]*mat[12] - mat[8]*mat[15]) + mat[7]*(mat[8]*mat[13] - mat[9]*mat[12]),
-    mat[0]*(mat[11]*mat[13] - mat[9]*mat[15]) + mat[1]*(mat[8]*mat[15] - mat[11]*mat[12]) + mat[3]*(mat[9]*mat[12] - mat[8]*mat[13]),
-    mat[0]*(mat[5]*mat[15] - mat[7]*mat[13]) + mat[1]*(mat[7]*mat[12] - mat[4]*mat[15]) + mat[3]*(mat[4]*mat[13] - mat[5]*mat[12]),
-    mat[0]*(mat[7]*mat[9] - mat[5]*mat[11]) + mat[1]*(mat[4]*mat[11] - mat[7]*mat[8]) + mat[3]*(mat[5]*mat[8] - mat[4]*mat[9]),
-    mat[4]*(mat[10]*mat[13] - mat[9]*mat[14])  + mat[5]*(mat[8]*mat[14] - mat[10]*mat[12]) + mat[6]*(mat[9]*mat[12] - mat[8]*mat[13]),
-    mat[0]*(mat[9]*mat[14] - mat[10]*mat[13]) + mat[1]*(mat[10]*mat[12] - mat[8]*mat[14]) + mat[2]*(mat[8]*mat[13] - mat[9]*mat[12]),
-    mat[0]*(mat[6]*mat[13] - mat[5]*mat[14]) + mat[1]*(mat[4]*mat[14] - mat[6]*mat[12]) + mat[2]*(mat[5]*mat[12] - mat[4]*mat[13]),
-    mat[0]*(mat[5]*mat[10] - mat[6]*mat[9]) + mat[1]*(mat[6]*mat[8] - mat[4]*mat[10]) + mat[2]*(mat[4]*mat[9] - mat[5]*mat[8])
+    mat[5]*(mat[10]*mat[15] - mat[11]*mat[14]) + mat[6]*(mat[11]*mat[13] - mat[ 9]*mat[15]) + mat[7]*(mat[ 9]*mat[14] - mat[10]*mat[13]),
+    mat[1]*(mat[11]*mat[14] - mat[10]*mat[15]) + mat[2]*(mat[ 9]*mat[15] - mat[11]*mat[13]) + mat[3]*(mat[10]*mat[13] - mat[ 9]*mat[14]),
+    mat[1]*(mat[ 6]*mat[15] - mat[ 7]*mat[14]) + mat[2]*(mat[ 7]*mat[13] - mat[ 5]*mat[15]) + mat[3]*(mat[ 5]*mat[14] - mat[ 6]*mat[13]),
+    mat[1]*(mat[ 7]*mat[10] - mat[ 6]*mat[11]) + mat[2]*(mat[ 5]*mat[11] - mat[ 7]*mat[ 9]) + mat[3]*(mat[ 6]*mat[ 9] - mat[ 5]*mat[10]),
+    mat[4]*(mat[11]*mat[14] - mat[10]*mat[15]) + mat[6]*(mat[ 8]*mat[15] - mat[11]*mat[12]) + mat[7]*(mat[10]*mat[12] - mat[ 8]*mat[14]),
+    mat[0]*(mat[10]*mat[15] - mat[11]*mat[14]) + mat[2]*(mat[11]*mat[12] - mat[ 8]*mat[15]) + mat[3]*(mat[ 8]*mat[14] - mat[10]*mat[12]),
+    mat[0]*(mat[ 7]*mat[14] - mat[ 6]*mat[15]) + mat[2]*(mat[ 4]*mat[15] - mat[ 7]*mat[12]) + mat[3]*(mat[ 6]*mat[12] - mat[ 4]*mat[14]),
+    mat[0]*(mat[ 6]*mat[11] - mat[ 7]*mat[10]) + mat[2]*(mat[ 7]*mat[ 8] - mat[ 4]*mat[11]) + mat[3]*(mat[ 4]*mat[10] - mat[ 6]*mat[ 8]),
+    mat[4]*(mat[ 9]*mat[15] - mat[11]*mat[13]) + mat[5]*(mat[11]*mat[12] - mat[ 8]*mat[15]) + mat[7]*(mat[ 8]*mat[13] - mat[ 9]*mat[12]),
+    mat[0]*(mat[11]*mat[13] - mat[ 9]*mat[15]) + mat[1]*(mat[ 8]*mat[15] - mat[11]*mat[12]) + mat[3]*(mat[ 9]*mat[12] - mat[ 8]*mat[13]),
+    mat[0]*(mat[ 5]*mat[15] - mat[ 7]*mat[13]) + mat[1]*(mat[ 7]*mat[12] - mat[ 4]*mat[15]) + mat[3]*(mat[ 4]*mat[13] - mat[ 5]*mat[12]),
+    mat[0]*(mat[ 7]*mat[ 9] - mat[ 5]*mat[11]) + mat[1]*(mat[ 4]*mat[11] - mat[ 7]*mat[ 8]) + mat[3]*(mat[ 5]*mat[ 8] - mat[ 4]*mat[ 9]),
+    mat[4]*(mat[10]*mat[13] - mat[ 9]*mat[14]) + mat[5]*(mat[ 8]*mat[14] - mat[10]*mat[12]) + mat[6]*(mat[ 9]*mat[12] - mat[ 8]*mat[13]),
+    mat[0]*(mat[ 9]*mat[14] - mat[10]*mat[13]) + mat[1]*(mat[10]*mat[12] - mat[ 8]*mat[14]) + mat[2]*(mat[ 8]*mat[13] - mat[ 9]*mat[12]),
+    mat[0]*(mat[ 6]*mat[13] - mat[ 5]*mat[14]) + mat[1]*(mat[ 4]*mat[14] - mat[ 6]*mat[12]) + mat[2]*(mat[ 5]*mat[12] - mat[ 4]*mat[13]),
+    mat[0]*(mat[ 5]*mat[10] - mat[ 6]*mat[ 9]) + mat[1]*(mat[ 6]*mat[ 8] - mat[ 4]*mat[10]) + mat[2]*(mat[ 4]*mat[ 9] - mat[ 5]*mat[ 8])
   ];
 }
 // 数値を文字列化: 指数表記ではなく整数・小数で
@@ -75,33 +75,33 @@ const deg = Math.PI / 180;
 
 
 // コマンド
-const cmd = document.getElementById("cmd");
+const command = document.getElementById("command");
 // コピー
-const cmdCopy = document.getElementById("cmdCopy");
+const commandCopy = document.getElementById("commandCopy");
 // 変数全指定トグル
-const cmdFull = document.getElementById("cmdFull");
+const commandFull = document.getElementById("commandFull");
 // FMBE変数データ
-let varData = {
-  xpos: {name: "xpos", value: 0, init: 0},
-  ypos: {name: "ypos", value: 0, init: 0},
-  zpos: {name: "zpos", value: 0, init: 0},
-  xrot: {name: "xrot", value: 0, init: 0},
-  yrot: {name: "yrot", value: 0, init: 0},
-  zrot: {name: "zrot", value: 0, init: 0},
-  scale: {name: "scale", value: 1, init: 1},
-  xzscale: {name: "xzscale", value: 1, init: 1},
-  yscale: {name: "yscale", value: 1, init: 1},
-  xbasepos: {name: "xbasepos", value: 0, init: 0},
-  ybasepos: {name: "ybasepos", value: 0, init: 0},
-  zbasepos: {name: "zbasepos", value: 0, init: 0},
+let parameterList = {
+  xpos: {value: 0, init: 0},
+  ypos: {value: 0, init: 0},
+  zpos: {value: 0, init: 0},
+  xrot: {value: 0, init: 0},
+  yrot: {value: 0, init: 0},
+  zrot: {value: 0, init: 0},
+  scale: {value: 1, init: 1},
+  xzscale: {value: 1, init: 1},
+  yscale: {value: 1, init: 1},
+  xbasepos: {value: 0, init: 0},
+  ybasepos: {value: 0, init: 0},
+  zbasepos: {value: 0, init: 0},
 };
-for (const varDatum of Object.values(varData)) {
+for (const [parameterName, parameter] of Object.entries(parameterList)) {
   // 入力欄
-  varDatum.input = document.getElementById(varDatum.name + "Input");
+  parameter.input = document.getElementById(parameterName + "Input");
   // スライダー
-  varDatum.slider = document.getElementById(varDatum.name + "Slider");
+  parameter.slider = document.getElementById(parameterName + "Slider");
   // ボタン
-  varDatum.reset = document.getElementById(varDatum.name + "Reset");
+  parameter.reset = document.getElementById(parameterName + "Reset");
 }
 // ブロック選択
 const blockTexture = document.getElementById("blockTexture");
@@ -112,68 +112,68 @@ const blockTexture = document.getElementById("blockTexture");
 
 
 // コマンドコピー
-let cmdCopyTimeoutID;
-cmdCopy.addEventListener("click", () => {
+let commandCopyTimeoutID;
+commandCopy.addEventListener("click", () => {
   navigator.clipboard.writeText(
-    cmd.textContent
+    command.textContent
   );
-  cmdCopy.textContent = "Copied!";
-  clearTimeout(cmdCopyTimeoutID);
-  cmdCopyTimeoutID = setTimeout(() => {
-    cmdCopy.textContent = "Copy";
+  commandCopy.textContent = "Copied!";
+  clearTimeout(commandCopyTimeoutID);
+  commandCopyTimeoutID = setTimeout(() => {
+    commandCopy.textContent = "Copy";
   }, 1000);
 });
 // コマンド設定
-setCmd();
-function setCmd() {
+setCommand();
+function setCommand() {
   let molang = " ";
-  for (const varDatum of Object.values(varData)) {
+  for (const [parameterName, parameter] of Object.entries(parameterList)) {
     if (
-      !cmdFull.checked &&
-      (varDatum.value === varDatum.init)
+      !commandFull.checked &&
+      (parameter.value === parameter.init)
     ) continue;
-    molang += `v.${varDatum.name}=${num2str(varDatum.value)}; `;
+    molang += `v.${parameterName}=${num2str(parameter.value)}; `;
   }
   if (molang === " ") molang = "";
-  cmd.textContent = `playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 "${molang}" setValue`;
+  command.textContent = `playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 "${molang}" setValue`;
 }
-cmdFull.addEventListener("input", e => {setCmd()})
+commandFull.addEventListener("input", e => {setCommand()})
 // 値セット
-function set(varName, value, {skipInput = false, skipSlider = false} = {}) {
-  const varDatum = varData[varName];
+function set(parameterName, value, {skipInput = false, skipSlider = false} = {}) {
+  const parameter = parameterList[parameterName];
 
   let valueFixed = Number(value);
   if (!Number.isFinite(valueFixed)) {
-    valueFixed = varDatum.init;
+    valueFixed = parameter.init;
   }
 
-  varDatum.value = valueFixed;
+  parameter.value = valueFixed;
   if (!skipInput) {
-    varDatum.input.value = valueFixed;
+    parameter.input.value = valueFixed;
   }
   if (!skipSlider) {
-    varDatum.slider.value = valueFixed;
+    parameter.slider.value = valueFixed;
   }
-  setCmd();
+  setCommand();
   draw();
 }
 // 値リセット
-function reset(varName) {
-  set(varName, varData[varName].init);
+function reset(parameterName) {
+  set(parameterName, parameterList[parameterName].init);
 }
 // 値変更
-for (const varDatum of Object.values(varData)) {
-  varDatum.input.addEventListener("input", e => {
-    set(e.target.id.slice(0, -1), e.target.value, {skipInput: true});
+for (const [parameterName, parameter] of Object.entries(parameterList)) {
+  parameter.input.addEventListener("input", e => {
+    set(parameterName, e.target.value, {skipInput: true});
   });
-  varDatum.input.addEventListener("change", e => {
-    set(e.target.id.slice(0, -1), e.target.value);
+  parameter.input.addEventListener("change", e => {
+    set(parameterName, e.target.value);
   });
-  varDatum.slider.addEventListener("input", e => {
-    set(e.target.id.slice(0, -1), e.target.value, {skipSlider: true});
+  parameter.slider.addEventListener("input", e => {
+    set(parameterName, e.target.value, {skipSlider: true});
   });
-  varDatum.reset.addEventListener("click", e => {
-    reset(varDatum.name);
+  parameter.reset.addEventListener("click", e => {
+    reset(parameterName);
   });
 }
 
@@ -206,12 +206,14 @@ const prg = gl.createProgram();
     const log = gl.getShaderInfoLog(vertShader);
     gl.deleteShader(vertShader);
     gl.deleteShader(fragShader);
+    gl.deleteProgram(prg);
     throw Error(`頂点シェーダーのコンパイルに失敗しました：${log}`);
   }
   if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS)) {
     const log = gl.getShaderInfoLog(fragShader);
     gl.deleteShader(vertShader);
     gl.deleteShader(fragShader);
+    gl.deleteProgram(prg);
     throw Error(`フラグメントシェーダーのコンパイルに失敗しました：${log}`);
   }
 
@@ -528,7 +530,7 @@ const axisVao = gl.createVertexArray();
 
 
 // ブロックテクスチャ
-let items = {
+let itemList = {
   diamond_block: {
     number: 1,
     image: new Image(),
@@ -558,7 +560,8 @@ let items = {
 let nowItemName = "diamond_block"
 
 // テクスチャを生成
-function imgOnloaded(name, item) {
+function imgOnloaded(itemName) {
+  const item = itemList[itemName]
   gl.activeTexture(gl.TEXTURE0 + item.number);
   const tex = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, tex);
@@ -566,25 +569,25 @@ function imgOnloaded(name, item) {
   gl.generateMipmap(gl.TEXTURE_2D);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
   item.loaded = true;
-  if (nowItemName == name) {
+  if (nowItemName == itemName) {
     draw();
   }
 }
-for (const [name, item] of Object.entries(items)) {
+for (const [itemName, item] of Object.entries(itemList)) {
   // 画像読み込み
-  item.image.src = `./${name}.png`;
+  item.image.src = `./${itemName}.png`;
   // 完了したらテクスチャを生成
   item.image.addEventListener("load", () => {
-    imgOnloaded(name, item);
+    imgOnloaded(itemName, item);
   });
   // 失敗したらログ
   item.image.addEventListener("error", e => {
-    console.warn(`画像 ${name} の読み込みに失敗しました`);
+    console.warn(`画像 ${itemName} の読み込みに失敗しました`);
   });
 }
 
 // ブロック変更時の処理
-blockTex.addEventListener("change", e => {
+blockTexture.addEventListener("change", e => {
   nowItemName = e.target.value;
   draw();
 });
@@ -605,39 +608,39 @@ function draw() {
   // 行列
   // FMBEによる変形
   let mMat = [ // basepos
-    1, 0, 0, varData.xbasepos.value / 16,
-    0, 1, 0, varData.ybasepos.value / 16,
-    0, 0, 1, varData.zbasepos.value / 16,
+    1, 0, 0, parameterList.xbasepos.value / 16,
+    0, 1, 0, parameterList.ybasepos.value / 16,
+    0, 0, 1, parameterList.zbasepos.value / 16,
     0, 0, 0, 1
   ];
   mMat = mulMat([ // scale
-    varData.scale.value * varData.xzscale.value, 0, 0, 0,
-    0, varData.scale.value * varData.yscale.value, 0, 0,
-    0, 0, varData.scale.value * varData.xzscale.value, 0,
+    parameterList.scale.value * parameterList.xzscale.value, 0, 0, 0,
+    0, parameterList.scale.value * parameterList.yscale.value, 0, 0,
+    0, 0, parameterList.scale.value * parameterList.xzscale.value, 0,
     0, 0, 0, 1
   ], mMat);
   mMat = mulMat([ // xrot
     1, 0, 0, 0,
-    0, Math.cos(varData.xrot.value * deg), -Math.sin(varData.xrot.value * deg), 0,
-    0, Math.sin(varData.xrot.value * deg), Math.cos(varData.xrot.value * deg), 0,
+    0, Math.cos(parameterList.xrot.value * deg), -Math.sin(parameterList.xrot.value * deg), 0,
+    0, Math.sin(parameterList.xrot.value * deg), Math.cos(parameterList.xrot.value * deg), 0,
     0, 0, 0, 1
   ], mMat);
   mMat = mulMat([ // zrot
-    Math.cos(varData.zrot.value * deg), Math.sin(varData.zrot.value * deg), 0, 0,
-    -Math.sin(varData.zrot.value * deg), Math.cos(varData.zrot.value * deg), 0, 0,
+    Math.cos(parameterList.zrot.value * deg), Math.sin(parameterList.zrot.value * deg), 0, 0,
+    -Math.sin(parameterList.zrot.value * deg), Math.cos(parameterList.zrot.value * deg), 0, 0,
     0, 0, 1, 0,
     0, 0, 0, 1
   ], mMat);
   mMat = mulMat([ // yrot
-    Math.cos(varData.yrot.value * deg), 0, -Math.sin(varData.yrot.value * deg), 0,
+    Math.cos(parameterList.yrot.value * deg), 0, -Math.sin(parameterList.yrot.value * deg), 0,
     0, 1, 0, 0,
-    Math.sin(varData.yrot.value * deg), 0, Math.cos(varData.yrot.value * deg), 0,
+    Math.sin(parameterList.yrot.value * deg), 0, Math.cos(parameterList.yrot.value * deg), 0,
     0, 0, 0, 1
   ], mMat);
   mMat = mulMat([ // pos
-    1, 0, 0, varData.xpos.value / 16,
-    0, 1, 0, varData.ypos.value / 16 + 0.5,
-    0, 0, 1, varData.zpos.value / 16,
+    1, 0, 0, parameterList.xpos.value / 16,
+    0, 1, 0, parameterList.ypos.value / 16 + 0.5,
+    0, 0, 1, parameterList.zpos.value / 16,
     0, 0, 0, 1
   ], mMat);
   // カメラの角度・透視投影
@@ -678,8 +681,8 @@ function draw() {
   // ブロックのVBO
   gl.bindVertexArray(blockVao);
   // テクスチャがあれば使う
-  gl.uniform1i(texLoc, items[nowItemName].number * items[nowItemName].loaded);
-  gl.uniform1i(texLoadedLoc, items[nowItemName].loaded);
+  gl.uniform1i(texLoc, itemList[nowItemName].number * itemList[nowItemName].loaded);
+  gl.uniform1i(texLoadedLoc, itemList[nowItemName].loaded);
   // 変形行列
   gl.uniformMatrix4fv(mvpMatLoc, false, tMat(mulMat(vpMat, mMat)));
   gl.uniformMatrix4fv(mAdjMatLoc, false, adjMat(mMat));
