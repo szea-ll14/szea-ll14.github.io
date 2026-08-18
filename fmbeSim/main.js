@@ -42,15 +42,15 @@ function adjMat(mat) {
   - mat[ 4] * c5 + mat[ 6] * c2 - mat[ 7] * c1,
     mat[ 0] * c5 - mat[ 2] * c2 + mat[ 3] * c1,
   - mat[12] * s5 + mat[14] * s2 - mat[15] * s1,
-  + mat[ 8] * s5 - mat[10] * s2 + mat[11] * s1,
+    mat[ 8] * s5 - mat[10] * s2 + mat[11] * s1,
     mat[ 4] * c4 - mat[ 5] * c2 + mat[ 7] * c0,
   - mat[ 0] * c4 + mat[ 1] * c2 - mat[ 3] * c0,
-  + mat[12] * s4 - mat[13] * s2 + mat[15] * s0,
+    mat[12] * s4 - mat[13] * s2 + mat[15] * s0,
   - mat[ 8] * s4 + mat[ 9] * s2 - mat[11] * s0,
   - mat[ 4] * c3 + mat[ 5] * c1 - mat[ 6] * c0,
     mat[ 0] * c3 - mat[ 1] * c1 + mat[ 2] * c0,
   - mat[12] * s3 + mat[13] * s1 - mat[14] * s0,
-  + mat[ 8] * s3 - mat[ 9] * s1 + mat[10] * s0
+    mat[ 8] * s3 - mat[ 9] * s1 + mat[10] * s0
   ];
 }
 // 数値を文字列化: 指数表記ではなく整数・小数で
@@ -95,7 +95,7 @@ const commandCopy = document.getElementById("commandCopy");
 // 変数全指定トグル
 const commandFull = document.getElementById("commandFull");
 // FMBE変数データ
-let parameterList = {
+let paramList = {
   xpos: {value: 0, init: 0},
   ypos: {value: 0, init: 0},
   zpos: {value: 0, init: 0},
@@ -109,13 +109,13 @@ let parameterList = {
   ybasepos: {value: 0, init: 0},
   zbasepos: {value: 0, init: 0},
 };
-for (const [parameterName, parameter] of Object.entries(parameterList)) {
+for (const [paramName, param] of Object.entries(paramList)) {
   // 入力欄
-  parameter.input = document.getElementById(parameterName + "Input");
+  param.input = document.getElementById(paramName + "Input");
   // スライダー
-  parameter.slider = document.getElementById(parameterName + "Slider");
+  param.slider = document.getElementById(paramName + "Slider");
   // ボタン
-  parameter.reset = document.getElementById(parameterName + "Reset");
+  param.reset = document.getElementById(paramName + "Reset");
 }
 // ブロック選択
 const blockTexture = document.getElementById("blockTexture");
@@ -141,53 +141,53 @@ commandCopy.addEventListener("click", () => {
 setCommand();
 function setCommand() {
   let molang = " ";
-  for (const [parameterName, parameter] of Object.entries(parameterList)) {
+  for (const [paramName, param] of Object.entries(paramList)) {
     if (
       !commandFull.checked &&
-      (parameter.value === parameter.init)
+      (param.value === param.init)
     ) continue;
-    molang += `v.${parameterName}=${num2str(parameter.value)}; `;
+    molang += `v.${paramName}=${num2str(param.value)}; `;
   }
   if (molang === " ") molang = "";
   command.textContent = `playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 "${molang}" setValue`;
 }
 commandFull.addEventListener("input", e => {setCommand()})
 // 値セット
-function set(parameterName, value, {skipInput = false, skipSlider = false} = {}) {
-  const parameter = parameterList[parameterName];
+function set(paramName, value, {skipInput = false, skipSlider = false} = {}) {
+  const param = paramList[paramName];
 
   let valueFixed = Number(value);
   if (!Number.isFinite(valueFixed)) {
-    valueFixed = parameter.init;
+    valueFixed = param.init;
   }
 
-  parameter.value = valueFixed;
+  param.value = valueFixed;
   if (!skipInput) {
-    parameter.input.value = valueFixed;
+    param.input.value = valueFixed;
   }
   if (!skipSlider) {
-    parameter.slider.value = valueFixed;
+    param.slider.value = valueFixed;
   }
   setCommand();
   draw();
 }
 // 値リセット
-function reset(parameterName) {
-  set(parameterName, parameterList[parameterName].init);
+function reset(paramName) {
+  set(paramName, paramList[paramName].init);
 }
 // 値変更
-for (const [parameterName, parameter] of Object.entries(parameterList)) {
-  parameter.input.addEventListener("input", e => {
-    set(parameterName, e.target.value, {skipInput: true});
+for (const [paramName, param] of Object.entries(paramList)) {
+  param.input.addEventListener("input", e => {
+    set(paramName, e.target.value, {skipInput: true});
   });
-  parameter.input.addEventListener("change", e => {
-    set(parameterName, e.target.value);
+  param.input.addEventListener("change", e => {
+    set(paramName, e.target.value);
   });
-  parameter.slider.addEventListener("input", e => {
-    set(parameterName, e.target.value, {skipSlider: true});
+  param.slider.addEventListener("input", e => {
+    set(paramName, e.target.value, {skipSlider: true});
   });
-  parameter.reset.addEventListener("click", e => {
-    reset(parameterName);
+  param.reset.addEventListener("click", e => {
+    reset(paramName);
   });
 }
 
@@ -577,8 +577,8 @@ let nowItemName = "diamond_block"
 function imgOnloaded(itemName) {
   const item = itemList[itemName]
   gl.activeTexture(gl.TEXTURE0 + item.number);
-  const tex = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, tex);
+  const texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, item.image);
   gl.generateMipmap(gl.TEXTURE_2D);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -608,8 +608,8 @@ blockTexture.addEventListener("change", e => {
 // 警告消し用テクスチャ
 {
   gl.activeTexture(gl.TEXTURE0);
-  const tex = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, tex);
+  const texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
 }
 
@@ -622,39 +622,39 @@ function draw() {
   // 行列
   // FMBEによる変形
   let mMat = [ // basepos
-    1, 0, 0, parameterList.xbasepos.value / 16,
-    0, 1, 0, parameterList.ybasepos.value / 16,
-    0, 0, 1, parameterList.zbasepos.value / 16,
+    1, 0, 0, paramList.xbasepos.value / 16,
+    0, 1, 0, paramList.ybasepos.value / 16,
+    0, 0, 1, paramList.zbasepos.value / 16,
     0, 0, 0, 1
   ];
   mMat = mulMat([ // scale
-    parameterList.scale.value * parameterList.xzscale.value, 0, 0, 0,
-    0, parameterList.scale.value * parameterList.yscale.value, 0, 0,
-    0, 0, parameterList.scale.value * parameterList.xzscale.value, 0,
+    paramList.scale.value * paramList.xzscale.value, 0, 0, 0,
+    0, paramList.scale.value * paramList.yscale.value, 0, 0,
+    0, 0, paramList.scale.value * paramList.xzscale.value, 0,
     0, 0, 0, 1
   ], mMat);
   mMat = mulMat([ // xrot
     1, 0, 0, 0,
-    0, Math.cos(parameterList.xrot.value * deg), -Math.sin(parameterList.xrot.value * deg), 0,
-    0, Math.sin(parameterList.xrot.value * deg), Math.cos(parameterList.xrot.value * deg), 0,
+    0, Math.cos(paramList.xrot.value * deg), -Math.sin(paramList.xrot.value * deg), 0,
+    0, Math.sin(paramList.xrot.value * deg), Math.cos(paramList.xrot.value * deg), 0,
     0, 0, 0, 1
   ], mMat);
   mMat = mulMat([ // zrot
-    Math.cos(parameterList.zrot.value * deg), Math.sin(parameterList.zrot.value * deg), 0, 0,
-    -Math.sin(parameterList.zrot.value * deg), Math.cos(parameterList.zrot.value * deg), 0, 0,
+    Math.cos(paramList.zrot.value * deg), Math.sin(paramList.zrot.value * deg), 0, 0,
+    -Math.sin(paramList.zrot.value * deg), Math.cos(paramList.zrot.value * deg), 0, 0,
     0, 0, 1, 0,
     0, 0, 0, 1
   ], mMat);
   mMat = mulMat([ // yrot
-    Math.cos(parameterList.yrot.value * deg), 0, -Math.sin(parameterList.yrot.value * deg), 0,
+    Math.cos(paramList.yrot.value * deg), 0, -Math.sin(paramList.yrot.value * deg), 0,
     0, 1, 0, 0,
-    Math.sin(parameterList.yrot.value * deg), 0, Math.cos(parameterList.yrot.value * deg), 0,
+    Math.sin(paramList.yrot.value * deg), 0, Math.cos(paramList.yrot.value * deg), 0,
     0, 0, 0, 1
   ], mMat);
   mMat = mulMat([ // pos
-    1, 0, 0, parameterList.xpos.value / 16,
-    0, 1, 0, parameterList.ypos.value / 16 + 0.5,
-    0, 0, 1, parameterList.zpos.value / 16,
+    1, 0, 0, paramList.xpos.value / 16,
+    0, 1, 0, paramList.ypos.value / 16 + 0.5,
+    0, 0, 1, paramList.zpos.value / 16,
     0, 0, 0, 1
   ], mMat);
   // カメラの角度・透視投影
