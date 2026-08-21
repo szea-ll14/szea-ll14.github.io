@@ -194,51 +194,6 @@ for (const [paramName, param] of Object.entries(paramList)) {
 
 
 
-// 分割レイアウト制御
-const appBody = document.getElementById("appBody");
-const appView = document.getElementById("appView");
-const appBar = document.getElementById("appBar");
-const root = document.documentElement;
-const appBarSize = parseFloat(getComputedStyle(root).getPropertyValue("--app-bar-size"));
-const appViewSizeMin = parseFloat(getComputedStyle(root).getPropertyValue("--app-view-size-min"));
-let appBarDragging = false;
-
-// 押下
-appBar.addEventListener("pointerdown", e => {
-  appBarDragging = true;
-  appBar.setPointerCapture(e.pointerId);
-  document.body.classList.add("resizing");
-  console.log("appBar: pointerdown");
-});
-
-appBar.addEventListener("pointermove", e => {
-  if (!appBarDragging) return;
-
-  const appRect = appBody.getBoundingClientRect();
-  const isHorizontal = appBody.classList.contains("horizontal");
-  const appBodySize = isHorizontal ? appRect.width : appRect.height;
-  let appViewSize = isHorizontal ? e.clientX - appRect.left : e.clientY - appRect.top;
-  let appViewRatio = (appViewSize - appViewSizeMin) / (appBodySize - appBarSize - appViewSizeMin * 2);
-  appViewRatio = Math.min(Math.max(appViewRatio, 0), 1);
-  root.style.setProperty("--app-view-ratio", appViewRatio);
-  resize();
-  draw();
-});
-
-appBar.addEventListener("pointerup", e => {
-  appBarDragging = false;
-  appBar.releasePointerCapture(e.pointerId);
-  document.body.classList.remove("resizing");
-});
-appBar.addEventListener("pointercancel", e => {
-  appBarDragging = false;
-  appBar.releasePointerCapture(e.pointerId);
-  document.body.classList.remove("resizing");
-});
-
-
-
-
 
 // WebGLコンテキストを取得
 const canvas = document.getElementById("canvas");
@@ -305,6 +260,51 @@ gl.clearDepth(1);
 
 
 
+// 分割レイアウト制御
+const appBody = document.getElementById("appBody");
+const appView = document.getElementById("appView");
+const appBar = document.getElementById("appBar");
+const root = document.documentElement;
+const appBarSize = parseFloat(getComputedStyle(root).getPropertyValue("--app-bar-size"));
+const appViewSizeMin = parseFloat(getComputedStyle(root).getPropertyValue("--app-view-size-min"));
+let appBarDragging = false;
+
+// 押下
+appBar.addEventListener("pointerdown", e => {
+  appBarDragging = true;
+  appBar.setPointerCapture(e.pointerId);
+  document.body.classList.add("resizing");
+});
+
+appBar.addEventListener("pointermove", e => {
+  if (!appBarDragging) return;
+
+  const appRect = appBody.getBoundingClientRect();
+  const isHorizontal = appBody.classList.contains("horizontal");
+  const appBodySize = isHorizontal ? appRect.width : appRect.height;
+  let appViewSize = isHorizontal ? e.clientX - appRect.left : e.clientY - appRect.top;
+  let appViewRatio = (appViewSize - appViewSizeMin) / (appBodySize - appBarSize - appViewSizeMin * 2);
+  appViewRatio = Math.min(Math.max(appViewRatio, 0), 1);
+  root.style.setProperty("--app-view-ratio", appViewRatio);
+  resize();
+  draw();
+});
+
+appBar.addEventListener("pointerup", e => {
+  appBarDragging = false;
+  appBar.releasePointerCapture(e.pointerId);
+  document.body.classList.remove("resizing");
+});
+appBar.addEventListener("pointercancel", e => {
+  appBarDragging = false;
+  appBar.releasePointerCapture(e.pointerId);
+  document.body.classList.remove("resizing");
+});
+
+
+
+
+
 // カメラ回転・スケール
 let viewPitch = 15, viewYaw = -10, viewScale = 2;
 
@@ -366,6 +366,11 @@ window.addEventListener("resize", () => {
   draw();
 });
 function resize() {
+  if (appBody.clientWidth > appBody.clientHeight) {
+    appBody.classList.add("horizontal");
+  } else {
+    appBody.classList.remove("horizontal");
+  }
   canvas.width = canvas.clientWidth * window.devicePixelRatio;
   canvas.height = canvas.clientHeight * window.devicePixelRatio;
   aspect = canvas.clientHeight / canvas.clientWidth;
