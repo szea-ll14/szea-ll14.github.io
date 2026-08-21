@@ -307,105 +307,56 @@ gl.clearDepth(1);
 
 // カメラ回転・スケール
 let viewPitch = 15, viewYaw = -10, viewScale = 2;
-let preOfsX = 0, preOfsY = 0, preDist = 0;
-let mouse = false, touch = false;
 
-canvas.addEventListener("mousedown", e => {// マウス押したとき
-  if (e.button != 0) return;
-  mouse = true;
-  setupViewRot(e.offsetX, e.offsetY);
-});
-canvas.addEventListener("mousemove", e => {// ドラッグ時
-  if (!mouse) return;
-  changeViewRot(e.offsetX, e.offsetY);
-  draw();
-});
-canvas.addEventListener("mouseup", e => {// マウス離したとき
-  if (e.button == 0) mouse = false;
-});
-canvas.addEventListener("mouseleave", e => {// カーソル外出たとき
-  if (e.button == 0) mouse = false;
-});
-canvas.addEventListener("wheel", e => {//ホイール回したとき
+let pointerList = {};
+canvas.addEventListener("pointerdown", pointerDown); // 押したとき
+canvas.addEventListener("pointermove", pointerMove); // ドラッグ時
+canvas.addEventListener("pointerup", pointerUp); // 離したとき
+canvas.addEventListener("pointercancel", pointerUp); // 消えたとき
+canvas.addEventListener("pointerleave", pointerUp); // 外へ出たとき
+canvas.addEventListener("wheel", e => { //ホイール回したとき
   if (e.cancelable) e.preventDefault();
   viewScale -= e.deltaY / 1024;
   draw();
 }, {passive: false});
 
-canvas.addEventListener("touchstart", e => {// 画面押したとき
-  touch = e.touches.length;
-  if (touch == 1) {
-    const rect = canvas.getBoundingClientRect();
-    setupViewRot(
-      e.touches[0].clientX - rect.left,
-      e.touches[0].clientY - rect.top
-    );
-  } else if (touch == 2) {
-    setupViewScale(
-      e.touches[0].clientX,
-      e.touches[0].clientY,
-      e.touches[1].clientX,
-      e.touches[1].clientY
-    );
+function pointerDown(e) { // ポインターを登録
+  if (e.button === 0) {
+    pointerList[e.pointerId] = {
+      x: e.offsetX, preX: e.offsetX,
+      y: e.offsetY, preY: e.offsetY,
+    };
   }
-});
-canvas.addEventListener("touchmove", e => {// ドラッグ時
-  if (e.cancelable) e.preventDefault();
-  if (touch == 1) {
-    const rect = canvas.getBoundingClientRect();
-    changeViewRot(
-      e.touches[0].clientX - rect.left,
-      e.touches[0].clientY - rect.top
-    );
-    draw();
-  } else if (touch == 2) {
-    changeViewScale(
-      e.touches[0].clientX,
-      e.touches[0].clientY,
-      e.touches[1].clientX,
-      e.touches[1].clientY
-    );
-    draw();
-  }
-}, {passive: false});
-canvas.addEventListener("touchend", e => {// 画面離したとき
-  touch = e.touches.length;
-  if (touch == 1) {
-    const rect = canvas.getBoundingClientRect();
-    setupViewRot(
-      e.touches[0].clientX - rect.left,
-      e.touches[0].clientY - rect.top
-    );
-  } else if (touch == 2) {
-    setupViewScale(
-      e.touches[0].clientX,
-      e.touches[0].clientY,
-      e.touches[1].clientX,
-      e.touches[1].clientY
-    );
-  }
-});
+}
+function pointerMove(e) {
+  if (!pointerList.hasOwnProperty(e.pointerId)) return;
+  let pointer = pointerList[e.pointerId]
+  pointer.x = e.offsetX;
+  pointer.y = e.offsetY;
 
-function setupViewRot(ofsX, ofsY) {
-  preOfsX = ofsX;
-  preOfsY = ofsY;
+  switch (Object.keys(pointerList).length) {
+    case 1: { // カメラ回転
+      viewYaw += pointer.x - pointer.preX;
+      viewPitch += pointer.y - pointer.preY;
+      viewYaw %= 360;
+      viewPitch = Math.min(Math.max(viewPitch, -90), 90);
+      draw();
+      break;
+    }
+    case 2: { // スケール
+      const posList = Object.values(pointerList);
+      let preDist = ((posList[0].preX - posList[1].preX) ** 2 + (posList[0].preY - posList[1].preY) ** 2) ** .5;
+      let dist = ((posList[0].x - posList[1].x) ** 2 + (posList[0].y - posList[1].y) ** 2) ** .5;
+      viewScale += (dist - preDist) / 128;
+      draw();
+      break;
+    }
+  }
+  pointer.preX = pointer.x;
+  pointer.preY = pointer.y;
 }
-function changeViewRot(ofsX, ofsY) {
-  viewYaw += ofsX - preOfsX;
-  viewPitch += ofsY - preOfsY;
-  viewYaw %= 360;
-  if (viewPitch < -90) viewPitch = -90;
-  if (viewPitch > 90) viewPitch = 90;
-  preOfsX = ofsX;
-  preOfsY = ofsY;
-}
-function setupViewScale(ofsX0, ofsY0, ofsX1, ofsY1) {
-  preDist = ((ofsX0 - ofsX1) ** 2 + (ofsY0 - ofsY1) ** 2) ** .5;
-}
-function changeViewScale(ofsX0, ofsY0, ofsX1, ofsY1) {
-  let dist = ((ofsX0 - ofsX1) ** 2 + (ofsY0 - ofsY1) ** 2) ** .5;
-  viewScale += (dist - preDist) / 128;
-  preDist = dist;
+function pointerUp(e) { // ポインターを削除
+  delete pointerList[e.pointerId];
 }
 
 // ウィンドウサイズ変更時
