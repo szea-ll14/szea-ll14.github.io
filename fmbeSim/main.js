@@ -569,46 +569,48 @@ let itemList = {
 };
 let nowItemName = "diamond_block";
 
-// テクスチャを生成
-function imgOnloaded(itemName) {
-  const item = itemList[itemName];
-  gl.activeTexture(gl.TEXTURE0 + item.number);
-  const texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, item.image);
-  gl.generateMipmap(gl.TEXTURE_2D);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  item.loaded = true;
-  if (nowItemName == itemName) {
-    render();
-  }
-}
-for (const [itemName, item] of Object.entries(itemList)) {
-  // 画像読み込み
-  item.image.src = `./img/${itemName}.png`;
-  // 完了したらテクスチャを生成
-  item.image.addEventListener("load", () => {
-    imgOnloaded(itemName, item);
-  });
-  // 失敗したらログ
-  item.image.addEventListener("error", e => {
-    console.warn(`画像 ${itemName} の読み込みに失敗しました`);
-  });
-}
-// ブロック選択
-const blockTexture = document.getElementById("blockTexture");
-
-// ブロック変更時の処理
-blockTexture.addEventListener("change", e => {
-  nowItemName = e.target.value;
-  render();
-});
-// 警告消し用テクスチャ
 {
-  gl.activeTexture(gl.TEXTURE0);
-  const texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+  // テクスチャを生成
+  function imgOnloaded(itemName) {
+    const item = itemList[itemName];
+    gl.activeTexture(gl.TEXTURE0 + item.number);
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, item.image);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    item.loaded = true;
+    if (nowItemName == itemName) {
+      render();
+    }
+  }
+  for (const [itemName, item] of Object.entries(itemList)) {
+    // 画像読み込み
+    item.image.src = `./img/${itemName}.png`;
+    // 完了したらテクスチャを生成
+    item.image.addEventListener("load", () => {
+      imgOnloaded(itemName, item);
+    });
+    // 失敗したらログ
+    item.image.addEventListener("error", e => {
+      console.warn(`画像 ${itemName} の読み込みに失敗しました`);
+    });
+  }
+  // ブロック選択
+  const blockTexture = document.getElementById("blockTexture");
+
+  // ブロック変更時の処理
+  blockTexture.addEventListener("change", e => {
+    nowItemName = e.target.value;
+    render();
+  });
+  // 警告消し用テクスチャ
+  {
+    gl.activeTexture(gl.TEXTURE0);
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+  }
 }
 
 
