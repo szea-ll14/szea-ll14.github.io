@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>FMBE Simulator</title>
+    <title>fmbeSim</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="fmbeSim">
+    <meta property="og:description" content="Simulate FMBE & Generate Command">
+    <meta property="og:image" content=".\img\ogp-image.png">
     <link rel="stylesheet" href="style.css">
     <!-- 頂点シェーダー -->
     <script id="vertShader" type="x-shader/x-vertex">
@@ -21,11 +24,11 @@
       out float diff;
 
       float atan2(in float y, in float x) {
-        return x == 0. ? sign(y)*radians(90.) : atan(y, x);
+        return x == 0. ? sign(y) * radians(90.) : atan(y, x);
       }
 
       void main(void) {
-        gl_Position = mvpMat * vec4(position, 1.0);
+        gl_Position = mvpMat * vec4(position, 1.);
         vColor = color;
         if (texLoaded) {
           vUv = uv;
@@ -63,7 +66,7 @@
   </head>
   <body>
     <div id="appBody">
-      <div id="appView"><canvas id="canvas" width=300 height=300></canvas></div>
+      <div id="appView"><canvas id="canvas" width="300" height="300"></canvas></div>
       <div id="appBar"></div>
       <div id="appControl">
         <div>
@@ -157,6 +160,6 @@
         <div><a href="https://github.com/szea-ll14/szea-ll14.github.io/tree/main/fmbeSim">なかみ</a></div>
       </div>
     </div>
-    <script src="main.js"></script>
+    <script src="main.js" type="module"></script>
   </body>
 </html>

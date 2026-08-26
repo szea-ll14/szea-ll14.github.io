@@ -1,58 +1,5 @@
-// 行列の乗算
-function mulMat(matL, matR) {
-  let rtn = [];
-  for (let i = 0; i < 16; i++) {
-    rtn[i] = matL[i - i % 4    ] * matR[i % 4     ]
-           + matL[i - i % 4 + 1] * matR[i % 4 +  4]
-           + matL[i - i % 4 + 2] * matR[i % 4 +  8]
-           + matL[i - i % 4 + 3] * matR[i % 4 + 12];
-  }
-  return rtn;
-}
-// 転置行列
-function tMat(mat) {
-  return [
-    mat[0], mat[4], mat[ 8], mat[12],
-    mat[1], mat[5], mat[ 9], mat[13],
-    mat[2], mat[6], mat[10], mat[14],
-    mat[3], mat[7], mat[11], mat[15],
-  ];
-}
-// 余因子行列
-function adjMat(mat) {
-  const s0 = mat[ 0] * mat[ 5] - mat[ 1] * mat[ 4];
-  const s1 = mat[ 0] * mat[ 6] - mat[ 2] * mat[ 4];
-  const s2 = mat[ 0] * mat[ 7] - mat[ 3] * mat[ 4];
-  const s3 = mat[ 1] * mat[ 6] - mat[ 2] * mat[ 5];
-  const s4 = mat[ 1] * mat[ 7] - mat[ 3] * mat[ 5];
-  const s5 = mat[ 2] * mat[ 7] - mat[ 3] * mat[ 6];
+import * as Matrix from "./js/matrix.js";
 
-  const c0 = mat[ 8] * mat[13] - mat[ 9] * mat[12];
-  const c1 = mat[ 8] * mat[14] - mat[10] * mat[12];
-  const c2 = mat[ 8] * mat[15] - mat[11] * mat[12];
-  const c3 = mat[ 9] * mat[14] - mat[10] * mat[13];
-  const c4 = mat[ 9] * mat[15] - mat[11] * mat[13];
-  const c5 = mat[10] * mat[15] - mat[11] * mat[14];
-
-  return [
-    mat[ 5] * c5 - mat[ 6] * c4 + mat[ 7] * c3,
-  - mat[ 1] * c5 + mat[ 2] * c4 - mat[ 3] * c3,
-    mat[13] * s5 - mat[14] * s4 + mat[15] * s3,
-  - mat[ 9] * s5 + mat[10] * s4 - mat[11] * s3,
-  - mat[ 4] * c5 + mat[ 6] * c2 - mat[ 7] * c1,
-    mat[ 0] * c5 - mat[ 2] * c2 + mat[ 3] * c1,
-  - mat[12] * s5 + mat[14] * s2 - mat[15] * s1,
-    mat[ 8] * s5 - mat[10] * s2 + mat[11] * s1,
-    mat[ 4] * c4 - mat[ 5] * c2 + mat[ 7] * c0,
-  - mat[ 0] * c4 + mat[ 1] * c2 - mat[ 3] * c0,
-    mat[12] * s4 - mat[13] * s2 + mat[15] * s0,
-  - mat[ 8] * s4 + mat[ 9] * s2 - mat[11] * s0,
-  - mat[ 4] * c3 + mat[ 5] * c1 - mat[ 6] * c0,
-    mat[ 0] * c3 - mat[ 1] * c1 + mat[ 2] * c0,
-  - mat[12] * s3 + mat[13] * s1 - mat[14] * s0,
-    mat[ 8] * s3 - mat[ 9] * s1 + mat[10] * s0
-  ];
-}
 // 数値を文字列化: 指数表記ではなく整数・小数で
 function num2str(num) {
   // 実数以外は思考放棄
@@ -63,7 +10,7 @@ function num2str(num) {
   if (!strRaw.includes("e")) return String(num)
 
   // 符号・仮数整数部・仮数小数部・指数に分解
-  let [_, sgn, manInt, manFrac, exp] = strRaw.match(
+  let [, sgn, manInt, manFrac, exp] = strRaw.match(
     /^(-?)(\d*)\.?(\d*)e([+-]\d+)$/
   );
   exp = Number(exp);
@@ -81,19 +28,20 @@ function num2str(num) {
   // 小数点が要れば付けて返す
   return sgn + manInt + (manFrac ? "." + manFrac : "");
 }
-// deg2rad
-const deg = Math.PI / 180;
+
+// 度
+const DEG = Math.PI / 180;
 
 
 
 
 
-// コマンド
-const command = document.getElementById("command");
-// コピー
-const commandCopy = document.getElementById("commandCopy");
-// 変数全指定トグル
-const commandFull = document.getElementById("commandFull");
+// ####     #    #        #    #   #
+// #   #   # #   #       # #   ## ##
+// ####   #   #  #      #   #  # # #
+// #      #####  #      #####  #   #
+// #      #   #  #####  #   #  #   #
+
 // FMBE変数データ
 let paramList = {
   xpos: {value: 0, init: 0},
@@ -117,41 +65,7 @@ for (const [paramName, param] of Object.entries(paramList)) {
   // ボタン
   param.reset = document.getElementById(paramName + "Reset");
 }
-// ブロック選択
-const blockTexture = document.getElementById("blockTexture");
 
-
-
-
-
-
-// コマンドコピー
-let commandCopyTimeoutID;
-commandCopy.addEventListener("click", () => {
-  navigator.clipboard.writeText(
-    command.textContent
-  );
-  commandCopy.textContent = "Copied!";
-  clearTimeout(commandCopyTimeoutID);
-  commandCopyTimeoutID = setTimeout(() => {
-    commandCopy.textContent = "Copy";
-  }, 1000);
-});
-// コマンド設定
-setCommand();
-function setCommand() {
-  let molang = " ";
-  for (const [paramName, param] of Object.entries(paramList)) {
-    if (
-      !commandFull.checked &&
-      (param.value === param.init)
-    ) continue;
-    molang += `v.${paramName}=${num2str(param.value)}; `;
-  }
-  if (molang === " ") molang = "";
-  command.textContent = `playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 "${molang}" setValue`;
-}
-commandFull.addEventListener("input", e => {setCommand()})
 // 値セット
 function set(paramName, value, {skipInput = false, skipSlider = false} = {}) {
   const param = paramList[paramName];
@@ -169,7 +83,7 @@ function set(paramName, value, {skipInput = false, skipSlider = false} = {}) {
     param.slider.value = valueFixed;
   }
   setCommand();
-  draw();
+  render();
 }
 // 値リセット
 function reset(paramName) {
@@ -186,7 +100,7 @@ for (const [paramName, param] of Object.entries(paramList)) {
   param.slider.addEventListener("input", e => {
     set(paramName, e.target.value, {skipSlider: true});
   });
-  param.reset.addEventListener("click", e => {
+  param.reset.addEventListener("click", () => {
     reset(paramName);
   });
 }
@@ -195,8 +109,126 @@ for (const [paramName, param] of Object.entries(paramList)) {
 
 
 
+//  ####  #####  #####          ###   #   #  #### 
+// #      #        #           #   #  ## ##  #   #
+//  ###   #####    #           #      # # #  #   #
+//     #  #        #           #   #  #   #  #   #
+// ####   #####    #            ###   #   #  #### 
+
+// コマンド
+const command = document.getElementById("command");
+// コピー
+const commandCopy = document.getElementById("commandCopy");
+// 変数全指定トグル
+const commandFull = document.getElementById("commandFull");
+
+// コマンドコピー
+let commandCopyTimeoutID;
+commandCopy.addEventListener("click", () => {
+  navigator.clipboard.writeText(
+    command.textContent
+  );
+  commandCopy.textContent = "Copied!";
+  clearTimeout(commandCopyTimeoutID);
+  commandCopyTimeoutID = setTimeout(() => {
+    commandCopy.textContent = "Copy";
+  }, 1000);
+});
+// コマンド設定
+function setCommand() {
+  let molang = " ";
+  for (const [paramName, param] of Object.entries(paramList)) {
+    if (
+      !commandFull.checked &&
+      (param.value === param.init)
+    ) continue;
+    molang += `v.${paramName}=${num2str(param.value)}; `;
+  }
+  if (molang === " ") molang = "";
+  command.textContent = `playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 "${molang}" setValue`;
+}
+commandFull.addEventListener("input", () => {setCommand()});
+
+
+
+
+
+//  ###     #    #   #  #   #    #     ####
+// #   #   # #   ##  #  #   #   # #   #    
+// #      #   #  # # #  #   #  #   #   ### 
+// #   #  #####  #  ##   # #   #####      #
+//  ###   #   #  #   #    #    #   #  #### 
+
 // WebGLコンテキストを取得
 const canvas = document.getElementById("canvas");
+
+// カメラ回転・スケール
+let viewPitch = 15, viewYaw = -10, viewScale = 2;
+{
+  let pointerList = {};
+  function pointerDown(e) { // ポインターを登録
+    if (e.button === 0) {
+      pointerList[e.pointerId] = {
+        x: e.offsetX, preX: e.offsetX,
+        y: e.offsetY, preY: e.offsetY,
+      };
+    }
+  }
+  function pointerMove(e) { // ポインター動くと
+    if (!pointerList.hasOwnProperty(e.pointerId)) return;
+    let pointer = pointerList[e.pointerId];
+    pointer.x = e.offsetX;
+    pointer.y = e.offsetY;
+
+    switch (Object.keys(pointerList).length) {
+      case 1: { // 1本指はカメラ回転
+        viewYaw += pointer.x - pointer.preX;
+        viewPitch += pointer.y - pointer.preY;
+        viewYaw = (viewYaw + 360) % 360;
+        viewPitch = Math.min(Math.max(viewPitch, -90), 90);
+        render();
+        break;
+      }
+      case 2: { // 2本指はスケール
+        const posList = Object.values(pointerList);
+        let preDist = ((posList[0].preX - posList[1].preX) ** 2 + (posList[0].preY - posList[1].preY) ** 2) ** .5;
+        let dist = ((posList[0].x - posList[1].x) ** 2 + (posList[0].y - posList[1].y) ** 2) ** .5;
+        viewScale += (dist - preDist) / 128;
+        render();
+        break;
+      }
+    }
+    pointer.preX = pointer.x;
+    pointer.preY = pointer.y;
+  }
+  function pointerUp(e) { // ポインターを削除
+    delete pointerList[e.pointerId];
+  }
+  function wheel(e) { // ホイール回すと
+    if (e.cancelable) e.preventDefault();
+    viewScale -= e.deltaY / 1024; // スケール
+    render();
+  }
+
+  canvas.addEventListener("pointerdown", pointerDown); // 押したとき
+  canvas.addEventListener("pointermove", pointerMove); // ドラッグ時
+  canvas.addEventListener("pointerup", pointerUp); // 離したとき
+  canvas.addEventListener("pointercancel", pointerUp); // 消えたとき
+  canvas.addEventListener("pointerleave", pointerUp); // 外へ出たとき
+  canvas.addEventListener("wheel", wheel, {passive: false}); // ホイール回したとき
+}
+
+
+
+
+
+//  ###   #    
+// #      #    
+// # ###  #    
+// #   #  #    
+//  ###   #####
+
+// WebGLコンテキストを取得
 const gl = canvas.getContext("webgl2");
 if (!gl) {
   throw Error("ブラウザがWebGL2に対応していません");
@@ -242,128 +274,81 @@ const prg = gl.createProgram();
     gl.deleteProgram(prg);
     throw Error(`プログラムのリンクに失敗しました：${log}`);
   }
+
+  // プログラムオブジェクトを有効化
+  gl.useProgram(prg);
+
+  // カリング・深度テストを有効化
+  gl.enable(gl.CULL_FACE);
+  gl.enable(gl.DEPTH_TEST);
+  gl.depthFunc(gl.LEQUAL);
+
+  // canvas初期化設定
+  gl.clearColor(.1, .1, .1, 1);
+  gl.clearDepth(1);
 }
 
-// プログラムオブジェクトを有効化
-gl.useProgram(prg);
-
-// カリング・深度テストを有効化
-gl.enable(gl.CULL_FACE);
-gl.enable(gl.DEPTH_TEST);
-gl.depthFunc(gl.LEQUAL);
-
-// canvas初期化設定
-gl.clearColor(.1, .1, .1, 1);
-gl.clearDepth(1);
 
 
 
 
+
+
+
+
+// #        #    #   #   ###   #   #  #####
+// #       # #    # #   #   #  #   #    #  
+// #      #   #    #    #   #  #   #    #  
+// #      #####    #    #   #  #   #    #  
+// #####  #   #    #     ###    ###     #  
 
 // 分割レイアウト制御
 const appBody = document.getElementById("appBody");
-const appView = document.getElementById("appView");
-const appBar = document.getElementById("appBar");
-const root = document.documentElement;
-const appBarSize = parseFloat(getComputedStyle(root).getPropertyValue("--app-bar-size"));
-const appViewSizeMin = parseFloat(getComputedStyle(root).getPropertyValue("--app-view-size-min"));
-let appBarDragging = false;
+{
+  const appBar = document.getElementById("appBar");
+  const root = document.documentElement;
+  const appBarSize = parseFloat(getComputedStyle(root).getPropertyValue("--app-bar-size"));
+  const appViewSizeMin = parseFloat(getComputedStyle(root).getPropertyValue("--app-view-size-min"));
+  let appBarDragging = false;
 
-// 押下
-appBar.addEventListener("pointerdown", e => {
-  appBarDragging = true;
-  appBar.setPointerCapture(e.pointerId);
-  document.body.classList.add("resizing");
-});
+  // 押下
+  appBar.addEventListener("pointerdown", e => {
+    appBarDragging = true;
+    appBar.setPointerCapture(e.pointerId);
+    document.body.classList.add("resizing");
+  });
 
-appBar.addEventListener("pointermove", e => {
-  if (!appBarDragging) return;
+  appBar.addEventListener("pointermove", e => {
+    if (!appBarDragging) return;
 
-  const appRect = appBody.getBoundingClientRect();
-  const isHorizontal = appBody.classList.contains("horizontal");
-  const appBodySize = isHorizontal ? appRect.width : appRect.height;
-  let appViewSize = isHorizontal ? e.clientX - appRect.left : e.clientY - appRect.top;
-  let appViewRatio = (appViewSize - appViewSizeMin) / (appBodySize - appBarSize - appViewSizeMin * 2);
-  appViewRatio = Math.min(Math.max(appViewRatio, 0), 1);
-  root.style.setProperty("--app-view-ratio", appViewRatio);
-  resize();
-  draw();
-});
+    const appRect = appBody.getBoundingClientRect();
+    const isHorizontal = appBody.classList.contains("horizontal");
+    const appBodySize = isHorizontal ? appRect.width : appRect.height;
+    let appViewSize = isHorizontal ? e.clientX - appRect.left : e.clientY - appRect.top;
+    let appViewRatio = (appViewSize - appViewSizeMin) / (appBodySize - appBarSize - appViewSizeMin * 2);
+    appViewRatio = Math.min(Math.max(appViewRatio, 0), 1);
+    root.style.setProperty("--app-view-ratio", appViewRatio);
+    resize();
+    render();
+  });
 
-appBar.addEventListener("pointerup", e => {
-  appBarDragging = false;
-  appBar.releasePointerCapture(e.pointerId);
-  document.body.classList.remove("resizing");
-});
-appBar.addEventListener("pointercancel", e => {
-  appBarDragging = false;
-  appBar.releasePointerCapture(e.pointerId);
-  document.body.classList.remove("resizing");
-});
-
-
-
-
-
-// カメラ回転・スケール
-let viewPitch = 15, viewYaw = -10, viewScale = 2;
-
-let pointerList = {};
-canvas.addEventListener("pointerdown", pointerDown); // 押したとき
-canvas.addEventListener("pointermove", pointerMove); // ドラッグ時
-canvas.addEventListener("pointerup", pointerUp); // 離したとき
-canvas.addEventListener("pointercancel", pointerUp); // 消えたとき
-canvas.addEventListener("pointerleave", pointerUp); // 外へ出たとき
-canvas.addEventListener("wheel", e => { //ホイール回したとき
-  if (e.cancelable) e.preventDefault();
-  viewScale -= e.deltaY / 1024;
-  draw();
-}, {passive: false});
-
-function pointerDown(e) { // ポインターを登録
-  if (e.button === 0) {
-    pointerList[e.pointerId] = {
-      x: e.offsetX, preX: e.offsetX,
-      y: e.offsetY, preY: e.offsetY,
-    };
-  }
-}
-function pointerMove(e) {
-  if (!pointerList.hasOwnProperty(e.pointerId)) return;
-  let pointer = pointerList[e.pointerId]
-  pointer.x = e.offsetX;
-  pointer.y = e.offsetY;
-
-  switch (Object.keys(pointerList).length) {
-    case 1: { // カメラ回転
-      viewYaw += pointer.x - pointer.preX;
-      viewPitch += pointer.y - pointer.preY;
-      viewYaw %= 360;
-      viewPitch = Math.min(Math.max(viewPitch, -90), 90);
-      draw();
-      break;
-    }
-    case 2: { // スケール
-      const posList = Object.values(pointerList);
-      let preDist = ((posList[0].preX - posList[1].preX) ** 2 + (posList[0].preY - posList[1].preY) ** 2) ** .5;
-      let dist = ((posList[0].x - posList[1].x) ** 2 + (posList[0].y - posList[1].y) ** 2) ** .5;
-      viewScale += (dist - preDist) / 128;
-      draw();
-      break;
-    }
-  }
-  pointer.preX = pointer.x;
-  pointer.preY = pointer.y;
-}
-function pointerUp(e) { // ポインターを削除
-  delete pointerList[e.pointerId];
+  appBar.addEventListener("pointerup", e => {
+    appBarDragging = false;
+    appBar.releasePointerCapture(e.pointerId);
+    document.body.classList.remove("resizing");
+  });
+  appBar.addEventListener("pointercancel", e => {
+    appBarDragging = false;
+    appBar.releasePointerCapture(e.pointerId);
+    document.body.classList.remove("resizing");
+  });
 }
 
 // ウィンドウサイズ変更時
 let aspect = 1;
 window.addEventListener("resize", () => {
   resize();
-  draw();
+  render();
 });
 function resize() {
   if (appBody.clientWidth > appBody.clientHeight) {
@@ -376,12 +361,18 @@ function resize() {
   aspect = canvas.clientHeight / canvas.clientWidth;
   gl.viewport(0, 0, canvas.width, canvas.height);
 }
-resize();
 
 
 
 
-// 頂点情報 : ブロック
+
+// #   #   ###   ####   #####  #    
+// ## ##  #   #  #   #  #      #    
+// # # #  #   #  #   #  #####  #    
+// #   #  #   #  #   #  #      #    
+// #   #   ###   ####   #####  #####
+
+// 頂点情報：ブロック
 const blockVert = new Float32Array([
   // 位置:vec3, 色:vec3, UV:vec2, 法線:vec3
   // 上
@@ -415,7 +406,7 @@ const blockVert = new Float32Array([
   -.5,  .5, -.5,  0, 1, 0,    1, .5,  0, 0, -1,
   -.5, -.5, -.5,  0, 0, 0,    1,  1,  0, 0, -1,
 ]);
-// インデックス : ブロック
+// インデックス：ブロック
 const blockIndex = new Int16Array([
    0,  1,  2, // 上
    2,  1,  3, 
@@ -430,7 +421,7 @@ const blockIndex = new Int16Array([
   20, 21, 22, // 後
   22, 21, 23,
 ]);
-// 頂点情報 : 軸
+// 頂点情報：軸
 const axisVert = new Float32Array([
   // 位置:vec3, 色:vec3
   // xyz軸
@@ -483,19 +474,14 @@ const axisVert = new Float32Array([
    4.5, 0,  5,  .4, .4, .4,
 ]);
 
-
-
-
+const blockCount = blockIndex.length;
+const axisCount = axisVert.length / 6;
 
 // シェーダー内の変数の場所を取得
 const posLoc = gl.getAttribLocation(prg, 'position');
 const colorLoc = gl.getAttribLocation(prg, 'color');
 const uvLoc = gl.getAttribLocation(prg, 'uv');
 const normalLoc = gl.getAttribLocation(prg, 'normal');
-const texLoadedLoc = gl.getUniformLocation(prg, "texLoaded");
-const texLoc = gl.getUniformLocation(prg, "tex");
-const mvpMatLoc = gl.getUniformLocation(prg, "mvpMat");
-const mAdjMatLoc = gl.getUniformLocation(prg, "mAdjMat");
 
 // ブロックのVAOを生成
 const blockVao = gl.createVertexArray();
@@ -514,7 +500,7 @@ const blockVao = gl.createVertexArray();
   gl.enableVertexAttribArray(colorLoc);
   gl.enableVertexAttribArray(uvLoc);
   gl.enableVertexAttribArray(normalLoc);
-  
+
   // ブロックのIBOを生成
   const ibo = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
@@ -536,13 +522,20 @@ const axisVao = gl.createVertexArray();
   gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
   gl.enableVertexAttribArray(posLoc);
   gl.enableVertexAttribArray(colorLoc);
-  
+
   gl.bindVertexArray(null);
 }
 
 
 
 
+
+
+// #####  #####  #   #  #####  #   #  ####   #####
+//   #    #       # #     #    #   #  #   #  #    
+//   #    #####    #      #    #   #  ####   #####
+//   #    #       # #     #    #   #  #  #   #    
+//   #    #####  #   #    #     ###   #   #  #####
 
 // ブロックテクスチャ
 let itemList = {
@@ -571,12 +564,12 @@ let itemList = {
     image: new Image(),
     loaded: false,
   },
-}
-let nowItemName = "diamond_block"
+};
+let nowItemName = "diamond_block";
 
 // テクスチャを生成
 function imgOnloaded(itemName) {
-  const item = itemList[itemName]
+  const item = itemList[itemName];
   gl.activeTexture(gl.TEXTURE0 + item.number);
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -585,12 +578,12 @@ function imgOnloaded(itemName) {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
   item.loaded = true;
   if (nowItemName == itemName) {
-    draw();
+    render();
   }
 }
 for (const [itemName, item] of Object.entries(itemList)) {
   // 画像読み込み
-  item.image.src = `./${itemName}.png`;
+  item.image.src = `./img/${itemName}.png`;
   // 完了したらテクスチャを生成
   item.image.addEventListener("load", () => {
     imgOnloaded(itemName, item);
@@ -600,11 +593,13 @@ for (const [itemName, item] of Object.entries(itemList)) {
     console.warn(`画像 ${itemName} の読み込みに失敗しました`);
   });
 }
+// ブロック選択
+const blockTexture = document.getElementById("blockTexture");
 
 // ブロック変更時の処理
 blockTexture.addEventListener("change", e => {
   nowItemName = e.target.value;
-  draw();
+  render();
 });
 // 警告消し用テクスチャ
 {
@@ -617,9 +612,21 @@ blockTexture.addEventListener("change", e => {
 
 
 
+
+// ####   #####  #   #  ####   #####  #### 
+// #   #  #      ##  #  #   #  #      #   #
+// ####   #####  # # #  #   #  #####  #### 
+// #  #   #      #  ##  #   #  #      #  # 
+// #   #  #####  #   #  ####   #####  #   #
+
+// シェーダー内の変数の場所を取得
+const texLoadedLoc = gl.getUniformLocation(prg, "texLoaded");
+const texLoc = gl.getUniformLocation(prg, "tex");
+const mvpMatLoc = gl.getUniformLocation(prg, "mvpMat");
+const mAdjMatLoc = gl.getUniformLocation(prg, "mAdjMat");
+
 // 描画
-draw();
-function draw() {
+function render() {
   // 行列
   // FMBEによる変形
   let mMat = [ // basepos
@@ -628,31 +635,31 @@ function draw() {
     0, 0, 1, paramList.zbasepos.value / 16,
     0, 0, 0, 1
   ];
-  mMat = mulMat([ // scale
+  mMat = Matrix.mul([ // scale
     paramList.scale.value * paramList.xzscale.value, 0, 0, 0,
     0, paramList.scale.value * paramList.yscale.value, 0, 0,
     0, 0, paramList.scale.value * paramList.xzscale.value, 0,
     0, 0, 0, 1
   ], mMat);
-  mMat = mulMat([ // xrot
+  mMat = Matrix.mul([ // xrot
     1, 0, 0, 0,
-    0, Math.cos(paramList.xrot.value * deg), -Math.sin(paramList.xrot.value * deg), 0,
-    0, Math.sin(paramList.xrot.value * deg), Math.cos(paramList.xrot.value * deg), 0,
+    0, Math.cos(paramList.xrot.value * DEG), -Math.sin(paramList.xrot.value * DEG), 0,
+    0, Math.sin(paramList.xrot.value * DEG), Math.cos(paramList.xrot.value * DEG), 0,
     0, 0, 0, 1
   ], mMat);
-  mMat = mulMat([ // zrot
-    Math.cos(paramList.zrot.value * deg), Math.sin(paramList.zrot.value * deg), 0, 0,
-    -Math.sin(paramList.zrot.value * deg), Math.cos(paramList.zrot.value * deg), 0, 0,
+  mMat = Matrix.mul([ // zrot
+    Math.cos(paramList.zrot.value * DEG), Math.sin(paramList.zrot.value * DEG), 0, 0,
+    -Math.sin(paramList.zrot.value * DEG), Math.cos(paramList.zrot.value * DEG), 0, 0,
     0, 0, 1, 0,
     0, 0, 0, 1
   ], mMat);
-  mMat = mulMat([ // yrot
-    Math.cos(paramList.yrot.value * deg), 0, -Math.sin(paramList.yrot.value * deg), 0,
+  mMat = Matrix.mul([ // yrot
+    Math.cos(paramList.yrot.value * DEG), 0, -Math.sin(paramList.yrot.value * DEG), 0,
     0, 1, 0, 0,
-    Math.sin(paramList.yrot.value * deg), 0, Math.cos(paramList.yrot.value * deg), 0,
+    Math.sin(paramList.yrot.value * DEG), 0, Math.cos(paramList.yrot.value * DEG), 0,
     0, 0, 0, 1
   ], mMat);
-  mMat = mulMat([ // pos
+  mMat = Matrix.mul([ // pos
     1, 0, 0, paramList.xpos.value / 16,
     0, 1, 0, paramList.ypos.value / 16 + 0.5,
     0, 0, 1, paramList.zpos.value / 16,
@@ -660,18 +667,18 @@ function draw() {
   ], mMat);
   // カメラの角度・透視投影
   let vpMat = [ // viewYaw
-    Math.cos(viewYaw * deg), 0, Math.sin(viewYaw * deg), 0,
+    Math.cos(viewYaw * DEG), 0, Math.sin(viewYaw * DEG), 0,
     0, 1, 0, 0,
-    -Math.sin(viewYaw * deg), 0, Math.cos(viewYaw * deg), 0,
+    -Math.sin(viewYaw * DEG), 0, Math.cos(viewYaw * DEG), 0,
     0, 0, 0, 1
   ];
-  vpMat = mulMat([ // viewPitch
+  vpMat = Matrix.mul([ // viewPitch
     1, 0, 0, 0,
-    0, Math.cos(viewPitch * deg), -Math.sin(viewPitch * deg), 0,
-    0, Math.sin(viewPitch * deg), Math.cos(viewPitch * deg), 0,
+    0, Math.cos(viewPitch * DEG), -Math.sin(viewPitch * DEG), 0,
+    0, Math.sin(viewPitch * DEG), Math.cos(viewPitch * DEG), 0,
     0, 0, 0, 1
   ], vpMat);
-  vpMat = mulMat([ // perspective
+  vpMat = Matrix.mul([ // perspective
     aspect * 2 ** viewScale, 0, 0, 0,
     0, 2 ** viewScale, 0, 0,
     0, 0, -1, 19,
@@ -683,14 +690,8 @@ function draw() {
   //     0  0 0 1] 0 0 0  1] 0 0 -1 0] 0 0 0   1]
 
 
-
-
-
   // canvasを初期化
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-
-
 
 
   // ブロックのVBO
@@ -699,13 +700,10 @@ function draw() {
   gl.uniform1i(texLoc, itemList[nowItemName].number * itemList[nowItemName].loaded);
   gl.uniform1i(texLoadedLoc, itemList[nowItemName].loaded);
   // 変形行列
-  gl.uniformMatrix4fv(mvpMatLoc, false, tMat(mulMat(vpMat, mMat)));
-  gl.uniformMatrix4fv(mAdjMatLoc, false, adjMat(mMat));
+  gl.uniformMatrix4fv(mvpMatLoc, false, Matrix.t(Matrix.mul(vpMat, mMat)));
+  gl.uniformMatrix4fv(mAdjMatLoc, false, Matrix.adj(mMat));
   // ブロックを描画
-  gl.drawElements(gl.TRIANGLES, blockIndex.length, gl.UNSIGNED_SHORT, 0);
-
-
-
+  gl.drawElements(gl.TRIANGLES, blockCount, gl.UNSIGNED_SHORT, 0);
 
 
   // 軸のVBO
@@ -713,14 +711,19 @@ function draw() {
   // テクスチャはないよ
   gl.uniform1i(texLoadedLoc, 0);
   // 変形行列
-  gl.uniformMatrix4fv(mvpMatLoc, false, tMat(vpMat));
+  gl.uniformMatrix4fv(mvpMatLoc, false, Matrix.t(vpMat));
   // 軸を描画
-  gl.drawArrays(gl.LINES, 0, axisVert.length / 6);
-
-
-
+  gl.drawArrays(gl.LINES, 0, axisCount);
 
 
   // 描画
   gl.flush();
 }
+
+
+
+
+
+setCommand();
+resize();
+render();
