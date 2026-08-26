@@ -239,11 +239,13 @@ const prg = gl.createProgram();
 
 {
   // シェーダーをコンパイル
-  const vertSource = document.getElementById("vertShader").textContent.trim();
+  // const vertSource = document.getElementById("vertShader").textContent.trim();
+  const vertSource = await (await fetch("./shader/vert.glsl")).text();
   const vertShader = gl.createShader(gl.VERTEX_SHADER);
   gl.shaderSource(vertShader, vertSource);
   gl.compileShader(vertShader);
-  const fragSource = document.getElementById("fragShader").textContent.trim();
+  // const fragSource = document.getElementById("fragShader").textContent.trim();
+  const fragSource = await (await fetch("./shader/frag.glsl")).text();
   const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
   gl.shaderSource(fragShader, fragSource);
   gl.compileShader(fragShader);

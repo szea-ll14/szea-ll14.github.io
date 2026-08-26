@@ -8,61 +8,6 @@
     <meta property="og:description" content="Simulate FMBE & Generate Command">
     <meta property="og:image" content=".\img\ogp-image.png">
     <link rel="stylesheet" href="style.css">
-    <!-- 頂点シェーダー -->
-    <script id="vertShader" type="x-shader/x-vertex">
-      #version 300 es
-      in vec3 position;
-      in vec3 color;
-      in vec2 uv;
-      in vec3 normal;
-      uniform bool texLoaded;
-      uniform mat4 mvpMat;
-      uniform mat4 mAdjMat;
-
-      out vec3 vColor;
-      out vec2 vUv;
-      out float diff;
-
-      float atan2(in float y, in float x) {
-        return x == 0. ? sign(y) * radians(90.) : atan(y, x);
-      }
-
-      void main(void) {
-        gl_Position = mvpMat * vec4(position, 1.);
-        vColor = color;
-        if (texLoaded) {
-          vUv = uv;
-          vec4 normalM = mAdjMat * vec4(normal, 0.);
-          float r = length(normalM);
-          if (r < .001) {
-            diff = 1.;
-          } else {
-            diff = .713
-                 + .272 * normalM.y / r
-                 + .098 * (normalM.z * normalM.z - normalM.x * normalM.x) / r / r;
-          }
-        }
-      }
-    </script>
-    <!-- フラグメントシェーダー -->
-    <script id="fragShader" type="x-shader/x-fragment">
-      #version 300 es
-      precision mediump float;
-      uniform bool texLoaded;
-      uniform sampler2D tex;
-      in vec3 vColor;
-      in vec2 vUv;
-      in float diff;
-      out vec4 fragColor;
-
-      void main(void) {
-        if (!texLoaded) {
-          fragColor = vec4(vColor, 1.);
-        } else {
-          fragColor = texture(tex, vUv) * vec4(vec3(diff) , 1.);
-        }
-      }
-    </script>
   </head>
   <body>
     <div id="appBody">
