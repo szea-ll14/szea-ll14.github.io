@@ -20,36 +20,36 @@ export function t(mat) {
 }
 // 余因子行列
 export function adj(mat) {
-  const s0 = mat[ 0] * mat[ 5] - mat[ 1] * mat[ 4];
-  const s1 = mat[ 0] * mat[ 6] - mat[ 2] * mat[ 4];
-  const s2 = mat[ 0] * mat[ 7] - mat[ 3] * mat[ 4];
-  const s3 = mat[ 1] * mat[ 6] - mat[ 2] * mat[ 5];
-  const s4 = mat[ 1] * mat[ 7] - mat[ 3] * mat[ 5];
-  const s5 = mat[ 2] * mat[ 7] - mat[ 3] * mat[ 6];
+  const t0 = mat[ 0] * mat[ 5] - mat[ 1] * mat[ 4];
+  const t1 = mat[ 0] * mat[ 6] - mat[ 2] * mat[ 4];
+  const t2 = mat[ 0] * mat[ 7] - mat[ 3] * mat[ 4];
+  const t3 = mat[ 1] * mat[ 6] - mat[ 2] * mat[ 5];
+  const t4 = mat[ 1] * mat[ 7] - mat[ 3] * mat[ 5];
+  const t5 = mat[ 2] * mat[ 7] - mat[ 3] * mat[ 6];
 
-  const c0 = mat[ 8] * mat[13] - mat[ 9] * mat[12];
-  const c1 = mat[ 8] * mat[14] - mat[10] * mat[12];
-  const c2 = mat[ 8] * mat[15] - mat[11] * mat[12];
-  const c3 = mat[ 9] * mat[14] - mat[10] * mat[13];
-  const c4 = mat[ 9] * mat[15] - mat[11] * mat[13];
-  const c5 = mat[10] * mat[15] - mat[11] * mat[14];
+  const b0 = mat[ 8] * mat[13] - mat[ 9] * mat[12];
+  const b1 = mat[ 8] * mat[14] - mat[10] * mat[12];
+  const b2 = mat[ 8] * mat[15] - mat[11] * mat[12];
+  const b3 = mat[ 9] * mat[14] - mat[10] * mat[13];
+  const b4 = mat[ 9] * mat[15] - mat[11] * mat[13];
+  const b5 = mat[10] * mat[15] - mat[11] * mat[14];
 
   return [
-    mat[ 5] * c5 - mat[ 6] * c4 + mat[ 7] * c3,
-  - mat[ 1] * c5 + mat[ 2] * c4 - mat[ 3] * c3,
-    mat[13] * s5 - mat[14] * s4 + mat[15] * s3,
-  - mat[ 9] * s5 + mat[10] * s4 - mat[11] * s3,
-  - mat[ 4] * c5 + mat[ 6] * c2 - mat[ 7] * c1,
-    mat[ 0] * c5 - mat[ 2] * c2 + mat[ 3] * c1,
-  - mat[12] * s5 + mat[14] * s2 - mat[15] * s1,
-    mat[ 8] * s5 - mat[10] * s2 + mat[11] * s1,
-    mat[ 4] * c4 - mat[ 5] * c2 + mat[ 7] * c0,
-  - mat[ 0] * c4 + mat[ 1] * c2 - mat[ 3] * c0,
-    mat[12] * s4 - mat[13] * s2 + mat[15] * s0,
-  - mat[ 8] * s4 + mat[ 9] * s2 - mat[11] * s0,
-  - mat[ 4] * c3 + mat[ 5] * c1 - mat[ 6] * c0,
-    mat[ 0] * c3 - mat[ 1] * c1 + mat[ 2] * c0,
-  - mat[12] * s3 + mat[13] * s1 - mat[14] * s0,
-    mat[ 8] * s3 - mat[ 9] * s1 + mat[10] * s0
+    mat[ 5] * b5 - mat[ 6] * b4 + mat[ 7] * b3,
+  - mat[ 1] * b5 + mat[ 2] * b4 - mat[ 3] * b3,
+    mat[13] * t5 - mat[14] * t4 + mat[15] * t3,
+  - mat[ 9] * t5 + mat[10] * t4 - mat[11] * t3,
+  - mat[ 4] * b5 + mat[ 6] * b2 - mat[ 7] * b1,
+    mat[ 0] * b5 - mat[ 2] * b2 + mat[ 3] * b1,
+  - mat[12] * t5 + mat[14] * t2 - mat[15] * t1,
+    mat[ 8] * t5 - mat[10] * t2 + mat[11] * t1,
+    mat[ 4] * b4 - mat[ 5] * b2 + mat[ 7] * b0,
+  - mat[ 0] * b4 + mat[ 1] * b2 - mat[ 3] * b0,
+    mat[12] * t4 - mat[13] * t2 + mat[15] * t0,
+  - mat[ 8] * t4 + mat[ 9] * t2 - mat[11] * t0,
+  - mat[ 4] * b3 + mat[ 5] * b1 - mat[ 6] * b0,
+    mat[ 0] * b3 - mat[ 1] * b1 + mat[ 2] * b0,
+  - mat[12] * t3 + mat[13] * t1 - mat[14] * t0,
+    mat[ 8] * t3 - mat[ 9] * t1 + mat[10] * t0
   ];
 }
