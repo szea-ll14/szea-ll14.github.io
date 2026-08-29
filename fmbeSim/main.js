@@ -44,25 +44,27 @@ const DEG = Math.PI / 180;
 
 // FMBE変数データ
 let paramList = {
-  xpos: {value: 0, init: 0},
-  ypos: {value: 0, init: 0},
-  zpos: {value: 0, init: 0},
-  xrot: {value: 0, init: 0},
-  yrot: {value: 0, init: 0},
-  zrot: {value: 0, init: 0},
-  scale: {value: 1, init: 1},
-  xzscale: {value: 1, init: 1},
-  yscale: {value: 1, init: 1},
-  xbasepos: {value: 0, init: 0},
-  ybasepos: {value: 0, init: 0},
-  zbasepos: {value: 0, init: 0},
+  xpos: {init: 0},
+  ypos: {init: 0},
+  zpos: {init: 0},
+  xrot: {init: 0},
+  yrot: {init: 0},
+  zrot: {init: 0},
+  scale: {init: 1},
+  xzscale: {init: 1},
+  yscale: {init: 1},
+  xbasepos: {init: 0},
+  ybasepos: {init: 0},
+  zbasepos: {init: 0},
 };
 for (const [paramName, param] of Object.entries(paramList)) {
+  // 値
+  param.value = param.init;
   // 入力欄
   param.input = document.getElementById(paramName + "Input");
   // スライダー
   param.slider = document.getElementById(paramName + "Slider");
-  // ボタン
+  // リセットボタン
   param.reset = document.getElementById(paramName + "Reset");
 }
 
@@ -701,11 +703,11 @@ function render() {
   // ブロックのVBO
   gl.bindVertexArray(blockVao);
   // テクスチャがあれば使う
-  gl.uniform1i(texLoc, itemList[nowItemName].number * itemList[nowItemName].loaded);
+  gl.uniform1i(texLoc, itemList[nowItemName].loaded ? itemList[nowItemName].number : 0);
   gl.uniform1i(texLoadedLoc, itemList[nowItemName].loaded);
   // 変形行列
-  gl.uniformMatrix4fv(mvpMatLoc, false, Matrix.t(Matrix.mul(vpMat, mMat)));
-  gl.uniformMatrix4fv(mAdjMatLoc, false, Matrix.adj(mMat));
+  gl.uniformMatrix4fv(mvpMatLoc, true, Matrix.mul(vpMat, mMat));
+  gl.uniformMatrix4fv(mAdjMatLoc, true, Matrix.t(Matrix.adj(mMat)));
   // ブロックを描画
   gl.drawElements(gl.TRIANGLES, blockCount, gl.UNSIGNED_SHORT, 0);
 
@@ -715,7 +717,7 @@ function render() {
   // テクスチャはないよ
   gl.uniform1i(texLoadedLoc, 0);
   // 変形行列
-  gl.uniformMatrix4fv(mvpMatLoc, false, Matrix.t(vpMat));
+  gl.uniformMatrix4fv(mvpMatLoc, true, vpMat);
   // 軸を描画
   gl.drawArrays(gl.LINES, 0, axisCount);
 

@@ -22,7 +22,7 @@ pre {
 }
 input[type=number] {
   text-align: center;
-  width: 4em;
+  width: 8ch;
 }
 canvas {
   width: 100%;

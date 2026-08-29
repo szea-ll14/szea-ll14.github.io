@@ -1,11 +1,14 @@
 // 行列の乗算
 export function mul(matL, matR) {
   let rtn = [];
-  for (let i = 0; i < 16; i++) {
-    rtn[i] = matL[i - i % 4    ] * matR[i % 4     ]
-           + matL[i - i % 4 + 1] * matR[i % 4 +  4]
-           + matL[i - i % 4 + 2] * matR[i % 4 +  8]
-           + matL[i - i % 4 + 3] * matR[i % 4 + 12];
+  for (let row = 0; row < 16; row += 4) {
+    for (let col = 0; col < 4; col++) {
+      rtn[row + col]
+        = matL[row    ] * matR[     col]
+        + matL[row + 1] * matR[ 4 + col]
+        + matL[row + 2] * matR[ 8 + col]
+        + matL[row + 3] * matR[12 + col];
+    }
   }
   return rtn;
 }
