@@ -1,7 +1,8 @@
 import * as Matrix from "./js/matrix.js";
+import {toPlaneDecimal} from "./js/to-plane-decimal.js";
 
 // 数値を文字列化: 指数表記ではなく整数・小数で
-function num2str(num) {
+function toPlaneDecimal(num) {
   // 実数以外は思考放棄
   if (!Number.isFinite(num)) return "";
   // 文字列化
@@ -144,7 +145,7 @@ function setCommand() {
       !commandFull.checked &&
       (param.value === param.init)
     ) continue;
-    molang += `v.${paramName}=${num2str(param.value)}; `;
+    molang += `v.${paramName}=${toPlaneDecimal(param.value)}; `;
   }
   if (molang === " ") molang = "";
   command.textContent = `playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 "${molang}" setValue`;
