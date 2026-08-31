@@ -1,5 +1,5 @@
 // 数値を文字列化：指数表記ではなく整数・小数で
-function toPlaneDecimal(num) {
+export function toPlaneDecimal(num) {
   // 実数以外は思考放棄
   if (!Number.isFinite(num)) return "";
   // 文字列化
