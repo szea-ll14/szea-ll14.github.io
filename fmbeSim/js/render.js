@@ -109,8 +109,4 @@ export function render() {
   gl.uniformMatrix4fv(mvpMatLoc, true, vpMat);
   // 軸を描画
   gl.drawArrays(gl.LINES, 0, axisLineCount);
-
-
-  // 描画
-  gl.flush();
 }
