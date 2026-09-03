@@ -4,21 +4,16 @@ import {requestOutput} from "./request-output.js";
 const appBody = document.getElementById("appBody");
 // canvas
 const canvas = document.getElementById("canvas");
-// WebGLコンテキスト
-let gl;
-// プログラムオブジェクト
-let prg;
+// WebGLコンテキスト・プログラムオブジェクト
+export let gl, prg;
+
+// シェーダー内の変数の場所
+export let texLoadedLoc, texLoc, mvpMatLoc, mAdjMatLoc;
 
 // カメラ回転・スケール
-let viewPitch = 15, viewYaw = -10, viewScale = 2;
+export let viewPitch = 15, viewYaw = -10, viewScale = 2;
 // canvasアスペクト比
-let aspect = 1;
-
-
-
-export function getCanvasVar() {
-  return {gl, prg, viewPitch, viewYaw, viewScale, aspect};
-}
+export let aspect = 1;
 
 
 
@@ -31,6 +26,8 @@ export function resize() {
   canvas.width = canvas.clientWidth * window.devicePixelRatio;
   canvas.height = canvas.clientHeight * window.devicePixelRatio;
   aspect = canvas.clientHeight / canvas.clientWidth;
+
+  if (!gl) return;
   gl.viewport(0, 0, canvas.width, canvas.height);
 }
 
@@ -41,6 +38,8 @@ export async function initCanvas() {
   gl = canvas.getContext("webgl2");
   if (!gl) {
     console.error("ブラウザーがWebGL2に非対応！");
+    gl = null;
+    return;
   }
 
   // シェーダーを取得
@@ -90,6 +89,12 @@ export async function initCanvas() {
     return;
   }
 
+  // シェーダー内の変数の場所を取得
+  texLoadedLoc = gl.getUniformLocation(prg, "texLoaded");
+  texLoc = gl.getUniformLocation(prg, "tex");
+  mvpMatLoc = gl.getUniformLocation(prg, "mvpMat");
+  mAdjMatLoc = gl.getUniformLocation(prg, "mAdjMat");
+
   // プログラムオブジェクトを有効化
   gl.useProgram(prg);
 
@@ -112,7 +117,7 @@ export async function initCanvas() {
 
 
   // カメラ回転・スケール
-  let pointerList = {};
+  const pointerList = {};
   function pointerDown(e) { // ポインターを登録
     if (e.button === 0) {
       pointerList[e.pointerId] = {
@@ -120,6 +125,7 @@ export async function initCanvas() {
         y: e.offsetY, preY: e.offsetY,
       };
     }
+    canvas.setPointerCapture(e.pointerId);
   }
 
   function pointerMove(e) { // ポインター動くと
@@ -152,6 +158,7 @@ export async function initCanvas() {
 
   function pointerUp(e) { // ポインターを削除
     delete pointerList[e.pointerId];
+    canvas.releasePointerCapture(e.pointerId);
   }
 
   function wheel(e) { // ホイール回すと
@@ -164,6 +171,5 @@ export async function initCanvas() {
   canvas.addEventListener("pointermove", pointerMove); // ドラッグ時
   canvas.addEventListener("pointerup", pointerUp); // 離したとき
   canvas.addEventListener("pointercancel", pointerUp); // 消えたとき
-  canvas.addEventListener("pointerleave", pointerUp); // 外へ出たとき
   canvas.addEventListener("wheel", wheel, {passive: false}); // ホイール回したとき
 }

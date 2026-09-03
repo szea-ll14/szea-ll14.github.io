@@ -1,5 +1,5 @@
 import {requestOutput} from "./request-output.js";
-import {getCanvasVar} from "./canvas.js";
+import {gl, prg} from "./canvas.js";
 
 // 頂点情報：ブロック
 const blockVert = new Float32Array([
@@ -36,7 +36,7 @@ const blockVert = new Float32Array([
   -.5, -.5, -.5,  0, 0, 0,    1,  1,  0, 0, -1,
 ]);
 // インデックス：ブロック
-const blockIndex = new Int16Array([
+const blockIndex = new Uint16Array([
    0,  1,  2, // 上
    2,  1,  3, 
    4,  5,  6, // 下
@@ -103,10 +103,10 @@ const axisVert = new Float32Array([
    4.5, 0,  5,  .4, .4, .4,
 ]);
 
-let blockVao, axisVao;
+export let blockVao, axisVao;
 
-const blockVertCount = blockIndex.length;
-const axisLineCount = axisVert.length / 6;
+export const blockVertCount = blockIndex.length;
+export const axisVertCount = axisVert.length / 6;
 
 // ブロックテクスチャ
 export const itemList = {
@@ -136,18 +136,11 @@ export const itemList = {
     loaded: false,
   },
 };
-let nowItemName = "diamond_block";
-
-
-
-export function getItemVar() {
-  return {blockVao, axisVao, blockVertCount, axisLineCount, nowItemName};
-}
+export let nowItemName = "diamond_block";
 
 
 
 export function initItem() {
-  const {gl, prg} = getCanvasVar();
   if (!gl) return;
 
   // シェーダー内の変数の場所を取得
@@ -202,8 +195,7 @@ export function initItem() {
 
 
   // テクスチャを生成
-  function imgOnloaded(itemName) {
-    const item = itemList[itemName];
+  function imgOnloaded(itemName, item) {
     gl.activeTexture(gl.TEXTURE0 + item.number);
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);

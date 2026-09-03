@@ -21,7 +21,7 @@ export function initSplitLayout() {
     const appRect = appBody.getBoundingClientRect();
     const isHorizontal = appBody.classList.contains("horizontal");
     const appBodySize = isHorizontal ? appRect.width : appRect.height;
-    let appViewSize = isHorizontal ? e.clientX - appRect.left : e.clientY - appRect.top;
+    const appViewSize = isHorizontal ? e.clientX - appRect.left : e.clientY - appRect.top;
     let appViewRatio = (appViewSize - appViewSizeMin) / (appBodySize - appBarSize - appViewSizeMin * 2);
     appViewRatio = Math.min(Math.max(appViewRatio, 0), 1);
     root.style.setProperty("--app-view-ratio", appViewRatio);
@@ -29,6 +29,7 @@ export function initSplitLayout() {
   }
 
   function pointerUp(e) { // ポインターを削除
+    if (!appBarDragging) return;
     appBarDragging = false;
     appBar.releasePointerCapture(e.pointerId);
     document.body.classList.remove("resizing");
@@ -38,5 +39,4 @@ export function initSplitLayout() {
   appBar.addEventListener("pointermove", pointerMove); // ドラッグ時
   appBar.addEventListener("pointerup", pointerUp); // 離したとき
   appBar.addEventListener("pointercancel", pointerUp); // 消えたとき
-  appBar.addEventListener("pointerleave", pointerUp); // 外へ出たとき
 }

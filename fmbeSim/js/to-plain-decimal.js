@@ -1,11 +1,11 @@
 // 数値を文字列化：指数表記ではなく整数・小数で
-export function toPlaneDecimal(num) {
+export function toPlainDecimal(num) {
   // 実数以外は思考放棄
   if (!Number.isFinite(num)) return "";
   // 文字列化
   const strRaw = String(num);
   // 指数表記じゃないならそのまま返す
-  if (!strRaw.includes("e")) return String(num)
+  if (!strRaw.includes("e")) return strRaw;
 
   // 符号・仮数整数部・仮数小数部・指数に分解
   let [, sgn, manInt, manFrac, exp] = strRaw.match(

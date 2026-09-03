@@ -1,8 +1,8 @@
-import {toPlaneDecimal} from "./to-plane-decimal.js";
+import {toPlainDecimal} from "./to-plain-decimal.js";
 import {requestOutput} from "./request-output.js";
 
 // パラメーター
-export let paramList = {
+export const paramList = {
   xpos: {init: 0},
   ypos: {init: 0},
   zpos: {init: 0},
@@ -17,12 +17,12 @@ export let paramList = {
   zbasepos: {init: 0},
 };
 
-  // コマンド
-  const command = document.getElementById("command");
-  // コピー
-  const commandCopy = document.getElementById("commandCopy");
-  // 変数全指定トグル
-  const commandFull = document.getElementById("commandFull");
+// コマンド
+const command = document.getElementById("command");
+// コピー
+const commandCopy = document.getElementById("commandCopy");
+// 変数全指定トグル
+const commandFull = document.getElementById("commandFull");
 
 
 
@@ -44,7 +44,7 @@ export function initParam() {
     const param = paramList[paramName];
 
     let valueFixed = Number(value);
-    if (!Number.isFinite(valueFixed)) {
+    if (value.trim() === "" || !Number.isFinite(valueFixed)) {
       valueFixed = param.init;
     }
 
@@ -102,7 +102,7 @@ export function setCommand() {
       !commandFull.checked &&
       (param.value === param.init)
     ) continue;
-    molang += `v.${paramName}=${toPlaneDecimal(param.value)}; `;
+    molang += `v.${paramName}=${toPlainDecimal(param.value)}; `;
   }
   if (molang === " ") molang = "";
   command.textContent = `playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 "${molang}" setValue`;

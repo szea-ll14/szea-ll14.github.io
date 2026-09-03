@@ -4,9 +4,11 @@
   --app-view-ratio: 0.4;
   --app-view-size-min: 10px;
 }
-#appControl {
-  text-align: center;
+html, body {
+  margin: 0;
+  height: 100%;
 }
+
 table {
   margin-left: auto;
   margin-right: auto;
@@ -31,11 +33,6 @@ canvas {
   touch-action: none;
 }
 
-
-html, body {
-  margin: 0;
-  height: 100%;
-}
 #appBody {
   display: flex;
   height: 100dvh;
@@ -50,15 +47,6 @@ html, body {
   flex: 0 0 calc((100% - var(--app-bar-size) - var(--app-view-size-min) * 2) * var(--app-view-ratio, 0.4) + var(--app-view-size-min));
   min-width: var(--app-view-size-min);
   min-height: var(--app-view-size-min);
-}
-
-#appControl {
-  flex: 1 1 auto;
-  min-width: var(--app-view-size-min);
-  min-height: var(--app-view-size-min);
-  text-align: center;
-  padding: 8px;
-  overflow: auto;
 }
 
 #appBar {
@@ -78,4 +66,13 @@ html, body {
 }
 body.resizing {
   user-select: none;
+}
+
+#appControl {
+  flex: 1 1 auto;
+  min-width: var(--app-view-size-min);
+  min-height: var(--app-view-size-min);
+  text-align: center;
+  padding: 8px;
+  overflow: auto;
 }

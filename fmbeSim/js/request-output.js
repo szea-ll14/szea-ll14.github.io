@@ -12,9 +12,9 @@ export function requestOutput({setCmd = false, resize = false, render = false} =
   if (resize) needsResize = true;
   if (render) needsRender = true;
   if (!requestId) requestId = requestAnimationFrame(() => {
+    requestId = null;
     if (needsSetCmd) {needsSetCmd = false; runSetCmd();}
     if (needsResize) {needsResize = false; runResize();}
     if (needsRender) {needsRender = false; runRender();}
-    requestId = null;
   });
 }

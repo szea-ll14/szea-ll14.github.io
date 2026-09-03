@@ -4,23 +4,14 @@ import * as Matrix from "./matrix.js";
 const DEG = Math.PI / 180;
 
 import {paramList} from "./param.js";
-import {getCanvasVar} from "./canvas.js";
-import {itemList, getItemVar} from "./item.js";
+import {gl, viewPitch, viewYaw, viewScale, aspect, texLoadedLoc, texLoc, mvpMatLoc, mAdjMatLoc} from "./canvas.js";
+import {blockVao, axisVao, blockVertCount, axisVertCount, itemList, nowItemName} from "./item.js";
 
 
 
 // 描画
 export function render() {
-  const {gl, prg, viewPitch, viewYaw, viewScale, aspect} = getCanvasVar();
   if (!gl) return;
-
-  let {blockVao, axisVao, blockVertCount, axisLineCount, nowItemName} = getItemVar();
-
-  // シェーダー内の変数の場所を取得
-  const texLoadedLoc = gl.getUniformLocation(prg, "texLoaded");
-  const texLoc = gl.getUniformLocation(prg, "tex");
-  const mvpMatLoc = gl.getUniformLocation(prg, "mvpMat");
-  const mAdjMatLoc = gl.getUniformLocation(prg, "mAdjMat");
 
   // 行列
   // FMBEによる変形
@@ -108,5 +99,5 @@ export function render() {
   // 変形行列
   gl.uniformMatrix4fv(mvpMatLoc, true, vpMat);
   // 軸を描画
-  gl.drawArrays(gl.LINES, 0, axisLineCount);
+  gl.drawArrays(gl.LINES, 0, axisVertCount);
 }
