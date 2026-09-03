@@ -28,7 +28,7 @@ export function initSplitLayout() {
     requestOutput({resize: true, render: true});
   }
 
-  function pointerUp(e) { // ポインターを削除
+  function pointerUp() { // ポインターを削除
     if (!appBarDragging) return;
     appBarDragging = false;
     document.body.classList.remove("resizing");

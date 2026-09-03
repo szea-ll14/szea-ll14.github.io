@@ -216,7 +216,7 @@ export function initItem() {
       imgOnloaded(itemName, item);
     });
     // 失敗したらログ
-    item.image.addEventListener("error", e => {
+    item.image.addEventListener("error", () => {
       console.warn(`画像 ${itemName} の読み込みに失敗しました`);
     });
   }
