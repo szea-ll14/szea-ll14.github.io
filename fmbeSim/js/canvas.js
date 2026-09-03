@@ -122,6 +122,7 @@ export async function initCanvas() {
       pointerList[e.pointerId] = {
         x: e.offsetX, preX: e.offsetX,
         y: e.offsetY, preY: e.offsetY,
+        buttons: e.buttons, preButtons: 0,
       };
       canvas.setPointerCapture(e.pointerId);
     }
@@ -129,30 +130,36 @@ export async function initCanvas() {
 
   function pointerMove(e) { // ポインター動くと
     if (!pointerList.hasOwnProperty(e.pointerId)) return;
+
     let pointer = pointerList[e.pointerId];
     pointer.x = e.offsetX;
     pointer.y = e.offsetY;
+    pointer.buttons = e.buttons;
 
-    switch (Object.keys(pointerList).length) {
-      case 1: { // 1本指はカメラ回転
-        viewYaw += pointer.x - pointer.preX;
-        viewPitch += pointer.y - pointer.preY;
-        viewYaw = (viewYaw + 360) % 360;
-        viewPitch = Math.min(Math.max(viewPitch, -90), 90);
-        requestOutput({render: true});
-        break;
-      }
-      case 2: { // 2本指はスケール
-        const posList = Object.values(pointerList);
-        let preDist = ((posList[0].preX - posList[1].preX) ** 2 + (posList[0].preY - posList[1].preY) ** 2) ** .5;
-        let dist = ((posList[0].x - posList[1].x) ** 2 + (posList[0].y - posList[1].y) ** 2) ** .5;
-        viewScale += (dist - preDist) / 128;
-        requestOutput({render: true});
-        break;
+    if (pointer.buttons & pointer.preButtons & 1) {
+      switch (Object.keys(pointerList).length) {
+        case 1: { // 1本指はカメラ回転
+          viewYaw += pointer.x - pointer.preX;
+          viewPitch += pointer.y - pointer.preY;
+          viewYaw = (viewYaw + 360) % 360;
+          viewPitch = Math.min(Math.max(viewPitch, -90), 90);
+          requestOutput({render: true});
+          break;
+        }
+        case 2: { // 2本指はスケール
+          const posList = Object.values(pointerList);
+          let preDist = ((posList[0].preX - posList[1].preX) ** 2 + (posList[0].preY - posList[1].preY) ** 2) ** .5;
+          let dist = ((posList[0].x - posList[1].x) ** 2 + (posList[0].y - posList[1].y) ** 2) ** .5;
+          viewScale += (dist - preDist) / 128;
+          requestOutput({render: true});
+          break;
+        }
       }
     }
+
     pointer.preX = pointer.x;
     pointer.preY = pointer.y;
+    pointer.preButtons = pointer.buttons;
   }
 
   function pointerUp(e) { // ポインターを削除
