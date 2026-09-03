@@ -44,7 +44,7 @@ export function initParam() {
     const param = paramList[paramName];
 
     let valueFixed = Number(value);
-    if (value.trim() === "" || !Number.isFinite(valueFixed)) {
+    if ((typeof value === "string" && value.trim() === "") || !Number.isFinite(valueFixed)) {
       valueFixed = param.init;
     }
 

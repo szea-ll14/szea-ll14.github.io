@@ -38,7 +38,6 @@ export async function initCanvas() {
   gl = canvas.getContext("webgl2");
   if (!gl) {
     console.error("ブラウザーがWebGL2に非対応！");
-    gl = null;
     return;
   }
 
@@ -124,8 +123,8 @@ export async function initCanvas() {
         x: e.offsetX, preX: e.offsetX,
         y: e.offsetY, preY: e.offsetY,
       };
+      canvas.setPointerCapture(e.pointerId);
     }
-    canvas.setPointerCapture(e.pointerId);
   }
 
   function pointerMove(e) { // ポインター動くと
@@ -158,7 +157,6 @@ export async function initCanvas() {
 
   function pointerUp(e) { // ポインターを削除
     delete pointerList[e.pointerId];
-    canvas.releasePointerCapture(e.pointerId);
   }
 
   function wheel(e) { // ホイール回すと
