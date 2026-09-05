@@ -118,14 +118,12 @@ export async function initCanvas() {
   // カメラ回転・スケール
   const pointerList = {};
   function pointerDown(e) { // ポインターを登録
-    if (e.button === 0) {
-      pointerList[e.pointerId] = {
-        x: e.offsetX, preX: e.offsetX,
-        y: e.offsetY, preY: e.offsetY,
-        buttons: e.buttons, preButtons: 0,
-      };
-      canvas.setPointerCapture(e.pointerId);
-    }
+    pointerList[e.pointerId] = {
+      x: e.offsetX, preX: e.offsetX,
+      y: e.offsetY, preY: e.offsetY,
+      buttons: e.buttons, preButtons: e.buttons,
+    };
+    canvas.setPointerCapture(e.pointerId);
   }
 
   function pointerMove(e) { // ポインター動くと
@@ -136,8 +134,10 @@ export async function initCanvas() {
     pointer.y = e.offsetY;
     pointer.buttons = e.buttons;
 
-    if (pointer.buttons & pointer.preButtons & 1) {
-      switch (Object.keys(pointerList).length) {
+    const enableList = Object.values(pointerList).filter(p => p.buttons & p.preButtons & 1);
+
+    if (enableList.includes(pointer)) {
+      switch (enableList.length) {
         case 1: { // 1本指はカメラ回転
           viewYaw += pointer.x - pointer.preX;
           viewPitch += pointer.y - pointer.preY;
@@ -147,9 +147,8 @@ export async function initCanvas() {
           break;
         }
         case 2: { // 2本指はスケール
-          const posList = Object.values(pointerList);
-          let preDist = ((posList[0].preX - posList[1].preX) ** 2 + (posList[0].preY - posList[1].preY) ** 2) ** .5;
-          let dist = ((posList[0].x - posList[1].x) ** 2 + (posList[0].y - posList[1].y) ** 2) ** .5;
+          let preDist = ((enableList[0].preX - enableList[1].preX) ** 2 + (enableList[0].preY - enableList[1].preY) ** 2) ** .5;
+          let dist = ((enableList[0].x - enableList[1].x) ** 2 + (enableList[0].y - enableList[1].y) ** 2) ** .5;
           viewScale += (dist - preDist) / 128;
           requestOutput({render: true});
           break;
