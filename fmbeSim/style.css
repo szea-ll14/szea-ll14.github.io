@@ -9,13 +9,9 @@ html, body {
   height: 100%;
 }
 
-table {
-  margin-left: auto;
-  margin-right: auto;
-}
 pre {
   margin: 0;
-  border: light-dark(#ddd, #444) 1pt solid;
+  border: 1pt solid light-dark(#ddd, #444);
   border-radius: 5px;
   padding: 8px;
   background-color: light-dark(#eee, #222);
@@ -33,6 +29,13 @@ canvas {
   touch-action: none;
 }
 
+/* 垂直空け */
+.group {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+/* 画面分割 */
 #app-body {
   display: flex;
   height: 100dvh;
@@ -52,7 +55,7 @@ canvas {
 #app-bar {
   flex: 0 0 var(--app-bar-size);
   position: relative;
-  background: #888;
+  background-color: #888;
   touch-action: none;
   cursor: row-resize;
 }
@@ -72,7 +75,36 @@ body.resizing {
   flex: 1 1 auto;
   min-width: var(--app-view-size-min);
   min-height: var(--app-view-size-min);
-  text-align: center;
   padding: 8px;
   overflow: auto;
+}
+
+/* セグメント */
+input[type="radio"] {
+  display: none;
+}
+.seg {
+  display: inline-flex;
+  gap: 1px;
+  padding: 1px;
+  margin: 5px;
+}
+.seg > label {
+  padding: 0.25em 0.5em;
+  outline: 1px solid #888;
+  user-select: none;
+  cursor: pointer;
+}
+.seg > label:has(:checked) {
+  background-color: #f606;
+}
+
+/* タブ表示・非表示 */
+.tab {
+  display: none;
+}
+body:has(input[name="tab"][value="parameters"]:checked) #tab-parameters,
+body:has(input[name="tab"][value="base"]:checked) #tab-base,
+body:has(input[name="tab"][value="settings"]:checked) #tab-settings {
+  display: block;
 }
