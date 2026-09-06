@@ -18,11 +18,6 @@ export let aspect = 1;
 
 
 export function resize() {
-  // if (appBody.clientWidth > appBody.clientHeight) {
-  //   appBody.classList.add("horizontal");
-  // } else {
-  //   appBody.classList.remove("horizontal");
-  // }
   canvas.width = canvas.clientWidth * window.devicePixelRatio;
   canvas.height = canvas.clientHeight * window.devicePixelRatio;
   aspect = canvas.clientHeight / canvas.clientWidth;
