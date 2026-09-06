@@ -42,9 +42,6 @@ canvas {
   overflow: hidden;
   flex-direction: column;
 }
-#app-body.horizontal {
-  flex-direction: row;
-}
 
 #app-view {
   flex: 0 0 calc((100% - var(--app-bar-size) - var(--app-view-size-min) * 2) * var(--app-view-ratio, 0.4) + var(--app-view-size-min));
@@ -64,9 +61,6 @@ canvas {
   position: absolute;
   inset: -15px;
 }
-.horizontal #app-bar {
-  cursor: col-resize;
-}
 body.resizing {
   user-select: none;
 }
@@ -77,6 +71,25 @@ body.resizing {
   min-height: var(--app-view-size-min);
   padding: 8px;
   overflow: auto;
+}
+
+body:has(input[name="layout"][value="stacked"]:checked) {
+  #app-body {
+    flex-direction: row;
+  }
+  #app-bar {
+    cursor: col-resize;
+  }
+}
+body:has(input[name="layout"][value="auto"]:checked) {
+  @media (aspect-ratio > 1/1) {
+    #app-body {
+      flex-direction: row;
+    }
+    #app-bar {
+      cursor: col-resize;
+    }
+  }
 }
 
 /* セグメント */

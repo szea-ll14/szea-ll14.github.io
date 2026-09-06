@@ -19,7 +19,7 @@ export function initSplitLayout() {
     if (!appBarDragging) return;
 
     const appRect = appBody.getBoundingClientRect();
-    const isHorizontal = appBody.classList.contains("horizontal");
+    const isHorizontal = getComputedStyle(appBody).flexDirection === "row";
     const appBodySize = isHorizontal ? appRect.width : appRect.height;
     const appViewSize = isHorizontal ? e.clientX - appRect.left : e.clientY - appRect.top;
     let appViewRatio = (appViewSize - appViewSizeMin) / (appBodySize - appBarSize - appViewSizeMin * 2);
