@@ -108,3 +108,11 @@ body:has(input[name="tab"][value="base"]:checked) #tab-base,
 body:has(input[name="tab"][value="settings"]:checked) #tab-settings {
   display: block;
 }
+
+/* Settings/カラーテーマ */
+html:has(input[name="theme"][value="light"]:checked) {
+  color-scheme: light;
+}
+html:has(input[name="theme"][value="dark"]:checked) {
+  color-scheme: dark;
+}
