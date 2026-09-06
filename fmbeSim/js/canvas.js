@@ -1,7 +1,7 @@
 import {requestOutput} from "./request-output.js";
 
 // appBody
-const appBody = document.getElementById("appBody");
+const appBody = document.getElementById("app-body");
 // canvas
 const canvas = document.getElementById("canvas");
 // WebGLコンテキスト・プログラムオブジェクト

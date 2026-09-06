@@ -20,9 +20,9 @@ export const paramList = {
 // コマンド
 const command = document.getElementById("command");
 // コピー
-const commandCopy = document.getElementById("commandCopy");
+const commandCopy = document.getElementById("command-copy");
 // 変数全指定トグル
-const commandFull = document.getElementById("commandFull");
+const commandFull = document.getElementById("command-full");
 
 
 
@@ -32,11 +32,11 @@ export function initParam() {
     // 値
     param.value = param.init;
     // 入力欄
-    param.input = document.getElementById(paramName + "Input");
+    param.input = document.getElementById(paramName + "-input");
     // スライダー
-    param.slider = document.getElementById(paramName + "Slider");
+    param.slider = document.getElementById(paramName + "-slider");
     // リセットボタン
-    param.reset = document.getElementById(paramName + "Reset");
+    param.reset = document.getElementById(paramName + "-reset");
   }
 
   // 値セット

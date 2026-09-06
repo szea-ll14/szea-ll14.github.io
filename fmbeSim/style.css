@@ -33,42 +33,42 @@ canvas {
   touch-action: none;
 }
 
-#appBody {
+#app-body {
   display: flex;
   height: 100dvh;
   overflow: hidden;
   flex-direction: column;
 }
-#appBody.horizontal {
+#app-body.horizontal {
   flex-direction: row;
 }
 
-#appView {
+#app-view {
   flex: 0 0 calc((100% - var(--app-bar-size) - var(--app-view-size-min) * 2) * var(--app-view-ratio, 0.4) + var(--app-view-size-min));
   min-width: var(--app-view-size-min);
   min-height: var(--app-view-size-min);
 }
 
-#appBar {
+#app-bar {
   flex: 0 0 var(--app-bar-size);
   position: relative;
   background: #888;
   touch-action: none;
   cursor: row-resize;
 }
-#appBar::before {
+#app-bar::before {
   content: "";
   position: absolute;
   inset: -15px;
 }
-.horizontal #appBar {
+.horizontal #app-bar {
   cursor: col-resize;
 }
 body.resizing {
   user-select: none;
 }
 
-#appControl {
+#app-control {
   flex: 1 1 auto;
   min-width: var(--app-view-size-min);
   min-height: var(--app-view-size-min);

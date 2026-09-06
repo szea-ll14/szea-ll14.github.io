@@ -14,13 +14,13 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <div id="appBody">
-      <div id="appView"><canvas id="canvas"></canvas></div>
-      <div id="appBar"></div>
-      <div id="appControl">
+    <div id="app-body">
+      <div id="app-view"><canvas id="canvas"></canvas></div>
+      <div id="app-bar"></div>
+      <div id="app-control">
         <div>
           Block : 
-          <select id="blockTexture">
+          <select id="block-texture">
             <option value="diamond_block">Diamond Block</option>
             <option value="curved_pumpkin">Curved Pumpkin</option>
             <option value="cartography_table">Cartography Table</option>
@@ -31,79 +31,79 @@
         <table>
           <tr>
             <td>xpos</td>
-            <td><input type="number" id="xposInput" value="0" step="1" /></td>
-            <td><input type="range" id="xposSlider" min="-80" max="80" value="0" step="0.1" /></td>
-            <td><button type="button" id="xposReset">Reset</button></td>
+            <td><input type="number" id="xpos-input" value="0" step="1" /></td>
+            <td><input type="range" id="xpos-slider" min="-80" max="80" value="0" step="0.1" /></td>
+            <td><button type="button" id="xpos-reset">Reset</button></td>
           </tr>
           <tr>
             <td>ypos</td>
-            <td><input type="number" id="yposInput" value="0" step="1" /></td>
-            <td><input type="range" id="yposSlider" min="-80" max="80" value="0" step="0.1" /></td>
-            <td><button type="button" id="yposReset">Reset</button></td>
+            <td><input type="number" id="ypos-input" value="0" step="1" /></td>
+            <td><input type="range" id="ypos-slider" min="-80" max="80" value="0" step="0.1" /></td>
+            <td><button type="button" id="ypos-reset">Reset</button></td>
           </tr>
           <tr>
             <td>zpos</td>
-            <td><input type="number" id="zposInput" value="0" step="1" /></td>
-            <td><input type="range" id="zposSlider" min="-80" max="80" value="0" step="0.1" /></td>
-            <td><button type="button" id="zposReset">Reset</button></td>
+            <td><input type="number" id="zpos-input" value="0" step="1" /></td>
+            <td><input type="range" id="zpos-slider" min="-80" max="80" value="0" step="0.1" /></td>
+            <td><button type="button" id="zpos-reset">Reset</button></td>
           </tr>
           <tr>
             <td>xrot</td>
-            <td><input type="number" id="xrotInput" value="0" step="5" /></td>
-            <td><input type="range" id="xrotSlider" min="-180" max="180" value="0" step="0.1" /></td>
-            <td><button type="button" id="xrotReset">Reset</button></td>
+            <td><input type="number" id="xrot-input" value="0" step="5" /></td>
+            <td><input type="range" id="xrot-slider" min="-180" max="180" value="0" step="0.1" /></td>
+            <td><button type="button" id="xrot-reset">Reset</button></td>
           </tr>
           <tr>
             <td>yrot</td>
-            <td><input type="number" id="yrotInput" value="0" step="5" /></td>
-            <td><input type="range" id="yrotSlider" min="-180" max="180" value="0" step="0.1" /></td>
-            <td><button type="button" id="yrotReset">Reset</button></td>
+            <td><input type="number" id="yrot-input" value="0" step="5" /></td>
+            <td><input type="range" id="yrot-slider" min="-180" max="180" value="0" step="0.1" /></td>
+            <td><button type="button" id="yrot-reset">Reset</button></td>
           </tr>
           <tr>
             <td>zrot</td>
-            <td><input type="number" id="zrotInput" value="0" step="5" /></td>
-            <td><input type="range" id="zrotSlider" min="-180" max="180" value="0" step="0.1" /></td>
-            <td><button type="button" id="zrotReset">Reset</button></td>
+            <td><input type="number" id="zrot-input" value="0" step="5" /></td>
+            <td><input type="range" id="zrot-slider" min="-180" max="180" value="0" step="0.1" /></td>
+            <td><button type="button" id="zrot-reset">Reset</button></td>
           </tr>
           <tr>
             <td>scale</td>
-            <td><input type="number" id="scaleInput" value="1" step="0.1" /></td>
-            <td><input type="range" id="scaleSlider" min="0" max="5" value="1" step="0.01" /></td>
-            <td><button type="button" id="scaleReset">Reset</button></td>
+            <td><input type="number" id="scale-input" value="1" step="0.1" /></td>
+            <td><input type="range" id="scale-slider" min="0" max="5" value="1" step="0.01" /></td>
+            <td><button type="button" id="scale-reset">Reset</button></td>
           </tr>
           <tr>
             <td>xzscale</td>
-            <td><input type="number" id="xzscaleInput" value="1" step="0.1" /></td>
-            <td><input type="range" id="xzscaleSlider" min="0" max="5" value="1" step="0.01" /></td>
-            <td><button type="button" id="xzscaleReset">Reset</button></td>
+            <td><input type="number" id="xzscale-input" value="1" step="0.1" /></td>
+            <td><input type="range" id="xzscale-slider" min="0" max="5" value="1" step="0.01" /></td>
+            <td><button type="button" id="xzscale-reset">Reset</button></td>
           </tr>
           <tr>
             <td>yscale</td>
-            <td><input type="number" id="yscaleInput" value="1" step="0.1" /></td>
-            <td><input type="range" id="yscaleSlider" min="0" max="5" value="1" step="0.01" /></td>
-            <td><button type="button" id="yscaleReset">Reset</button></td>
+            <td><input type="number" id="yscale-input" value="1" step="0.1" /></td>
+            <td><input type="range" id="yscale-slider" min="0" max="5" value="1" step="0.01" /></td>
+            <td><button type="button" id="yscale-reset">Reset</button></td>
           </tr>
           <tr>
             <td>xbasepos</td>
-            <td><input type="number" id="xbaseposInput" value="0" step="1" /></td>
-            <td><input type="range" id="xbaseposSlider" min="-80" max="80" value="0" step="0.1" /></td>
-            <td><button type="button" id="xbaseposReset">Reset</button></td>
+            <td><input type="number" id="xbasepos-input" value="0" step="1" /></td>
+            <td><input type="range" id="xbasepos-slider" min="-80" max="80" value="0" step="0.1" /></td>
+            <td><button type="button" id="xbasepos-reset">Reset</button></td>
           </tr>
           <tr>
             <td>ybasepos</td>
-            <td><input type="number" id="ybaseposInput" value="0" step="1" /></td>
-            <td><input type="range" id="ybaseposSlider" min="-80" max="80" value="0" step="0.1" /></td>
-            <td><button type="button" id="ybaseposReset">Reset</button></td>
+            <td><input type="number" id="ybasepos-input" value="0" step="1" /></td>
+            <td><input type="range" id="ybasepos-slider" min="-80" max="80" value="0" step="0.1" /></td>
+            <td><button type="button" id="ybasepos-reset">Reset</button></td>
           </tr>
           <tr>
             <td>zbasepos</td>
-            <td><input type="number" id="zbaseposInput" value="0" step="1" /></td>
-            <td><input type="range" id="zbaseposSlider" min="-80" max="80" value="0" step="0.1" /></td>
-            <td><button type="button" id="zbaseposReset">Reset</button></td>
+            <td><input type="number" id="zbasepos-input" value="0" step="1" /></td>
+            <td><input type="range" id="zbasepos-slider" min="-80" max="80" value="0" step="0.1" /></td>
+            <td><button type="button" id="zbasepos-reset">Reset</button></td>
           </tr>
         </table>
         <div>
-          <button id="commandCopy" type="button">Copy</button><label><input id="commandFull" type="checkbox">Full</label>
+          <button id="command-copy" type="button">Copy</button><label><input id="command-full" type="checkbox">Full</label>
           <pre id="command">?</pre>
         </div>
         <div><a href="https://github.com/szea-ll14/szea-ll14.github.io/tree/main/fmbeSim">なかみ</a></div>

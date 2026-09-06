@@ -2,8 +2,8 @@ import {requestOutput} from "./request-output.js";
 
 // 分割レイアウト制御
 export function initSplitLayout() {
-  const appBody = document.getElementById("appBody");
-  const appBar = document.getElementById("appBar");
+  const appBody = document.getElementById("app-body");
+  const appBar = document.getElementById("app-bar");
   const root = document.documentElement;
   const appBarSize = parseFloat(getComputedStyle(root).getPropertyValue("--app-bar-size"));
   const appViewSizeMin = parseFloat(getComputedStyle(root).getPropertyValue("--app-view-size-min"));

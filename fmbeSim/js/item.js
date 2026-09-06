@@ -222,7 +222,7 @@ export function initItem() {
   }
 
   // ブロック選択
-  const blockTexture = document.getElementById("blockTexture");
+  const blockTexture = document.getElementById("block-texture");
 
   // ブロック変更時の処理
   blockTexture.addEventListener("change", e => {
