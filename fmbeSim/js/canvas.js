@@ -1,9 +1,7 @@
 import {requestOutput} from "./request-output.js";
 
-// appBody
-const appBody = document.getElementById("app-body");
 // canvas
-const canvas = document.getElementById("canvas");
+export const canvas = document.getElementById("canvas");
 // WebGLコンテキスト・プログラムオブジェクト
 export let gl, prg;
 
@@ -12,19 +10,6 @@ export let texLoadedLoc, texLoc, mvpMatLoc, mAdjMatLoc;
 
 // カメラ回転・スケール
 export let viewPitch = 15, viewYaw = -10, viewScale = 2;
-// canvasアスペクト比
-export let aspect = 1;
-
-
-
-export function resize() {
-  canvas.width = canvas.clientWidth * window.devicePixelRatio;
-  canvas.height = canvas.clientHeight * window.devicePixelRatio;
-  aspect = canvas.clientHeight / canvas.clientWidth;
-
-  if (!gl) return;
-  gl.viewport(0, 0, canvas.width, canvas.height);
-}
 
 
 

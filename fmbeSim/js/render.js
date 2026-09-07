@@ -4,8 +4,23 @@ import * as Matrix from "./matrix.js";
 const DEG = Math.PI / 180;
 
 import {paramList} from "./param.js";
-import {gl, viewPitch, viewYaw, viewScale, aspect, texLoadedLoc, texLoc, mvpMatLoc, mAdjMatLoc} from "./canvas.js";
+import {canvas, gl, viewPitch, viewYaw, viewScale, texLoadedLoc, texLoc, mvpMatLoc, mAdjMatLoc} from "./canvas.js";
 import {blockVao, axisVao, blockVertCount, axisVertCount, itemList, nowItemName} from "./item.js";
+
+
+
+// canvasアスペクト比
+let aspect = 1;
+
+// キャンバスリサイズ
+export function resize() {
+  canvas.width = canvas.clientWidth * devicePixelRatio;
+  canvas.height = canvas.clientHeight * devicePixelRatio;
+  aspect = canvas.clientHeight / canvas.clientWidth;
+
+  if (!gl) return;
+  gl.viewport(0, 0, canvas.width, canvas.height);
+}
 
 
 
