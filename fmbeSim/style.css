@@ -22,7 +22,10 @@ canvas {
 }
 input[type=number] {
   text-align: center;
-  width: 8ch;
+  padding-left: 1ex;
+  padding-right: 1ex;
+  min-width: 8ch;
+  field-sizing: content;
 }
 
 .tab > div {
@@ -32,6 +35,13 @@ input[type=number] {
     margin-top: 1.25em;
     margin-bottom: 1.25em;
   }
+}
+
+input[type="text"] {
+  padding-left: 1ex;
+  padding-right: 1ex;
+  min-width: 25ex;
+  field-sizing: content;
 }
 
 /* コマンドボックス */
