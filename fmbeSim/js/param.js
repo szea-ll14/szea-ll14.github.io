@@ -33,7 +33,7 @@ export function initParam() {
     // 値
     param.value = param.init;
     // 入力欄
-    param.input = document.getElementById(paramName + "-input");
+    param.field = document.getElementById(paramName + "-field");
     // スライダー
     param.slider = document.getElementById(paramName + "-slider");
     // リセットボタン
@@ -41,7 +41,7 @@ export function initParam() {
   }
 
   // 値セット
-  function set(paramName, value, {skipInput = false, skipSlider = false} = {}) {
+  function set(paramName, value, {skipField = false, skipSlider = false} = {}) {
     const param = paramList[paramName];
 
     let valueFixed = Number(value);
@@ -50,8 +50,8 @@ export function initParam() {
     }
 
     param.value = valueFixed;
-    if (!skipInput) {
-      param.input.value = valueFixed;
+    if (!skipField) {
+      param.field.value = valueFixed;
     }
     if (!skipSlider) {
       param.slider.value = valueFixed;
@@ -61,10 +61,10 @@ export function initParam() {
 
   // 値変更
   for (const [paramName, param] of Object.entries(paramList)) {
-    param.input.addEventListener("input", e => {
-      set(paramName, e.target.value, {skipInput: true});
+    param.field.addEventListener("input", e => {
+      set(paramName, e.target.value, {skipField: true});
     });
-    param.input.addEventListener("change", e => {
+    param.field.addEventListener("change", e => {
       set(paramName, e.target.value);
     });
     param.slider.addEventListener("input", e => {
