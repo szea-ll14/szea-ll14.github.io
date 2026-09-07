@@ -18,12 +18,15 @@ export const paramList = {
   zbasepos: {init: 0},
 };
 
-// コマンド
-const command = document.getElementById("command");
-// コピー
-const commandCopy = document.getElementById("command-copy");
-// 変数全指定トグル
-const commandFull = document.getElementById("command-full");
+// セレクター
+const inputSelector = document.getElementById("input-selector");
+// デフォルトを含むか
+const inputDefaults = document.getElementById("input-defaults");
+// アニコン名
+const inputController = document.getElementById("input-controller");
+
+// molangに空白を含むか
+const settingNoSpace = document.getElementById("setting-no-space");
 
 
 
@@ -56,7 +59,7 @@ export function initParam() {
     if (!skipSlider) {
       param.slider.value = valueFixed;
     }
-    requestOutput({setCmd: true, render: true});
+    requestOutput({inputCmd: true, render: true});
   }
 
   // 値変更
@@ -75,23 +78,39 @@ export function initParam() {
     });
   }
 
-  // commandFull.addEventListener("input", () => {
-  //   requestOutput({setCmd: true});
-  // });
+  // Inputコマンド設定/変更時の反映
+  inputSelector.addEventListener("input", () => {
+    requestOutput({inputCmd: true});
+  });
+  inputDefaults.addEventListener("input", () => {
+    requestOutput({inputCmd: true});
+  });
+  inputController.addEventListener("input", () => {
+    requestOutput({inputCmd: true});
+  });
+
+  settingNoSpace.addEventListener("input", () => {
+    requestOutput({inputCmd: true});
+  });
 }
 
 
 
-// 設定コマンド出力
-export function setCommand() {
+// Inputコマンド出力
+export function generateInputCmd() {
   let molang = " ";
   for (const [paramName, param] of Object.entries(paramList)) {
     if (
-      !commandFull.checked &&
+      !inputDefaults.checked &&
       (param.value === param.init)
     ) continue;
-    molang += `v.${paramName}=${toPlainDecimal(param.value)}; `;
+    molang += `v.${paramName} = ${toPlainDecimal(param.value)}; `;
   }
   if (molang === " ") molang = "";
-  setCmd("cmd-input", `playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 "${molang}" setValue`);
+  if (settingNoSpace.checked) molang = molang.replaceAll(" ", "");
+
+  const selector = inputSelector.value;
+  const controller = inputController.value
+
+  setCmd("cmd-input", `playanimation ${selector} animation.player.attack.positions _ 0 "${molang}" ${controller}`);
 }

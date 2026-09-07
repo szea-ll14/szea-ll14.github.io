@@ -222,10 +222,10 @@ export function initItem() {
   }
 
   // ブロック選択
-  const blockTexture = document.getElementById("block-texture");
+  const previewItem = document.getElementById("preview-item");
 
   // ブロック変更時の処理
-  blockTexture.addEventListener("change", e => {
+  previewItem.addEventListener("change", e => {
     nowItemName = e.target.value;
     requestOutput({render: true});
   });

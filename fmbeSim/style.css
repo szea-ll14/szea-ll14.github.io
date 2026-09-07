@@ -31,8 +31,9 @@ input[type=number] {
   background-color: var(--gray-bg);
   outline: 1px solid var(--gray-line);
   gap: 1px;
-  display: flex;
-  justify-content: space-between;
+}
+.cmdbox > div > button {
+  margin-right: 2em;
 }
 .cmdbox > pre {
   outline: 1px solid var(--gray-line);
@@ -43,9 +44,10 @@ input[type=number] {
 }
 
 /* 垂直空け */
-.group {
-  margin-top: 1em;
-  margin-bottom: 1em;
+h2 {
+  font-size: 1.2em;
+  margin-block-start: 0.625em;
+  margin-block-end: 0.625em;
 }
 
 /* 画面分割 */
@@ -140,7 +142,7 @@ body:has(input[name="layout"][value="auto"]:checked) {
   display: none;
 }
 body:has(input[name="tab"][value="parameters"]:checked) #tab-parameters,
-body:has(input[name="tab"][value="base"]:checked) #tab-base,
+body:has(input[name="tab"][value="core"]:checked) #tab-core,
 body:has(input[name="tab"][value="settings"]:checked) #tab-settings {
   display: block;
 }

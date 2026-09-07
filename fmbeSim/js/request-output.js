@@ -1,16 +1,16 @@
-import {setCommand as runSetCmd} from "./param.js";
+import {generateInputCmd as runInputCmd} from "./param.js";
 import {resize as runResize, render as runRender} from "./render.js";
 
 let requestId = null;
-let needsSetCmd = false;
+let needsInputCmd = false;
 let needsResize = false;
 let needsRender = false;
 
 function output() {
   requestId = null;
-  if (needsSetCmd) {
-    needsSetCmd = false;
-    runSetCmd();
+  if (needsInputCmd) {
+    needsInputCmd = false;
+    runInputCmd();
   }
   if (needsResize) {
     needsResize = false;
@@ -22,8 +22,8 @@ function output() {
   }
 }
 
-export function requestOutput({setCmd = false, resize = false, render = false} = {}) {
-  if (setCmd) needsSetCmd = true;
+export function requestOutput({inputCmd = false, resize = false, render = false} = {}) {
+  if (inputCmd) needsInputCmd = true;
   if (resize) needsResize = true;
   if (render) needsRender = true;
   if (!requestId) requestId = requestAnimationFrame(output);

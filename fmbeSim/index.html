@@ -20,11 +20,12 @@
       <div id="app-control">
         <div class="seg group">
           <label><input type="radio" name="tab" value="parameters" checked>Parameters</label>
-          <label><input type="radio" name="tab" value="base">Base</label>
+          <label><input type="radio" name="tab" value="core">Core</label>
           <label><input type="radio" name="tab" value="settings">Settings</label>
         </div>
         <div id="tab-parameters" class="tab">
-          <table class="group">
+          <h2>Parameters</h2>
+          <table>
             <tr>
               <td>xpos</td>
               <td><input type="number" id="xpos-field" value="0" step="1" /></td>
@@ -98,55 +99,63 @@
               <td><button type="button" id="zbasepos-reset">Reset</button></td>
             </tr>
           </table>
-          <div class="group">
-            <div>
-              Item:
-              <select id="block-texture">
-                <option value="diamond_block">Diamond Block</option>
-                <option value="curved_pumpkin">Curved Pumpkin</option>
-                <option value="cartography_table">Cartography Table</option>
-                <option value="chain_command_block">Chain Command Block</option>
-                <option value="alex">Alex Head Block</option>
-              </select>
-            </div>
-            <div>
-              <label>Full<input id="command-full" type="checkbox"></label>
-            </div>
+          <h2>Preview</h2>
+          <div>
+            Item:
+            <select id="preview-item">
+              <option value="diamond_block">Diamond Block</option>
+              <option value="curved_pumpkin">Curved Pumpkin</option>
+              <option value="cartography_table">Cartography Table</option>
+              <option value="chain_command_block">Chain Command Block</option>
+              <option value="alex">Alex Head Block</option>
+            </select>
           </div>
-          <div class="group">
-            <div class="cmdbox" id="cmd-input">
-              <div>
-                <span>76 characters</span>
-                <button type="button">Copy</button>
-              </div>
-              <pre>playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 "" setValue</pre>
+          <h2>Input Command</h2>
+          <div>
+            <label>Target Selector: <input id="input-selector" type="text" value="@e[tag=fmbe]"></label>
+          </div>
+          <div>
+            <label>Include defaults: <input id="input-defaults" type="checkbox"></label>
+          </div>
+          <div>
+            <label>Controller Name: <input id="input-controller" type="text" value="input"></label>
+          </div>
+          <h2></h2>
+          <div class="cmdbox" id="cmd-input">
+            <div>
+              <button type="button">Copy</button><span>73 characters</span>
             </div>
+            <pre>playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 "" input</pre>
           </div>
         </div>
-        <div id="tab-base" class="tab">
-          <div class="group">
+        <div id="tab-core" class="tab">
+          <div>
             はまだ
           </div>
         </div>
         <div id="tab-settings" class="tab">
-          <div class="group">
-            <div>
-              Theme:
-              <span class="seg">
-                <label><input type="radio" name="theme" value="auto" checked>Auto</label>
-                <label><input type="radio" name="theme" value="light">Light</label>
-                <label><input type="radio" name="theme" value="dark">Dark</label>
-              </span>
-            </div>
-            <div>
-              Layout:
-              <span class="seg">
-                <label><input type="radio" name="layout" value="auto" checked>Auto</label>
-                <label><input type="radio" name="layout" value="side-by-side">Side by side</label>
-                <label><input type="radio" name="layout" value="stacked">Stacked</label>
-              </span>
-            </div>
+          <h2>Site</h2>
+          <div>
+            Theme:
+            <span class="seg">
+              <label><input type="radio" name="theme" value="auto" checked>Auto</label>
+              <label><input type="radio" name="theme" value="light">Light</label>
+              <label><input type="radio" name="theme" value="dark">Dark</label>
+            </span>
           </div>
+          <div>
+            Layout:
+            <span class="seg">
+              <label><input type="radio" name="layout" value="auto" checked>Auto</label>
+              <label><input type="radio" name="layout" value="side-by-side">Side by side</label>
+              <label><input type="radio" name="layout" value="stacked">Stacked</label>
+            </span>
+          </div>
+          <h2>Command</h2>
+          <div>
+            <label>No spaces in molang: <input id="setting-no-space" type="checkbox"></label>
+          </div>
+          <h2>Github</h2>
           <div class="group">
             <div><a href="https://github.com/szea-ll14/szea-ll14.github.io/tree/main/fmbeSim">Code</a></div>
           </div>

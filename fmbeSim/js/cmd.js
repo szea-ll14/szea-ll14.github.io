@@ -4,8 +4,8 @@ export function initCmd() {
   for (const cmdboxRoot of document.getElementsByClassName("cmdbox")) {
     const id = cmdboxRoot.id;
     cmdboxList[id] = {
-      count: cmdboxRoot.children[0].children[0],
-      copy: cmdboxRoot.children[0].children[1],
+      copy: cmdboxRoot.children[0].children[0],
+      count: cmdboxRoot.children[0].children[1],
       pre: cmdboxRoot.children[1],
     }
 
