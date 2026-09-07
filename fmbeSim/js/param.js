@@ -1,4 +1,5 @@
 import {toPlainDecimal} from "./to-plain-decimal.js";
+import {setCmd} from "./cmd.js";
 import {requestOutput} from "./request-output.js";
 
 // パラメーター
@@ -74,22 +75,9 @@ export function initParam() {
     });
   }
 
-  // コマンドコピー
-  let commandCopyTimeoutID;
-  commandCopy.addEventListener("click", () => {
-    navigator.clipboard.writeText(
-      command.textContent
-    );
-    commandCopy.textContent = "Copied!";
-    clearTimeout(commandCopyTimeoutID);
-    commandCopyTimeoutID = setTimeout(() => {
-      commandCopy.textContent = "Copy";
-    }, 1000);
-  });
-
-  commandFull.addEventListener("input", () => {
-    requestOutput({setCmd: true});
-  });
+  // commandFull.addEventListener("input", () => {
+  //   requestOutput({setCmd: true});
+  // });
 }
 
 
@@ -105,5 +93,5 @@ export function setCommand() {
     molang += `v.${paramName}=${toPlainDecimal(param.value)}; `;
   }
   if (molang === " ") molang = "";
-  command.textContent = `playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 "${molang}" setValue`;
+  setCmd("cmd-input", `playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 "${molang}" setValue`);
 }

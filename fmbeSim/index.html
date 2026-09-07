@@ -99,6 +99,7 @@
             </tr>
           </table>
           <div class="group">
+            <div>
             Item:
             <select id="block-texture">
               <option value="diamond_block">Diamond Block</option>
@@ -107,11 +108,19 @@
               <option value="chain_command_block">Chain Command Block</option>
               <option value="alex">Alex Head Block</option>
             </select>
+            </div>
+            <div>
+              <label>Full<input id="command-full" type="checkbox"></label>
+            </div>
           </div>
           <div class="group">
-            <button id="command-copy" type="button">Copy</button>
-            <label><input id="command-full" type="checkbox">Full</label>
-            <pre id="command">?</pre>
+            <div class="cmdbox" id="cmd-input">
+              <div>
+                <span>76 characters</span>
+                <button type="button">Copy</button>
+              </div>
+              <pre>playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 "" setValue</pre>
+            </div>
           </div>
         </div>
         <div id="tab-base" class="tab">
