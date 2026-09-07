@@ -4,17 +4,17 @@ export function initCmd() {
   for (const cmdboxRoot of document.getElementsByClassName("cmdbox")) {
     const id = cmdboxRoot.id;
     cmdboxList[id] = {
-      copy: cmdboxRoot.children[0].children[0],
-      count: cmdboxRoot.children[0].children[1],
-      pre: cmdboxRoot.children[1],
+      copy: cmdboxRoot.querySelector(".cmdbox-copy"),
+      count: cmdboxRoot.querySelector(".cmdbox-count"),
+      body: cmdboxRoot.querySelector(".cmdbox-body"),
     }
 
     const cmdbox = cmdboxList[id];
 
     // コピーボタン
-    cmdbox.copy.addEventListener("click", () => {
+    cmdbox.copy.addEventListener("click", async () => {
       try {
-        navigator.clipboard.writeText(cmdbox.pre.textContent);
+        await navigator.clipboard.writeText(cmdbox.body.textContent);
         cmdbox.copy.textContent = "Copied!";
       } catch {
         cmdbox.copy.textContent = "Failed";
@@ -29,7 +29,9 @@ export function initCmd() {
 
 export function setCmd(id, text) {
   const cmdbox = cmdboxList[id];
-  cmdbox.pre.textContent = text;
+  if (!cmdbox) return;
+
+  cmdbox.body.textContent = text;
   const length = text.length;
   cmdbox.count.textContent = `${length} character${length === 1 ? "" : "s"}`;
 }

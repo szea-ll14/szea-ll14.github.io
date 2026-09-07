@@ -110,10 +110,10 @@
             <label>Controller: <input id="input-controller" type="text" value="input"></label>
           </div>
           <div class="cmdbox" id="cmd-input">
-            <div>
-              <button type="button">Copy</button><span>73 characters</span>
+            <div class="cmdbox-head">
+              <button type="button" class="cmdbox-copy">Copy</button><span class="cmdbox-count"></span>
             </div>
-            <pre>playanimation @e[tag=fmbe] animation.player.attack.positions _ 0 "" input</pre>
+            <pre class="cmdbox-body"></pre>
           </div>
           <h2>Preview</h2>
           <div>

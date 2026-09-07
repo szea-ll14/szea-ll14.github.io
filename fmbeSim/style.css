@@ -6,7 +6,7 @@
   --app-bar-expand: -15px;
   --gray-line: light-dark(#bbb, #555);
   --gray-bg: light-dark(#eee, #222);
-  --orange-waek: light-dark(#fb6, #730);
+  --orange-weak: light-dark(#fb6, #730);
 }
 html, body {
   margin: 0;
@@ -39,16 +39,17 @@ input[type=number] {
   display: grid;
   border: 1px solid var(--gray-line);
 }
-.cmdbox > div {
+.cmdbox-head {
   padding: 4px 8px;
   background-color: var(--gray-bg);
   border-bottom: 1px solid var(--gray-line);
   font-size: 0.825em;
+  display: flex;
 }
-.cmdbox > div > button {
+.cmdbox-copy {
   margin-right: 2em;
 }
-.cmdbox > pre {
+.cmdbox-body {
   white-space: pre-wrap;
   margin: 1em;
 }
@@ -64,7 +65,7 @@ h2 {
 }
 h2::after {
   content: "";
-  border-top: 2px solid var(--orange-waek);
+  border-top: 2px solid var(--orange-weak);
   flex-grow: 1;
   margin-left: 1ex;
 }
@@ -161,7 +162,7 @@ body:has(input[name="layout"][value="auto"]:checked) {
   cursor: pointer;
 }
 .seg > label:has(:checked) {
-  background-color: var(--orange-waek);
+  background-color: var(--orange-weak);
 }
 
 /* タブ表示・非表示 */

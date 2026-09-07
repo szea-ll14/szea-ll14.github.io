@@ -1,4 +1,5 @@
 import {toPlainDecimal} from "./to-plain-decimal.js";
+import {isNoSpace} from "./settings.js";
 import {setCmd} from "./cmd.js";
 import {requestOutput} from "./request-output.js";
 
@@ -24,9 +25,6 @@ const inputSelector = document.getElementById("input-selector");
 const inputDefaults = document.getElementById("input-defaults");
 // アニコン名
 const inputController = document.getElementById("input-controller");
-
-// molangに空白を含むか
-const settingNoSpace = document.getElementById("setting-no-space");
 
 
 
@@ -82,14 +80,10 @@ export function initParam() {
   inputSelector.addEventListener("input", () => {
     requestOutput({inputCmd: true});
   });
-  inputDefaults.addEventListener("input", () => {
+  inputDefaults.addEventListener("change", () => {
     requestOutput({inputCmd: true});
   });
   inputController.addEventListener("input", () => {
-    requestOutput({inputCmd: true});
-  });
-
-  settingNoSpace.addEventListener("input", () => {
     requestOutput({inputCmd: true});
   });
 }
@@ -107,10 +101,10 @@ export function generateInputCmd() {
     molang += `v.${paramName} = ${toPlainDecimal(param.value)}; `;
   }
   if (molang === " ") molang = "";
-  if (settingNoSpace.checked) molang = molang.replaceAll(" ", "");
+  if (isNoSpace()) molang = molang.replaceAll(" ", "");
 
   const selector = inputSelector.value;
-  const controller = inputController.value
+  const controller = inputController.value;
 
   setCmd("cmd-input", `playanimation ${selector} animation.player.attack.positions _ 0 "${molang}" ${controller}`);
 }
