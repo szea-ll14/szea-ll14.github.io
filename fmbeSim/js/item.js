@@ -115,7 +115,7 @@ export const itemList = {
     image: new Image(),
     loaded: false,
   },
-  curved_pumpkin: {
+  carved_pumpkin: {
     number: 2,
     image: new Image(),
     loaded: false,
