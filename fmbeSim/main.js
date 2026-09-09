@@ -12,4 +12,4 @@ initParam();
 initSplitLayout();
 await initCanvas();
 initItem();
-requestOutput({inputCmd: true, resize: true, render: true});
+requestOutput({setvarCmd: true, resize: true, render: true});

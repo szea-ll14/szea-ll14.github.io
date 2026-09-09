@@ -20,11 +20,11 @@ export const paramList = {
 };
 
 // セレクター
-const inputSelector = document.getElementById("input-selector");
+const setvarSelector = document.getElementById("setvar-selector");
 // デフォルトを含むか
-const inputDefaults = document.getElementById("input-defaults");
+const setvarDefaults = document.getElementById("setvar-defaults");
 // アニコン名
-const inputController = document.getElementById("input-controller");
+const setvarController = document.getElementById("setvar-controller");
 
 
 
@@ -57,7 +57,7 @@ export function initParam() {
     if (!skipSlider) {
       param.slider.value = valueFixed;
     }
-    requestOutput({inputCmd: true, render: true});
+    requestOutput({setvarCmd: true, render: true});
   }
 
   // 値変更
@@ -76,26 +76,26 @@ export function initParam() {
     });
   }
 
-  // Inputコマンド設定/変更時の反映
-  inputSelector.addEventListener("input", () => {
-    requestOutput({inputCmd: true});
+  // 代入コマンド設定/変更時の反映
+  setvarSelector.addEventListener("input", () => {
+    requestOutput({setvarCmd: true});
   });
-  inputDefaults.addEventListener("change", () => {
-    requestOutput({inputCmd: true});
+  setvarDefaults.addEventListener("change", () => {
+    requestOutput({setvarCmd: true});
   });
-  inputController.addEventListener("input", () => {
-    requestOutput({inputCmd: true});
+  setvarController.addEventListener("input", () => {
+    requestOutput({setvarCmd: true});
   });
 }
 
 
 
-// Inputコマンド出力
-export function generateInputCmd() {
+// 代入コマンド出力
+export function generateSetvarCmd() {
   let molang = " ";
   for (const [paramName, param] of Object.entries(paramList)) {
     if (
-      !inputDefaults.checked &&
+      !setvarDefaults.checked &&
       (param.value === param.init)
     ) continue;
     molang += `v.${paramName} = ${toPlainDecimal(param.value)}; `;
@@ -103,8 +103,8 @@ export function generateInputCmd() {
   if (molang === " ") molang = "";
   if (isNoSpace()) molang = molang.replaceAll(" ", "");
 
-  const selector = inputSelector.value;
-  const controller = inputController.value;
+  const selector = setvarSelector.value;
+  const controller = setvarController.value;
 
-  setCmd("cmd-input", `playanimation ${selector} animation.player.attack.positions _ 0 "${molang}" ${controller}`);
+  setCmd("cmd-setvar", `playanimation ${selector} animation.player.attack.positions _ 0 "${molang}" ${controller}`);
 }

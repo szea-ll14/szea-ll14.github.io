@@ -12,6 +12,6 @@ export function isNoSpace() {
 export function initSettings() {
   // 設定変更時の反映
   settingNoSpace.addEventListener("change", () => {
-    requestOutput({inputCmd: true});
+    requestOutput({setvarCmd: true});
   });
 }
