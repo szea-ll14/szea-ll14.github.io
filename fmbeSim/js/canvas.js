@@ -14,34 +14,18 @@ export let viewPitch = 15, viewYaw = -10, viewScale = 2;
 
 
 export async function initCanvas() {
-  // WebGLコンテキストを取得
-  gl = canvas.getContext("webgl2");
-  if (!gl) {
-    errorLog("ブラウザーがWebGL2に非対応");
-    return;
-  }
-
-
-
-  let hasFailed = false;
-
+  // シェーダーのソースをまとめて取得
   async function loadSource(...nameList) {
     const textList = await Promise.all(nameList.map(async name => {
-      // シェーダーのソースを取得
-      try {
-        const res = await fetch(`./shader/${name}`);
-        if (!res.ok) throw Error(`HTTP ${res.status}`);
-        return await res.text();
-      } catch (error) {
-        errorLog(`${name} 取得失敗`, error.message);
-        hasFailed = true;
-        return;
-      }
+      const res = await fetch(`./shader/${name}`);
+      if (!res.ok) throw Error(`HTTP ${res.status}`);
+      return await res.text();
     }));
 
     return Object.fromEntries(nameList.map((name, i) => [name, textList[i]]));
   }
 
+  // プログラムオブジェクトを作ってシェーダーをリンク
   function buildProgram(sourceList, name) {
     const vertSource = sourceList[`${name}.vert`];
     const vertShader = gl.createShader(gl.VERTEX_SHADER);
@@ -54,18 +38,11 @@ export async function initCanvas() {
 
     if (!gl.getShaderParameter(vertShader, gl.COMPILE_STATUS)) {
       const log = gl.getShaderInfoLog(vertShader);
-      errorLog(`${name}.vert コンパイル失敗`, log);
-      hasFailed = true;
+      throw Error(`${name}.vert コンパイル失敗: ${log}`);
     }
     if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS)) {
       const log = gl.getShaderInfoLog(fragShader);
-      errorLog(`${name}.frag コンパイル失敗`, log);
-      hasFailed = true;
-    }
-    if (hasFailed) {
-      gl.deleteShader(vertShader);
-      gl.deleteShader(fragShader);
-      return;
+      throw Error(`${name}.frag コンパイル失敗: ${log}`);
     }
 
     // プログラムオブジェクトを作成
@@ -80,30 +57,25 @@ export async function initCanvas() {
 
     if (!gl.getProgramParameter(prg, gl.LINK_STATUS)) {
       const log = gl.getProgramInfoLog(prg);
-      gl.deleteProgram(prg);
-      errorLog(`${name}プログラム リンク失敗`, log);
-      hasFailed = true;
-      return;
+      throw Error(`${name}プログラム リンク失敗: ${log}`);
     }
 
     return prg;
   }
 
-  // シェーダーを取得
-  const sourceList = await loadSource("item.vert", "item.frag", "axis.vert", "axis.frag");
+  try {
+    // WebGLコンテキストを取得
+    gl = canvas.getContext("webgl2");
+    if (!gl) throw Error("ブラウザーがWebGL2に非対応");
 
-  if (hasFailed) {
-    gl = null;
-    return;
-  }
+    // シェーダーのソースをまとめて取得
+    const sourceList = await loadSource("item.vert", "item.frag", "axis.vert", "axis.frag");
 
-  // プログラムオブジェクトを作成
-  itemPrgInfo.prg = buildProgram(sourceList, "item");
-  axisPrgInfo.prg = buildProgram(sourceList, "axis");
-
-  if (hasFailed) {
-    if (itemPrgInfo.prg) gl.deleteProgram(itemPrgInfo.prg);
-    if (axisPrgInfo.prg) gl.deleteProgram(axisPrgInfo.prg);
+    // プログラムオブジェクトを作ってシェーダーをリンク
+    itemPrgInfo.prg = buildProgram(sourceList, "item");
+    axisPrgInfo.prg = buildProgram(sourceList, "axis");
+  } catch (error) {
+    errorLog("WebGL2の初期化が失敗しました", error);
     gl = null;
     return;
   }
