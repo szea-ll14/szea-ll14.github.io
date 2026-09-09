@@ -25,27 +25,28 @@ export async function initCanvas() {
 
   let hasFailed = false;
 
-  async function loadProgram(name) {
-    // シェーダーを取得
-    const vertRes = await fetch(`./shader/${name}.vert`);
-    if (!vertRes.ok) {
-      errorLog(`${name}.vert 取得失敗`);
-      hasFailed = true;
-      return;
-    }
+  async function loadSource(...nameList) {
+    const textList = await Promise.all(nameList.map(async name => {
+      // シェーダーのソースを取得
+      const res = await fetch(`./shader/${name}`);
+      if (!res.ok) {
+        errorLog(`${name} 取得失敗`);
+        hasFailed = true;
+        return;
+      }
 
-    const fragRes = await fetch(`./shader/${name}.frag`);
-    if (!fragRes.ok) {
-      errorLog(`${name}.frag 取得失敗`);
-      hasFailed = true;
-      return;
-    }
+      return res.text();
+    }));
 
-    const vertSource = await vertRes.text();
+    return Object.fromEntries(nameList.map((k, i) => [k, textList[i]]));
+  }
+
+  function loadProgram(sourceList, name) {
+    const vertSource = sourceList[`${name}.vert`];
     const vertShader = gl.createShader(gl.VERTEX_SHADER);
     gl.shaderSource(vertShader, vertSource);
     gl.compileShader(vertShader);
-    const fragSource = await fragRes.text();
+    const fragSource = sourceList[`${name}.frag`];
     const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
     gl.shaderSource(fragShader, fragSource);
     gl.compileShader(fragShader);
@@ -87,9 +88,12 @@ export async function initCanvas() {
     return prg;
   }
 
+  // シェーダーを取得
+  const sourceList = await loadSource("item.vert", "item.frag", "axis.vert", "axis.frag");
+
   // プログラムオブジェクトを作成
-  itemPrgInfo.prg = await loadProgram("item");
-  axisPrgInfo.prg = await loadProgram("axis");
+  itemPrgInfo.prg = loadProgram(sourceList, "item");
+  axisPrgInfo.prg = loadProgram(sourceList, "axis");
 
   if (hasFailed) {
     if (itemPrgInfo.prg) gl.deleteProgram(itemPrgInfo.prg);
