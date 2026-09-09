@@ -1,43 +1,43 @@
 import {errorLog} from "./error.js";
 import {requestOutput} from "./request-output.js";
-import {gl, prg} from "./canvas.js";
+import {gl, itemPrgInfo, axisPrgInfo} from "./canvas.js";
 
-// 頂点情報：ブロック
-const blockVert = new Float32Array([
-  // 位置:vec3, 色:vec3, UV:vec2, 法線:vec3
+// アイテム/頂点情報
+const blockVert = [
+  // 位置:vec3, UV:vec2, 法線:vec3
   // 上
-  -.5,  .5, -.5,  0, 1, 0,  .25,  0,  0, 1, 0,
-  -.5,  .5,  .5,  0, 1, 1,  .25, .5,  0, 1, 0,
-   .5,  .5, -.5,  1, 1, 0,   .5,  0,  0, 1, 0,
-   .5,  .5,  .5,  1, 1, 1,   .5, .5,  0, 1, 0,
+  -.5,  .5, -.5,  .25,  0,  0, 1, 0,
+  -.5,  .5,  .5,  .25, .5,  0, 1, 0,
+   .5,  .5, -.5,   .5,  0,  0, 1, 0,
+   .5,  .5,  .5,   .5, .5,  0, 1, 0,
   // 下
-  -.5, -.5, -.5,  0, 0, 0,   .5,  0,  0, -1, 0,
-   .5, -.5, -.5,  1, 0, 0,  .75,  0,  0, -1, 0,
-  -.5, -.5,  .5,  0, 0, 1,   .5, .5,  0, -1, 0,
-   .5, -.5,  .5,  1, 0, 1,  .75, .5,  0, -1, 0,
+  -.5, -.5, -.5,   .5,  0,  0, -1, 0,
+   .5, -.5, -.5,  .75,  0,  0, -1, 0,
+  -.5, -.5,  .5,   .5, .5,  0, -1, 0,
+   .5, -.5,  .5,  .75, .5,  0, -1, 0,
   // 右
-  -.5,  .5, -.5,  0, 1, 0,    0, .5,  -1, 0, 0,
-  -.5, -.5, -.5,  0, 0, 0,    0,  1,  -1, 0, 0,
-  -.5,  .5,  .5,  0, 1, 1,  .25, .5,  -1, 0, 0,
-  -.5, -.5,  .5,  0, 0, 1,  .25,  1,  -1, 0, 0,
+  -.5,  .5, -.5,    0, .5,  -1, 0, 0,
+  -.5, -.5, -.5,    0,  1,  -1, 0, 0,
+  -.5,  .5,  .5,  .25, .5,  -1, 0, 0,
+  -.5, -.5,  .5,  .25,  1,  -1, 0, 0,
   // 前
-  -.5,  .5,  .5,  0, 1, 1,  .25, .5,  0, 0, 1,
-  -.5, -.5,  .5,  0, 0, 1,  .25,  1,  0, 0, 1,
-   .5,  .5,  .5,  1, 1, 1,   .5, .5,  0, 0, 1,
-   .5, -.5,  .5,  1, 0, 1,   .5,  1,  0, 0, 1,
+  -.5,  .5,  .5,  .25, .5,  0, 0, 1,
+  -.5, -.5,  .5,  .25,  1,  0, 0, 1,
+   .5,  .5,  .5,   .5, .5,  0, 0, 1,
+   .5, -.5,  .5,   .5,  1,  0, 0, 1,
   // 左
-   .5,  .5,  .5,  1, 1, 1,   .5, .5,  1, 0, 0,
-   .5, -.5,  .5,  1, 0, 1,   .5,  1,  1, 0, 0,
-   .5,  .5, -.5,  1, 1, 0,  .75, .5,  1, 0, 0,
-   .5, -.5, -.5,  1, 0, 0,  .75,  1,  1, 0, 0,
+   .5,  .5,  .5,   .5, .5,  1, 0, 0,
+   .5, -.5,  .5,   .5,  1,  1, 0, 0,
+   .5,  .5, -.5,  .75, .5,  1, 0, 0,
+   .5, -.5, -.5,  .75,  1,  1, 0, 0,
   // 後
-   .5,  .5, -.5,  1, 1, 0,  .75, .5,  0, 0, -1,
-   .5, -.5, -.5,  1, 0, 0,  .75,  1,  0, 0, -1,
-  -.5,  .5, -.5,  0, 1, 0,    1, .5,  0, 0, -1,
-  -.5, -.5, -.5,  0, 0, 0,    1,  1,  0, 0, -1,
-]);
-// インデックス：ブロック
-const blockIndex = new Uint16Array([
+   .5,  .5, -.5,  .75, .5,  0, 0, -1,
+   .5, -.5, -.5,  .75,  1,  0, 0, -1,
+  -.5,  .5, -.5,    1, .5,  0, 0, -1,
+  -.5, -.5, -.5,    1,  1,  0, 0, -1,
+];
+// アイテム/インデックス
+const blockIndex = [
    0,  1,  2, // 上
    2,  1,  3, 
    4,  5,  6, // 下
@@ -50,9 +50,9 @@ const blockIndex = new Uint16Array([
   18, 17, 19, 
   20, 21, 22, // 後
   22, 21, 23,
-]);
-// 頂点情報：軸
-const axisVert = new Float32Array([
+];
+// 軸/頂点情報
+const axisVert = [
   // 位置:vec3, 色:vec3
   // xyz軸
   0, 0, 0,  1, 0, 0,
@@ -61,48 +61,16 @@ const axisVert = new Float32Array([
   0, 5, 0,  0, 1, 0,
   0, 0, 0,  0, 0, 1,
   0, 0, 5,  0, 0, 1,
-  // xz平面
-  -5, 0, -4.5,  .4, .4, .4,
-   5, 0, -4.5,  .4, .4, .4,
-  -5, 0, -3.5,  .4, .4, .4,
-   5, 0, -3.5,  .4, .4, .4,
-  -5, 0, -2.5,  .4, .4, .4,
-   5, 0, -2.5,  .4, .4, .4,
-  -5, 0, -1.5,  .4, .4, .4,
-   5, 0, -1.5,  .4, .4, .4,
-  -5, 0, -0.5,  .4, .4, .4,
-   5, 0, -0.5,  .4, .4, .4,
-  -5, 0,  0.5,  .4, .4, .4,
-   5, 0,  0.5,  .4, .4, .4,
-  -5, 0,  1.5,  .4, .4, .4,
-   5, 0,  1.5,  .4, .4, .4,
-  -5, 0,  2.5,  .4, .4, .4,
-   5, 0,  2.5,  .4, .4, .4,
-  -5, 0,  3.5,  .4, .4, .4,
-   5, 0,  3.5,  .4, .4, .4,
-  -5, 0,  4.5,  .4, .4, .4,
-   5, 0,  4.5,  .4, .4, .4,
-  -4.5, 0, -5,  .4, .4, .4,
-  -4.5, 0,  5,  .4, .4, .4,
-  -3.5, 0, -5,  .4, .4, .4,
-  -3.5, 0,  5,  .4, .4, .4,
-  -2.5, 0, -5,  .4, .4, .4,
-  -2.5, 0,  5,  .4, .4, .4,
-  -1.5, 0, -5,  .4, .4, .4,
-  -1.5, 0,  5,  .4, .4, .4,
-  -0.5, 0, -5,  .4, .4, .4,
-  -0.5, 0,  5,  .4, .4, .4,
-   0.5, 0, -5,  .4, .4, .4,
-   0.5, 0,  5,  .4, .4, .4,
-   1.5, 0, -5,  .4, .4, .4,
-   1.5, 0,  5,  .4, .4, .4,
-   2.5, 0, -5,  .4, .4, .4,
-   2.5, 0,  5,  .4, .4, .4,
-   3.5, 0, -5,  .4, .4, .4,
-   3.5, 0,  5,  .4, .4, .4,
-   4.5, 0, -5,  .4, .4, .4,
-   4.5, 0,  5,  .4, .4, .4,
-]);
+];
+for (let i = -4.5; i < 5; i++) {
+  axisVert.push(
+    // xz平面
+    -5, 0, i,  .4, .4, .4,
+     5, 0, i,  .4, .4, .4,
+    i, 0, -5,  .4, .4, .4,
+    i, 0,  5,  .4, .4, .4,
+  );
+}
 
 export let blockVao, axisVao;
 
@@ -144,11 +112,7 @@ export let nowItemName = "diamond_block";
 export function initItem() {
   if (!gl) return;
 
-  // シェーダー内の変数の場所を取得
-  const posLoc = gl.getAttribLocation(prg, 'position');
-  const colorLoc = gl.getAttribLocation(prg, 'color');
-  const uvLoc = gl.getAttribLocation(prg, 'uv');
-  const normalLoc = gl.getAttribLocation(prg, 'normal');
+
 
   // ブロックのVAOを生成
   blockVao = gl.createVertexArray();
@@ -158,20 +122,18 @@ export function initItem() {
     // ブロックのVBOを生成
     const vbo = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-    gl.bufferData(gl.ARRAY_BUFFER, blockVert, gl.STATIC_DRAW);
-    gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 0);
-    gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-    gl.vertexAttribPointer(uvLoc, 2, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 6 * Float32Array.BYTES_PER_ELEMENT);
-    gl.vertexAttribPointer(normalLoc, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 8 * Float32Array.BYTES_PER_ELEMENT);
-    gl.enableVertexAttribArray(posLoc);
-    gl.enableVertexAttribArray(colorLoc);
-    gl.enableVertexAttribArray(uvLoc);
-    gl.enableVertexAttribArray(normalLoc);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(blockVert), gl.STATIC_DRAW);
+    gl.vertexAttribPointer(itemPrgInfo.position, 3, gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 0);
+    gl.vertexAttribPointer(itemPrgInfo.uv, 2, gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+    gl.vertexAttribPointer(itemPrgInfo.normal, 3, gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+    gl.enableVertexAttribArray(itemPrgInfo.position);
+    gl.enableVertexAttribArray(itemPrgInfo.uv);
+    gl.enableVertexAttribArray(itemPrgInfo.normal);
 
     // ブロックのIBOを生成
     const ibo = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, blockIndex, gl.STATIC_DRAW);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(blockIndex), gl.STATIC_DRAW);
 
     gl.bindVertexArray(null);
   }
@@ -184,11 +146,11 @@ export function initItem() {
     // 軸のVBOを生成
     const vbo = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-    gl.bufferData(gl.ARRAY_BUFFER, axisVert, gl.STATIC_DRAW);
-    gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-    gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-    gl.enableVertexAttribArray(posLoc);
-    gl.enableVertexAttribArray(colorLoc);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(axisVert), gl.STATIC_DRAW);
+    gl.vertexAttribPointer(axisPrgInfo.position, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+    gl.vertexAttribPointer(axisPrgInfo.color, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+    gl.enableVertexAttribArray(axisPrgInfo.position);
+    gl.enableVertexAttribArray(axisPrgInfo.color);
 
     gl.bindVertexArray(null);
   }

@@ -3,11 +3,10 @@ import {requestOutput} from "./request-output.js";
 
 // canvas
 export const canvas = document.getElementById("canvas");
-// WebGLコンテキスト・プログラムオブジェクト
-export let gl, prg;
-
-// シェーダー内の変数の場所
-export let texLoadedLoc, texLoc, mvpMatLoc, mAdjMatLoc;
+// WebGLコンテキスト
+export let gl;
+// プログラムオブジェクト・変数の位置
+export const itemPrgInfo = {}, axisPrgInfo = {};
 
 // カメラ回転・スケール
 export let viewPitch = 15, viewYaw = -10, viewScale = 2;
@@ -18,65 +17,102 @@ export async function initCanvas() {
   // WebGLコンテキストを取得
   gl = canvas.getContext("webgl2");
   if (!gl) {
-    errorLog("ブラウザーがWebGL2に非対応！");
+    errorLog("ブラウザーがWebGL2に非対応");
     return;
   }
 
-  // シェーダーを取得
-  const vertSource = await (await fetch("./shader/vert.glsl")).text();
-  const fragSource = await (await fetch("./shader/frag.glsl")).text();
 
-  // シェーダーをコンパイル
-  const vertShader = gl.createShader(gl.VERTEX_SHADER);
-  gl.shaderSource(vertShader, vertSource);
-  gl.compileShader(vertShader);
 
-  const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-  gl.shaderSource(fragShader, fragSource);
-  gl.compileShader(fragShader);
+  let hasFailed = false;
 
-  if (!gl.getShaderParameter(vertShader, gl.COMPILE_STATUS)) {
-    const log = gl.getShaderInfoLog(vertShader);
+  async function createProgram(name) {
+    // シェーダーを取得
+    const vertRes = await fetch(`./shader/${name}.vert`);
+    if (!vertRes.ok) {
+      errorLog(`${name}.vert 取得失敗`);
+      hasFailed = true;
+      return;
+    }
+
+    const fragRes = await fetch(`./shader/${name}.frag`);
+    if (!fragRes.ok) {
+      errorLog(`${name}.frag 取得失敗`);
+      hasFailed = true;
+      return;
+    }
+
+    const vertSource = await vertRes.text();
+    const vertShader = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vertShader, vertSource);
+    gl.compileShader(vertShader);
+    const fragSource = await fragRes.text();
+    const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fragShader, fragSource);
+    gl.compileShader(fragShader);
+
+    if (!gl.getShaderParameter(vertShader, gl.COMPILE_STATUS)) {
+      const log = gl.getShaderInfoLog(vertShader);
+      errorLog(`${name}.vert コンパイル失敗`, log);
+      hasFailed = true;
+    }
+    if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS)) {
+      const log = gl.getShaderInfoLog(fragShader);
+      errorLog(`${name}.frag コンパイル失敗`, log);
+      hasFailed = true;
+    }
+    if (hasFailed) {
+      gl.deleteShader(vertShader);
+      gl.deleteShader(fragShader);
+      return;
+    }
+
+    // プログラムオブジェクトを作成
+    const prg = gl.createProgram();
+
+    // シェーダーをリンク
+    gl.attachShader(prg, vertShader);
     gl.deleteShader(vertShader);
+    gl.attachShader(prg, fragShader);
     gl.deleteShader(fragShader);
-    errorLog("頂点シェーダーのコンパイルに失敗！", log);
-    gl = null;
-    return;
-  }
-  if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS)) {
-    const log = gl.getShaderInfoLog(fragShader);
-    gl.deleteShader(vertShader);
-    gl.deleteShader(fragShader);
-    errorLog("フラグメントシェーダーのコンパイルに失敗！", log);
-    gl = null;
-    return;
+    gl.linkProgram(prg);
+
+    if (!gl.getProgramParameter(prg, gl.LINK_STATUS)) {
+      const log = gl.getProgramInfoLog(prg);
+      gl.deleteProgram(prg);
+      errorLog(`${name}プログラム リンク失敗`, log);
+      hasFailed = true;
+      return prg;
+    }
+
+    return prg;
   }
 
   // プログラムオブジェクトを作成
-  prg = gl.createProgram();
+  itemPrgInfo.prg = await createProgram("item");
+  axisPrgInfo.prg = await createProgram("axis");
 
-  // シェーダーをリンク
-  gl.attachShader(prg, vertShader);
-  gl.deleteShader(vertShader);
-  gl.attachShader(prg, fragShader);
-  gl.deleteShader(fragShader);
-  gl.linkProgram(prg);
-  if (!gl.getProgramParameter(prg, gl.LINK_STATUS)) {
-    const log = gl.getProgramInfoLog(prg);
-    gl.deleteProgram(prg);
-    errorLog("プログラムのリンクに失敗！", log);
+  if (hasFailed) {
+    if (itemPrgInfo.prg) gl.deleteProgram(itemPrgInfo.prg);
+    if (axisPrgInfo.prg) gl.deleteProgram(axisPrgInfo.prg);
     gl = null;
     return;
   }
 
-  // シェーダー内の変数の場所を取得
-  texLoadedLoc = gl.getUniformLocation(prg, "texLoaded");
-  texLoc = gl.getUniformLocation(prg, "tex");
-  mvpMatLoc = gl.getUniformLocation(prg, "mvpMat");
-  mAdjMatLoc = gl.getUniformLocation(prg, "mAdjMat");
 
-  // プログラムオブジェクトを有効化
-  gl.useProgram(prg);
+
+  // シェーダー内の変数の場所を取得
+  itemPrgInfo.position = gl.getAttribLocation(itemPrgInfo.prg, "position");
+  itemPrgInfo.uv = gl.getAttribLocation(itemPrgInfo.prg, "uv");
+  itemPrgInfo.normal = gl.getAttribLocation(itemPrgInfo.prg, "normal");
+  itemPrgInfo.mvpMat = gl.getUniformLocation(itemPrgInfo.prg, "mvpMat");
+  itemPrgInfo.mAdjMat = gl.getUniformLocation(itemPrgInfo.prg, "mAdjMat");
+  itemPrgInfo.tex = gl.getUniformLocation(itemPrgInfo.prg, "tex");
+
+  axisPrgInfo.position = gl.getAttribLocation(axisPrgInfo.prg, "position");
+  axisPrgInfo.color = gl.getAttribLocation(axisPrgInfo.prg, "color");
+  axisPrgInfo.mvpMat = gl.getUniformLocation(axisPrgInfo.prg, "mvpMat");
+
+
 
   // カリング・深度テストを有効化
   gl.enable(gl.CULL_FACE);
@@ -93,6 +129,7 @@ export async function initCanvas() {
   (new ResizeObserver(() => {
     requestOutput({resize: true, render: true});
   })).observe(canvas);
+
 
 
   // カメラ回転・スケール

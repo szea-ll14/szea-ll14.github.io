@@ -4,7 +4,7 @@ import * as Matrix from "./matrix.js";
 const DEG = Math.PI / 180;
 
 import {paramList} from "./param.js";
-import {canvas, gl, viewPitch, viewYaw, viewScale, texLoadedLoc, texLoc, mvpMatLoc, mAdjMatLoc} from "./canvas.js";
+import {canvas, gl, itemPrgInfo, axisPrgInfo, viewPitch, viewYaw, viewScale} from "./canvas.js";
 import {blockVao, axisVao, blockVertCount, axisVertCount, itemList, nowItemName} from "./item.js";
 
 
@@ -94,25 +94,25 @@ export function render() {
   // canvasを初期化
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-
-  // ブロックのVBO
+  // アイテム
+  gl.useProgram(itemPrgInfo.prg);
+  // VBO
   gl.bindVertexArray(blockVao);
-  // テクスチャがあれば使う
-  gl.uniform1i(texLoc, itemList[nowItemName].loaded ? itemList[nowItemName].number : 0);
-  gl.uniform1i(texLoadedLoc, itemList[nowItemName].loaded);
+  // テクスチャ
+  gl.uniform1i(itemPrgInfo.tex, itemList[nowItemName].number);
   // 変形行列
-  gl.uniformMatrix4fv(mvpMatLoc, true, Matrix.mul(vpMat, mMat));
-  gl.uniformMatrix4fv(mAdjMatLoc, true, Matrix.t(Matrix.adj(mMat)));
+  gl.uniformMatrix4fv(itemPrgInfo.mvpMat, true, Matrix.mul(vpMat, mMat));
+  gl.uniformMatrix4fv(itemPrgInfo.mAdjMat, true, Matrix.t(Matrix.adj(mMat)));
   // ブロックを描画
   gl.drawElements(gl.TRIANGLES, blockVertCount, gl.UNSIGNED_SHORT, 0);
 
 
-  // 軸のVBO
+  // 軸
+  gl.useProgram(axisPrgInfo.prg);
+  // VBO
   gl.bindVertexArray(axisVao);
-  // テクスチャはないよ
-  gl.uniform1i(texLoadedLoc, 0);
   // 変形行列
-  gl.uniformMatrix4fv(mvpMatLoc, true, vpMat);
+  gl.uniformMatrix4fv(axisPrgInfo.mvpMat, true, vpMat);
   // 軸を描画
   gl.drawArrays(gl.LINES, 0, axisVertCount);
 }
