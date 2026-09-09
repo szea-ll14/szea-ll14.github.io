@@ -74,7 +74,7 @@ for (let i = -4.5; i < 5; i++) {
 
 export let blockVao, axisVao;
 
-export const blockVertCount = blockIndex.length;
+export const blockIndexCount = blockIndex.length;
 export const axisVertCount = axisVert.length / 6;
 
 // ブロックテクスチャ

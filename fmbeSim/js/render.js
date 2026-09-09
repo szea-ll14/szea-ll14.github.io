@@ -5,7 +5,7 @@ const DEG = Math.PI / 180;
 
 import {paramList} from "./param.js";
 import {canvas, gl, itemPrgInfo, axisPrgInfo, viewPitch, viewYaw, viewScale} from "./canvas.js";
-import {blockVao, axisVao, blockVertCount, axisVertCount, itemList, nowItemName} from "./item.js";
+import {blockVao, axisVao, blockIndexCount, axisVertCount, itemList, nowItemName} from "./item.js";
 
 
 
@@ -104,7 +104,7 @@ export function render() {
   gl.uniformMatrix4fv(itemPrgInfo.mvpMat, true, Matrix.mul(vpMat, mMat));
   gl.uniformMatrix4fv(itemPrgInfo.mAdjMat, true, Matrix.t(Matrix.adj(mMat)));
   // ブロックを描画
-  gl.drawElements(gl.TRIANGLES, blockVertCount, gl.UNSIGNED_SHORT, 0);
+  gl.drawElements(gl.TRIANGLES, blockIndexCount, gl.UNSIGNED_SHORT, 0);
 
 
   // 軸

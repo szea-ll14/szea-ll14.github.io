@@ -25,7 +25,7 @@ export async function initCanvas() {
 
   let hasFailed = false;
 
-  async function createProgram(name) {
+  async function loadProgram(name) {
     // シェーダーを取得
     const vertRes = await fetch(`./shader/${name}.vert`);
     if (!vertRes.ok) {
@@ -81,15 +81,15 @@ export async function initCanvas() {
       gl.deleteProgram(prg);
       errorLog(`${name}プログラム リンク失敗`, log);
       hasFailed = true;
-      return prg;
+      return;
     }
 
     return prg;
   }
 
   // プログラムオブジェクトを作成
-  itemPrgInfo.prg = await createProgram("item");
-  axisPrgInfo.prg = await createProgram("axis");
+  itemPrgInfo.prg = await loadProgram("item");
+  axisPrgInfo.prg = await loadProgram("axis");
 
   if (hasFailed) {
     if (itemPrgInfo.prg) gl.deleteProgram(itemPrgInfo.prg);
