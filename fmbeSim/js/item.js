@@ -1,3 +1,4 @@
+import {errorLog} from "./error.js";
 import {requestOutput} from "./request-output.js";
 import {gl, prg} from "./canvas.js";
 
@@ -217,7 +218,7 @@ export function initItem() {
     });
     // 失敗したらログ
     item.image.addEventListener("error", () => {
-      console.warn(`画像 ${itemName} の読み込みに失敗しました`);
+      errorLog(`画像 ${itemName} の読み込みに失敗しました`);
     });
   }
 

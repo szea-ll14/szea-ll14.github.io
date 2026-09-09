@@ -1,3 +1,4 @@
+import {errorLog} from "./error.js";
 import {requestOutput} from "./request-output.js";
 
 // canvas
@@ -17,7 +18,7 @@ export async function initCanvas() {
   // WebGLコンテキストを取得
   gl = canvas.getContext("webgl2");
   if (!gl) {
-    console.error("ブラウザーがWebGL2に非対応！");
+    errorLog("ブラウザーがWebGL2に非対応！");
     return;
   }
 
@@ -38,7 +39,7 @@ export async function initCanvas() {
     const log = gl.getShaderInfoLog(vertShader);
     gl.deleteShader(vertShader);
     gl.deleteShader(fragShader);
-    console.error(`頂点シェーダーのコンパイルに失敗！\n${log}`);
+    errorLog("頂点シェーダーのコンパイルに失敗！", log);
     gl = null;
     return;
   }
@@ -46,7 +47,7 @@ export async function initCanvas() {
     const log = gl.getShaderInfoLog(fragShader);
     gl.deleteShader(vertShader);
     gl.deleteShader(fragShader);
-    console.error(`フラグメントシェーダーのコンパイルに失敗！\n${log}`);
+    errorLog("フラグメントシェーダーのコンパイルに失敗！", log);
     gl = null;
     return;
   }
@@ -63,7 +64,7 @@ export async function initCanvas() {
   if (!gl.getProgramParameter(prg, gl.LINK_STATUS)) {
     const log = gl.getProgramInfoLog(prg);
     gl.deleteProgram(prg);
-    console.error(`プログラムのリンクに失敗！\n${log}`);
+    errorLog("プログラムのリンクに失敗！", log);
     gl = null;
     return;
   }
