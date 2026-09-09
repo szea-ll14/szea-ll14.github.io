@@ -28,20 +28,21 @@ export async function initCanvas() {
   async function loadSource(...nameList) {
     const textList = await Promise.all(nameList.map(async name => {
       // シェーダーのソースを取得
-      const res = await fetch(`./shader/${name}`);
-      if (!res.ok) {
-        errorLog(`${name} 取得失敗`);
+      try {
+        const res = await fetch(`./shader/${name}`);
+        if (!res.ok) throw Error(`HTTP ${res.status}`);
+        return await res.text();
+      } catch (error) {
+        errorLog(`${name} 取得失敗`, error.message);
         hasFailed = true;
         return;
       }
-
-      return res.text();
     }));
 
-    return Object.fromEntries(nameList.map((k, i) => [k, textList[i]]));
+    return Object.fromEntries(nameList.map((name, i) => [name, textList[i]]));
   }
 
-  function loadProgram(sourceList, name) {
+  function buildProgram(sourceList, name) {
     const vertSource = sourceList[`${name}.vert`];
     const vertShader = gl.createShader(gl.VERTEX_SHADER);
     gl.shaderSource(vertShader, vertSource);
@@ -91,9 +92,14 @@ export async function initCanvas() {
   // シェーダーを取得
   const sourceList = await loadSource("item.vert", "item.frag", "axis.vert", "axis.frag");
 
+  if (hasFailed) {
+    gl = null;
+    return;
+  }
+
   // プログラムオブジェクトを作成
-  itemPrgInfo.prg = loadProgram(sourceList, "item");
-  axisPrgInfo.prg = loadProgram(sourceList, "axis");
+  itemPrgInfo.prg = buildProgram(sourceList, "item");
+  axisPrgInfo.prg = buildProgram(sourceList, "axis");
 
   if (hasFailed) {
     if (itemPrgInfo.prg) gl.deleteProgram(itemPrgInfo.prg);
