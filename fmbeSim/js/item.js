@@ -31,11 +31,11 @@ export const itemList = {
     model: "full",
     category: "Block (Solid)",
   },
-  dummy: {
-    name: "Dummy",
-    model: "full",
-    category: "Block (Solid)",
-  },
+  // dummy: {
+  //   name: "Dummy",
+  //   model: "full",
+  //   category: "Block (Solid)",
+  // },
 };
 
 export let nowItemName = Object.keys(itemList)[0];
@@ -45,7 +45,6 @@ const categoryList = ["Block (Solid)", "Block (Plane)", "Item"];
 
 
 // アイテムモデル
-// vert: 
 export const itemModelList = {
   full: {
     cubeList: [
@@ -179,7 +178,7 @@ export function initItem() {
   lineModel.count = lineModel.vert.length / 6;
 
   // VAO
-  lineModel.vao = gl.createVertexArray()
+  lineModel.vao = gl.createVertexArray();
   {
     gl.bindVertexArray(lineModel.vao);
 
@@ -197,7 +196,6 @@ export function initItem() {
 
 
 
-
   // 警告消し用テクスチャ
   gl.activeTexture(gl.TEXTURE0);
   gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
@@ -205,9 +203,9 @@ export function initItem() {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
-  gl.activeTexture(gl.TEXTURE1);
   // テクスチャを生成
   function imgOnloaded(itemName, item) {
+    gl.activeTexture(gl.TEXTURE1);
     item.texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, item.texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, item.image);
@@ -234,6 +232,8 @@ export function initItem() {
     });
   }
 
+
+
   // 描画アイテム変更時の処理
   const previewItem = document.getElementById("preview-item");
   previewItem.addEventListener("change", e => {
@@ -258,4 +258,6 @@ export function initItem() {
 
     previewItem.appendChild(optgroup);
   });
+
+  previewItem.value = nowItemName;
 }

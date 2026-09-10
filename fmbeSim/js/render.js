@@ -98,14 +98,15 @@ export function render() {
 
   // アイテム
   const item = itemList[nowItemName];
-  const model = itemModelList[item.model]
+  const model = itemModelList[item.model];
 
   gl.useProgram(itemPrgInfo.prg);
   // VBO
   gl.bindVertexArray(model.vao);
   // テクスチャ
+  gl.activeTexture(gl.TEXTURE1);
   gl.bindTexture(gl.TEXTURE_2D, item.texture);
-  gl.uniform1i(itemPrgInfo.tex, item.loaded);
+  gl.uniform1i(itemPrgInfo.tex, item.loaded ? 1 : 0);
   // 変形行列
   gl.uniformMatrix4fv(itemPrgInfo.mvpMat, true, Matrix.mul(vpMat, mMat));
   gl.uniformMatrix4fv(itemPrgInfo.mAdjMat, true, Matrix.t(Matrix.adj(mMat)));
