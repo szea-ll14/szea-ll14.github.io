@@ -6,7 +6,7 @@ export const canvas = document.getElementById("canvas");
 // WebGLコンテキスト
 export let gl;
 // プログラムオブジェクト・変数の位置
-export const itemPrgInfo = {}, axisPrgInfo = {};
+export const itemPrgInfo = {}, linePrgInfo = {};
 
 // カメラ回転・スケール
 export let viewPitch = 15, viewYaw = -10, viewScale = 2;
@@ -69,11 +69,11 @@ export async function initCanvas() {
     if (!gl) throw Error("ブラウザーがWebGL2に非対応");
 
     // シェーダーのソースをまとめて取得
-    const sourceList = await loadSource("item.vert", "item.frag", "axis.vert", "axis.frag");
+    const sourceList = await loadSource("item.vert", "item.frag", "line.vert", "line.frag");
 
     // プログラムオブジェクトを作ってシェーダーをリンク
     itemPrgInfo.prg = buildProgram(sourceList, "item");
-    axisPrgInfo.prg = buildProgram(sourceList, "axis");
+    linePrgInfo.prg = buildProgram(sourceList, "line");
   } catch (error) {
     errorLog("WebGL2の初期化が失敗しました", error);
     gl = null;
@@ -90,9 +90,9 @@ export async function initCanvas() {
   itemPrgInfo.mAdjMat = gl.getUniformLocation(itemPrgInfo.prg, "mAdjMat");
   itemPrgInfo.tex = gl.getUniformLocation(itemPrgInfo.prg, "tex");
 
-  axisPrgInfo.position = gl.getAttribLocation(axisPrgInfo.prg, "position");
-  axisPrgInfo.color = gl.getAttribLocation(axisPrgInfo.prg, "color");
-  axisPrgInfo.mvpMat = gl.getUniformLocation(axisPrgInfo.prg, "mvpMat");
+  linePrgInfo.position = gl.getAttribLocation(linePrgInfo.prg, "position");
+  linePrgInfo.color = gl.getAttribLocation(linePrgInfo.prg, "color");
+  linePrgInfo.mvpMat = gl.getUniformLocation(linePrgInfo.prg, "mvpMat");
 
 
 
