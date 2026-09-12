@@ -53,12 +53,12 @@ input[type="text"] {
 /* コマンドボックス */
 .cmdbox {
   display: grid;
-  border: 1px solid var(--gray-line);
 }
 .cmdbox-head {
   padding: 4px 8px;
   background-color: var(--gray-bg);
-  border-bottom: 1px solid var(--gray-line);
+  border: 1px solid var(--gray-line);
+  border-bottom: none;
   font-size: 0.825em;
   display: flex;
 }
@@ -67,7 +67,10 @@ input[type="text"] {
 }
 .cmdbox-body {
   white-space: pre-wrap;
-  margin: 1em;
+  overflow-wrap: anywhere;
+  margin: 0;
+  padding: 1em;
+  border: 1px solid var(--gray-line);
 }
 
 /* 見出し */
