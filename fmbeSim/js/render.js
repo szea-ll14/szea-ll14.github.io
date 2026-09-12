@@ -31,39 +31,39 @@ export function render() {
   // 行列
   // FMBEによる変形
   let mMat = [ // basepos
-    1, 0, 0, paramList.xbasepos.value / 16,
-    0, 1, 0, paramList.ybasepos.value / 16,
-    0, 0, 1, paramList.zbasepos.value / 16,
+    1, 0, 0, paramList.get("xbasepos").value / 16,
+    0, 1, 0, paramList.get("ybasepos").value / 16,
+    0, 0, 1, paramList.get("zbasepos").value / 16,
     0, 0, 0, 1
   ];
   mMat = Matrix.mul([ // scale
-    paramList.scale.value * paramList.xzscale.value, 0, 0, 0,
-    0, paramList.scale.value * paramList.yscale.value, 0, 0,
-    0, 0, paramList.scale.value * paramList.xzscale.value, 0,
+    paramList.get("scale").value * paramList.get("xzscale").value, 0, 0, 0,
+    0, paramList.get("scale").value * paramList.get("yscale").value, 0, 0,
+    0, 0, paramList.get("scale").value * paramList.get("xzscale").value, 0,
     0, 0, 0, 1
   ], mMat);
   mMat = Matrix.mul([ // xrot
     1, 0, 0, 0,
-    0, Math.cos(paramList.xrot.value * DEG), -Math.sin(paramList.xrot.value * DEG), 0,
-    0, Math.sin(paramList.xrot.value * DEG), Math.cos(paramList.xrot.value * DEG), 0,
+    0, Math.cos(paramList.get("xrot").value * DEG), -Math.sin(paramList.get("xrot").value * DEG), 0,
+    0, Math.sin(paramList.get("xrot").value * DEG), Math.cos(paramList.get("xrot").value * DEG), 0,
     0, 0, 0, 1
   ], mMat);
   mMat = Matrix.mul([ // zrot
-    Math.cos(paramList.zrot.value * DEG), Math.sin(paramList.zrot.value * DEG), 0, 0,
-    -Math.sin(paramList.zrot.value * DEG), Math.cos(paramList.zrot.value * DEG), 0, 0,
+    Math.cos(paramList.get("zrot").value * DEG), Math.sin(paramList.get("zrot").value * DEG), 0, 0,
+    -Math.sin(paramList.get("zrot").value * DEG), Math.cos(paramList.get("zrot").value * DEG), 0, 0,
     0, 0, 1, 0,
     0, 0, 0, 1
   ], mMat);
   mMat = Matrix.mul([ // yrot
-    Math.cos(paramList.yrot.value * DEG), 0, -Math.sin(paramList.yrot.value * DEG), 0,
+    Math.cos(paramList.get("yrot").value * DEG), 0, -Math.sin(paramList.get("yrot").value * DEG), 0,
     0, 1, 0, 0,
-    Math.sin(paramList.yrot.value * DEG), 0, Math.cos(paramList.yrot.value * DEG), 0,
+    Math.sin(paramList.get("yrot").value * DEG), 0, Math.cos(paramList.get("yrot").value * DEG), 0,
     0, 0, 0, 1
   ], mMat);
   mMat = Matrix.mul([ // pos
-    1, 0, 0, paramList.xpos.value / 16,
-    0, 1, 0, paramList.ypos.value / 16 + 0.5,
-    0, 0, 1, paramList.zpos.value / 16,
+    1, 0, 0, paramList.get("xpos").value / 16,
+    0, 1, 0, paramList.get("ypos").value / 16 + 0.5,
+    0, 0, 1, paramList.get("zpos").value / 16,
     0, 0, 0, 1
   ], mMat);
   // カメラの角度・透視投影
