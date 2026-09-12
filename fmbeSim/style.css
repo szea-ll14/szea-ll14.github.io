@@ -44,6 +44,12 @@ input[type="text"] {
   field-sizing: content;
 }
 
+#param-grid {
+  display: inline grid;
+  grid-template-columns: auto auto auto auto;
+  gap: 6px;
+}
+
 /* コマンドボックス */
 .cmdbox {
   display: grid;
