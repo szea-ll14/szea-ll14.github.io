@@ -83,16 +83,26 @@ export async function initCanvas() {
 
 
   // シェーダー内の変数の場所を取得
-  itemPrgInfo.position = gl.getAttribLocation(itemPrgInfo.prg, "position");
-  itemPrgInfo.uv = gl.getAttribLocation(itemPrgInfo.prg, "uv");
-  itemPrgInfo.normal = gl.getAttribLocation(itemPrgInfo.prg, "normal");
-  itemPrgInfo.mvpMat = gl.getUniformLocation(itemPrgInfo.prg, "mvpMat");
-  itemPrgInfo.mAdjMat = gl.getUniformLocation(itemPrgInfo.prg, "mAdjMat");
-  itemPrgInfo.tex = gl.getUniformLocation(itemPrgInfo.prg, "tex");
+  function getLocations(prginfo) {
+    const prg = prginfo.prg;
 
-  linePrgInfo.position = gl.getAttribLocation(linePrgInfo.prg, "position");
-  linePrgInfo.color = gl.getAttribLocation(linePrgInfo.prg, "color");
-  linePrgInfo.mvpMat = gl.getUniformLocation(linePrgInfo.prg, "mvpMat");
+    // Attribute 変数
+    const numAttribs = gl.getProgramParameter(prg, gl.ACTIVE_ATTRIBUTES);
+    for (let i = 0; i < numAttribs; ++i) {
+      const {name} = gl.getActiveAttrib(prg, i);
+      prginfo[name] = gl.getAttribLocation(prg, name);
+    }
+
+    // Uniform 変数
+    const numUniforms = gl.getProgramParameter(prg, gl.ACTIVE_UNIFORMS);
+    for (let i = 0; i < numUniforms; ++i) {
+      const {name} = gl.getActiveUniform(prg, i);
+      prginfo[name] = gl.getUniformLocation(prg, name);
+    }
+  }
+
+  getLocations(itemPrgInfo);
+  getLocations(linePrgInfo);
 
 
 
