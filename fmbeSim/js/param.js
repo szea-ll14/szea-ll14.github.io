@@ -55,7 +55,6 @@ function set(paramName, value, {skipField = false, skipSlider = false} = {}) {
 
 export function initParam() {
   // FMBEパラメーター
-  paramGrid.replaceChildren();
   for (const [paramName, param] of paramList) {
     // 値
     param.value = param.init;

@@ -28,13 +28,9 @@ input[type=number] {
   field-sizing: content;
 }
 
-.tab > div {
+.control-row {
   margin-top: .5em;
   margin-bottom: .5em;
-  &.cmdbox {
-    margin-top: 1.25em;
-    margin-bottom: 1.25em;
-  }
 }
 
 input[type="text"] {
@@ -53,6 +49,8 @@ input[type="text"] {
 /* コマンドボックス */
 .cmdbox {
   display: grid;
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
 }
 .cmdbox-head {
   padding: 4px 8px;

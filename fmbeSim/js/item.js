@@ -96,7 +96,7 @@ export function initItem() {
     model.vert = [];
     model.index = [];
 
-    model.cubeList.forEach((cube, i) => {
+    for (const [i, cube] of model.cubeList.entries()) {
       if (cube.length !== 30) throw Error(`itemModelList.${modelName}.cubeList[${i}].length != 30`);
 
       model.vert.push(
@@ -140,7 +140,7 @@ export function initItem() {
           k + 2, k + 3, k    ,
         );
       }
-    });
+    }
 
     // 頂点数
     model.count = model.cubeList.length * 36;
@@ -242,22 +242,22 @@ export function initItem() {
   });
 
   // 描画アイテム変更の選択肢を生成
-  categoryList.forEach(category => {
+  for (const category of categoryList) {
     const itemNameList = Object.keys(itemList).filter(itemName => itemList[itemName].category === category);
-    if (itemNameList.length === 0) return;
+    if (itemNameList.length === 0) continue;
 
     const optgroup = document.createElement("optgroup");
     optgroup.label = category;
 
-    itemNameList.forEach(itemName => {
+    for (const itemName of itemNameList) {
       const option = document.createElement("option");
       option.value = itemName;
       option.textContent = itemList[itemName].name;
       optgroup.appendChild(option);
-    });
+    }
 
     previewItem.appendChild(optgroup);
-  });
+  }
 
   previewItem.value = nowItemName;
 }
