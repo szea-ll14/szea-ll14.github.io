@@ -44,6 +44,7 @@ input[type="text"] {
   display: inline grid;
   grid-template-columns: auto auto auto auto;
   gap: 6px;
+  align-items: center;
 }
 
 /* コマンドボックス */
@@ -59,6 +60,7 @@ input[type="text"] {
   border-bottom: none;
   font-size: 0.825em;
   display: flex;
+  align-items: center;
 }
 .cmdbox-copy {
   margin-right: 2em;
