@@ -24,7 +24,7 @@ input[type=number] {
   text-align: center;
   padding-left: 1ex;
   padding-right: 1ex;
-  min-width: 6ch;
+  min-width: 8ch;
   field-sizing: content;
 }
 
@@ -41,7 +41,7 @@ input[type="text"] {
 }
 
 #param-grid {
-  display: inline grid;
+  display: inline-grid;
   grid-template-columns: auto auto auto auto;
   gap: 6px;
   align-items: center;

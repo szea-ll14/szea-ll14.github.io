@@ -5,18 +5,18 @@ import {requestOutput} from "./request-output.js";
 
 // パラメーター
 export const paramList = new Map([
-  ["xpos", {init: 0, var: true}],
-  ["ypos", {init: 0, var: true}],
-  ["zpos", {init: 0, var: true}],
-  ["xrot", {init: 0, var: true}],
-  ["yrot", {init: 0, var: true}],
-  ["zrot", {init: 0, var: true}],
-  ["scale", {init: 1, var: true}],
-  ["xzscale", {init: 1, var: true}],
-  ["yscale", {init: 1, var: true}],
-  ["xbasepos", {init: 0, var: true}],
-  ["ybasepos", {init: 0, var: true}],
-  ["zbasepos", {init: 0, var: true}],
+  ["xpos", {init: 0, isVar: true}],
+  ["ypos", {init: 0, isVar: true}],
+  ["zpos", {init: 0, isVar: true}],
+  ["xrot", {init: 0, isVar: true}],
+  ["yrot", {init: 0, isVar: true}],
+  ["zrot", {init: 0, isVar: true}],
+  ["scale", {init: 1, isVar: true}],
+  ["xzscale", {init: 1, isVar: true}],
+  ["yscale", {init: 1, isVar: true}],
+  ["xbasepos", {init: 0, isVar: true}],
+  ["ybasepos", {init: 0, isVar: true}],
+  ["zbasepos", {init: 0, isVar: true}],
 ]);
 
 // パラメーターグリッド
@@ -60,7 +60,7 @@ export function initParam() {
     param.value = param.init;
     const [fieldStep, sliderStep, sliderMin, sliderMax]
       = paramName.includes("pos") ? [1, 0.1, -80, 80]
-      : paramName.includes("rot") ? [1, 1, -180, 180]
+      : paramName.includes("rot") ? [5, 0.1, -180, 180]
       : paramName.includes("scale") ? [0.1, 0.01, 0, 5]
       : [1, 1, -1, 1];
 
@@ -86,7 +86,6 @@ export function initParam() {
 
     // スライダー
     param.slider = document.createElement("input");
-    param.slider.id = `${paramName}-slider`;
     param.slider.type = "range";
     param.slider.value = param.init;
     param.slider.step = sliderStep;
@@ -99,7 +98,6 @@ export function initParam() {
 
     // リセットボタン
     param.reset = document.createElement("button");
-    param.reset.id = `${paramName}-reset`;
     param.reset.type = "button";
     param.reset.textContent = "Reset";
     param.reset.addEventListener("click", () => {
