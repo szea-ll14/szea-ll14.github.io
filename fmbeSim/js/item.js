@@ -38,6 +38,10 @@ export const itemList = {
   // },
 };
 
+for (const item of Object.values(itemList)) {
+  item.loadState = "idle";
+}
+
 export let nowItemName = Object.keys(itemList)[0];
 
 const categoryList = ["Block (Solid)", "Block (Plane)", "Item"];
@@ -204,32 +208,40 @@ export function initItem() {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
   // テクスチャを生成
-  function imgOnloaded(itemName, item) {
-    gl.activeTexture(gl.TEXTURE1);
-    item.texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, item.texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, item.image);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    item.loaded = true;
-    if (nowItemName === itemName) {
-      requestOutput({render: true});
-    }
-  }
+  function changeItem(itemName) {
+    nowItemName = itemName;
+    const item = itemList[itemName];
 
-  for (const [itemName, item] of Object.entries(itemList)) {
-    item.loaded = false;
-    // 画像読み込み
-    item.image = new Image();
-    item.image.src = `./img/${itemName}.png`;
-    // 完了したらテクスチャを生成
-    item.image.addEventListener("load", () => {
-      imgOnloaded(itemName, item);
-    });
-    // 失敗したらログ
-    item.image.addEventListener("error", () => {
-      errorLog(`Failed to load the image ${itemName}.png.`);
-    });
+    if (item.loadState === "idle") {
+      item.loadState = "loading";
+
+      // 画像読み込み
+      item.image = new Image();
+      item.image.src = `./img/${itemName}.png`;
+
+      // 完了したらテクスチャを生成
+      item.image.addEventListener("load", () => {
+        gl.activeTexture(gl.TEXTURE1);
+        item.texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, item.texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, item.image);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        item.loadState = "loaded";
+
+        if (nowItemName === itemName) {
+          requestOutput({render: true});
+        }
+      });
+
+      // 失敗したらログ
+      item.image.addEventListener("error", () => {
+        item.loadState = "failed";
+        errorLog(`Failed to load the image ${itemName}.png.`);
+      });
+    }
+
+    requestOutput({render: true});
   }
 
 
@@ -237,8 +249,7 @@ export function initItem() {
   // 描画アイテム変更時の処理
   const previewItem = document.getElementById("preview-item");
   previewItem.addEventListener("change", e => {
-    nowItemName = e.target.value;
-    requestOutput({render: true});
+    changeItem(e.target.value);
   });
 
   // 描画アイテム変更の選択肢を生成
@@ -260,4 +271,5 @@ export function initItem() {
   }
 
   previewItem.value = nowItemName;
+  changeItem(nowItemName);
 }

@@ -106,7 +106,7 @@ export function render() {
   // テクスチャ
   gl.activeTexture(gl.TEXTURE1);
   gl.bindTexture(gl.TEXTURE_2D, item.texture);
-  gl.uniform1i(itemPrgInfo.tex, item.loaded ? 1 : 0);
+  gl.uniform1i(itemPrgInfo.tex, item.loadState === "loaded" ? 1 : 0);
   // 変形行列
   gl.uniformMatrix4fv(itemPrgInfo.mvpMat, true, Matrix.mul(vpMat, mMat));
   gl.uniformMatrix4fv(itemPrgInfo.mAdjMat, true, Matrix.t(Matrix.adj(mMat)));
