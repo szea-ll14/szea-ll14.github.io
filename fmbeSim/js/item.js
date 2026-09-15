@@ -228,7 +228,7 @@ export function initItem() {
     });
     // 失敗したらログ
     item.image.addEventListener("error", () => {
-      errorLog(`画像 ${itemName} の読み込みに失敗しました`);
+      errorLog(`Failed to load the image ${itemName}.png.`);
     });
   }
 

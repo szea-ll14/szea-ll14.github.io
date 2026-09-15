@@ -201,3 +201,35 @@ html:has(input[name="theme"][value="light"]:checked) {
 html:has(input[name="theme"][value="dark"]:checked) {
   color-scheme: dark;
 }
+
+/* エラーメッセージ */
+#app-error {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 1;
+  padding: 0 12px;
+}
+
+.error-message {
+  pointer-events: auto;
+  margin: 12px 0;
+  padding: 4px;
+  border: 1px solid light-dark(#f00, #d00);
+  background-color: light-dark(#f88, #300);
+  display: flex;
+  align-items: center;
+}
+
+.error-close {
+  border: none;
+  background-color: transparent;
+  font-size: 1em;
+  padding: 3px;
+  margin: 2px;
+}
+
+.error-close:hover {
+  background-color: light-dark(#0004, #fff4);
+}

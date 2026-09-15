@@ -38,11 +38,11 @@ export async function initCanvas() {
 
     if (!gl.getShaderParameter(vertShader, gl.COMPILE_STATUS)) {
       const log = gl.getShaderInfoLog(vertShader);
-      throw Error(`${name}.vert コンパイル失敗: ${log}`);
+      throw Error(`Failed to compile ${name}.vert. log: ${log}`);
     }
     if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS)) {
       const log = gl.getShaderInfoLog(fragShader);
-      throw Error(`${name}.frag コンパイル失敗: ${log}`);
+      throw Error(`Failed to compile ${name}.frag. log: ${log}`);
     }
 
     // プログラムオブジェクトを作成
@@ -57,7 +57,7 @@ export async function initCanvas() {
 
     if (!gl.getProgramParameter(prg, gl.LINK_STATUS)) {
       const log = gl.getProgramInfoLog(prg);
-      throw Error(`${name}プログラム リンク失敗: ${log}`);
+      throw Error(`Failed to link ${name} program. log: ${log}`);
     }
 
     return prg;
@@ -66,7 +66,7 @@ export async function initCanvas() {
   try {
     // WebGLコンテキストを取得
     gl = canvas.getContext("webgl2");
-    if (!gl) throw Error("ブラウザーがWebGL2に非対応");
+    if (!gl) throw Error("Browser does not support WebGL2.");
 
     // シェーダーのソースをまとめて取得
     const sourceList = await loadSource("item.vert", "item.frag", "line.vert", "line.frag");
@@ -75,7 +75,7 @@ export async function initCanvas() {
     itemPrgInfo.prg = buildProgram(sourceList, "item");
     linePrgInfo.prg = buildProgram(sourceList, "line");
   } catch (error) {
-    errorLog("WebGL2の初期化が失敗しました", error);
+    errorLog("Failed to initialize WebGL2.", error);
     gl = null;
     return;
   }
