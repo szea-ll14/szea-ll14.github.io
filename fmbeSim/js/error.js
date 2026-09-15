@@ -3,17 +3,16 @@ const appError = document.getElementById("app-error");
 export function errorLog(message, log) {
   console.error(message, "\n", log ?? "");
 
-  const errorMessage = appError.appendChild(document.createElement("div"));
-  errorMessage.className = "error-message";
+  const box = appError.appendChild(document.createElement("div"));
+  box.className = "errorbox";
 
-  const errorButton = errorMessage.appendChild(document.createElement("button"));
-  errorButton.type = "button";
-  errorButton.className = "error-close";
-  errorButton.textContent = "✕";
-  errorButton.addEventListener("click", () => {
-    appError.removeChild(errorMessage);
-  })
+  const button = box.appendChild(document.createElement("button"));
+  button.type = "button";
+  button.className = "errorbox-close";
+  button.textContent = "✕";
+  button.addEventListener("click", () => {
+    box.remove();
+  });
 
-  errorMessage.appendChild(new Text(message));
-
+  box.appendChild(new Text(message));
 }

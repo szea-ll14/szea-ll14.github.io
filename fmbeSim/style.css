@@ -210,11 +210,14 @@ html:has(input[name="theme"][value="dark"]:checked) {
   pointer-events: none;
   z-index: 1;
   padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
 }
 
-.error-message {
+.errorbox {
   pointer-events: auto;
-  margin: 12px 0;
+  margin: 6px 0;
   padding: 4px;
   border: 1px solid light-dark(#f00, #d00);
   background-color: light-dark(#f88, #300);
@@ -222,14 +225,15 @@ html:has(input[name="theme"][value="dark"]:checked) {
   align-items: center;
 }
 
-.error-close {
+.errorbox-close {
   border: none;
   background-color: transparent;
   font-size: 1em;
   padding: 3px;
   margin: 2px;
+  cursor: pointer;
 }
 
-.error-close:hover {
+.errorbox-close:hover {
   background-color: light-dark(#0004, #fff4);
 }
