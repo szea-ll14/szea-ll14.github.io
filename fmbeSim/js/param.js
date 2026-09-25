@@ -1,6 +1,6 @@
 import {toPlainDecimal} from "./to-plain-decimal.js";
 import {isNoSpace} from "./settings.js";
-import {setCmd} from "./cmd.js";
+import {setCmd} from "./cmdbox.js";
 import {requestOutput} from "./request-output.js";
 
 // パラメーター

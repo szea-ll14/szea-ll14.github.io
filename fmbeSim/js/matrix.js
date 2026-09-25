@@ -1,17 +1,28 @@
+// 単位行列
+export const I = [
+  1, 0, 0, 0,
+  0, 1, 0, 0,
+  0, 0, 1, 0,
+  0, 0, 0, 1,
+];
+
 // 行列の乗算
-export function mul(matL, matR) {
-  let rtn = [];
-  for (let row = 0; row < 16; row += 4) {
-    for (let col = 0; col < 4; col++) {
-      rtn[row + col]
-        = matL[row    ] * matR[     col]
-        + matL[row + 1] * matR[ 4 + col]
-        + matL[row + 2] * matR[ 8 + col]
-        + matL[row + 3] * matR[12 + col];
+export function mul(...matList) {
+  return matList.reduce((matL, matR) => {
+    let rtn = [];
+    for (let row = 0; row < 16; row += 4) {
+      for (let col = 0; col < 4; col++) {
+        rtn[row + col]
+          = matL[row    ] * matR[     col]
+          + matL[row + 1] * matR[ 4 + col]
+          + matL[row + 2] * matR[ 8 + col]
+          + matL[row + 3] * matR[12 + col];
+      }
     }
-  }
-  return rtn;
+    return rtn;
+  }, I);
 }
+
 // 転置行列
 export function t(mat) {
   return [
@@ -21,6 +32,7 @@ export function t(mat) {
     mat[3], mat[7], mat[11], mat[15],
   ];
 }
+
 // 余因子行列
 export function adj(mat) {
   const t0 = mat[ 0] * mat[ 5] - mat[ 1] * mat[ 4];

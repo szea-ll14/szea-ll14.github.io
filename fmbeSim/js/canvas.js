@@ -6,7 +6,7 @@ export const canvas = document.getElementById("canvas");
 // WebGLコンテキスト
 export let gl;
 // プログラムオブジェクト・変数の位置
-export const itemPrgInfo = {}, linePrgInfo = {};
+export const cubePrgInfo = {}, linePrgInfo = {};
 
 // カメラ回転・スケール
 export let viewPitch = 15, viewYaw = -10, viewScale = 2;
@@ -69,10 +69,10 @@ export async function initCanvas() {
     if (!gl) throw Error("Browser does not support WebGL2.");
 
     // シェーダーのソースをまとめて取得
-    const sourceList = await loadSource("item.vert", "item.frag", "line.vert", "line.frag");
+    const sourceList = await loadSource("cube.vert", "cube.frag", "line.vert", "line.frag");
 
     // プログラムオブジェクトを作ってシェーダーをリンク
-    itemPrgInfo.prg = buildProgram(sourceList, "item");
+    cubePrgInfo.prg = buildProgram(sourceList, "cube");
     linePrgInfo.prg = buildProgram(sourceList, "line");
   } catch (error) {
     errorLog("Failed to initialize WebGL2.", error);
@@ -101,7 +101,7 @@ export async function initCanvas() {
     }
   }
 
-  getLocations(itemPrgInfo);
+  getLocations(cubePrgInfo);
   getLocations(linePrgInfo);
 
 

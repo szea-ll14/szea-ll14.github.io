@@ -1,6 +1,6 @@
 const cmdboxList = {};
 
-export function initCmd() {
+export function initCmdbox() {
   for (const cmdboxRoot of document.getElementsByClassName("cmdbox")) {
     const id = cmdboxRoot.id;
     cmdboxList[id] = {

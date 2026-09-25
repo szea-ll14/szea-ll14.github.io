@@ -1,11 +1,16 @@
 import {errorLog} from "./error.js";
 import {requestOutput} from "./request-output.js";
-import {gl, itemPrgInfo, linePrgInfo} from "./canvas.js";
+import {gl, cubePrgInfo} from "./canvas.js";
 
 
 
 // ブロックテクスチャ
 export const itemList = {
+  // dummy: {
+  //   name: "Dummy",
+  //   model: "full",
+  //   category: "Block (Solid)",
+  // },
   diamond_block: {
     name: "Diamond block",
     model: "full",
@@ -31,11 +36,6 @@ export const itemList = {
     model: "full",
     category: "Block (Solid)",
   },
-  // dummy: {
-  //   name: "Dummy",
-  //   model: "full",
-  //   category: "Block (Solid)",
-  // },
 };
 
 for (const item of Object.values(itemList)) {
@@ -49,43 +49,15 @@ const categoryList = ["Block (Solid)", "Block (Plane)", "Item"];
 
 
 // アイテムモデル
-export const itemModelList = {
-  full: {
-    cubeList: [
-      [
-        -.5, -.5, -.5,   .5,  .5,  .5, // 位置
-          0,  .5,       .25,   1,      // UV/x-
-         .5,  .5,       .75,   1,      // UV/x+
-         .5,   0,       .75,  .5,      // UV/y-
-        .25,   0,        .5,  .5,      // UV/y+
-        .75,  .5,         1,   1,      // UV/z-
-        .25,  .5,        .5,   1,      // UV/z+
-      ],
+const cubeListList = {
+  full: [
+    [
+      -.5, -.5, -.5,   .5,  .5,  .5, // XYZ
+        0,   0,         1,   1,      // UV
     ],
-  },
-};
-
-
-
-export const lineModel = {
-  vert: [
-    // 位置: vec3, 色: vec3
-    0, 0, 0,  1, 0, 0, // x軸
-    5, 0, 0,  1, 0, 0,
-    0, 0, 0,  0, 1, 0, // y軸
-    0, 5, 0,  0, 1, 0,
-    0, 0, 0,  0, 0, 1, // z軸
-    0, 0, 5,  0, 0, 1,
   ],
 };
-for (let i = -4.5; i < 5; i++) {
-  lineModel.vert.push(
-    -5, 0, i,  .4, .4, .4, // x平面
-     5, 0, i,  .4, .4, .4,
-    i, 0, -5,  .4, .4, .4, // z平面
-    i, 0,  5,  .4, .4, .4,
-  );
-}
+export const itemModelList = {};
 
 
 
@@ -94,52 +66,55 @@ export function initItem() {
 
 
 
-  // アイテム/モデル作成
-  for (const [modelName, model] of Object.entries(itemModelList)) {
+  // モデル作成
+  for (const [modelName, cubeList] of Object.entries(cubeListList)) {
     // 頂点・インデックス
-    model.vert = [];
-    model.index = [];
+    const vert = [];
+    const index = [];
 
-    for (const [i, cube] of model.cubeList.entries()) {
-      if (cube.length !== 30) throw Error(`itemModelList.${modelName}.cubeList[${i}].length != 30`);
+    for (const [i, cube] of cubeList.entries()) {
+      if (cube.length !== 10) throw Error(`Invalid cube data length`);
 
-      model.vert.push(
+      const [u0, u1, u2, u3, u4] = [0, 1, 2, 3, 4].map(i => (cube[6] * (4 - i) + cube[8] * i) / 4);
+      const [v0, v1, v2] = [0, 1, 2].map(i => (cube[7] * (2 - i) + cube[9] * i) / 2);
+
+      vert.push(
         // 位置:vec3, UV:vec2, 法線:vec3
         // x-
-        cube[0], cube[4], cube[2],  cube[ 6], cube[ 7],  -1, 0, 0,
-        cube[0], cube[1], cube[2],  cube[ 6], cube[ 9],  -1, 0, 0,
-        cube[0], cube[1], cube[5],  cube[ 8], cube[ 9],  -1, 0, 0,
-        cube[0], cube[4], cube[5],  cube[ 8], cube[ 7],  -1, 0, 0,
+        cube[0], cube[4], cube[2],  u0, v1,  -1, 0, 0,
+        cube[0], cube[1], cube[2],  u0, v2,  -1, 0, 0,
+        cube[0], cube[1], cube[5],  u1, v2,  -1, 0, 0,
+        cube[0], cube[4], cube[5],  u1, v1,  -1, 0, 0,
         // x+
-        cube[3], cube[4], cube[5],  cube[10], cube[11],  1, 0, 0,
-        cube[3], cube[1], cube[5],  cube[10], cube[13],  1, 0, 0,
-        cube[3], cube[1], cube[2],  cube[12], cube[13],  1, 0, 0,
-        cube[3], cube[4], cube[2],  cube[12], cube[11],  1, 0, 0,
+        cube[3], cube[4], cube[5],  u2, v1,  1, 0, 0,
+        cube[3], cube[1], cube[5],  u2, v2,  1, 0, 0,
+        cube[3], cube[1], cube[2],  u3, v2,  1, 0, 0,
+        cube[3], cube[4], cube[2],  u3, v1,  1, 0, 0,
         // y-
-        cube[3], cube[1], cube[2],  cube[14], cube[15],  0, -1, 0,
-        cube[3], cube[1], cube[5],  cube[14], cube[17],  0, -1, 0,
-        cube[0], cube[1], cube[5],  cube[16], cube[17],  0, -1, 0,
-        cube[0], cube[1], cube[2],  cube[16], cube[15],  0, -1, 0,
+        cube[3], cube[1], cube[2],  u3, v0,  0, -1, 0,
+        cube[3], cube[1], cube[5],  u3, v1,  0, -1, 0,
+        cube[0], cube[1], cube[5],  u2, v1,  0, -1, 0,
+        cube[0], cube[1], cube[2],  u2, v0,  0, -1, 0,
         // y+
-        cube[0], cube[4], cube[2],  cube[18], cube[19],  0, 1, 0,
-        cube[0], cube[4], cube[5],  cube[18], cube[21],  0, 1, 0,
-        cube[3], cube[4], cube[5],  cube[20], cube[21],  0, 1, 0,
-        cube[3], cube[4], cube[2],  cube[20], cube[19],  0, 1, 0,
+        cube[0], cube[4], cube[2],  u1, v0,  0, 1, 0,
+        cube[0], cube[4], cube[5],  u1, v1,  0, 1, 0,
+        cube[3], cube[4], cube[5],  u2, v1,  0, 1, 0,
+        cube[3], cube[4], cube[2],  u2, v0,  0, 1, 0,
         // z-
-        cube[3], cube[4], cube[2],  cube[22], cube[23],  0, 0, -1,
-        cube[3], cube[1], cube[2],  cube[22], cube[25],  0, 0, -1,
-        cube[0], cube[1], cube[2],  cube[24], cube[25],  0, 0, -1,
-        cube[0], cube[4], cube[2],  cube[24], cube[23],  0, 0, -1,
+        cube[3], cube[4], cube[2],  u3, v1,  0, 0, -1,
+        cube[3], cube[1], cube[2],  u3, v2,  0, 0, -1,
+        cube[0], cube[1], cube[2],  u4, v2,  0, 0, -1,
+        cube[0], cube[4], cube[2],  u4, v1,  0, 0, -1,
         // z+
-        cube[0], cube[4], cube[5],  cube[26], cube[27],  0, 0, 1,
-        cube[0], cube[1], cube[5],  cube[26], cube[29],  0, 0, 1,
-        cube[3], cube[1], cube[5],  cube[28], cube[29],  0, 0, 1,
-        cube[3], cube[4], cube[5],  cube[28], cube[27],  0, 0, 1,
+        cube[0], cube[4], cube[5],  u1, v1,  0, 0, 1,
+        cube[0], cube[1], cube[5],  u1, v2,  0, 0, 1,
+        cube[3], cube[1], cube[5],  u2, v2,  0, 0, 1,
+        cube[3], cube[4], cube[5],  u2, v1,  0, 0, 1,
       );
 
       for (let j = 0; j < 6; j++) {
         const k = i * 24 + j * 4;
-        model.index.push(
+        index.push(
           k    , k + 1, k + 2,
           k + 2, k + 3, k    ,
         );
@@ -147,55 +122,34 @@ export function initItem() {
     }
 
     // 頂点数
-    model.count = model.cubeList.length * 36;
+    const count = cubeList.length * 36;
 
 
     // VAO
-    model.vao = gl.createVertexArray();
+    const vao = gl.createVertexArray();
     {
-      gl.bindVertexArray(model.vao);
+      gl.bindVertexArray(vao);
 
       // VBO
       const vbo = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.vert), gl.STATIC_DRAW);
-      gl.vertexAttribPointer(itemPrgInfo.position, 3, gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 0);
-      gl.vertexAttribPointer(itemPrgInfo.uv, 2, gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-      gl.vertexAttribPointer(itemPrgInfo.normal, 3, gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
-      gl.enableVertexAttribArray(itemPrgInfo.position);
-      gl.enableVertexAttribArray(itemPrgInfo.uv);
-      gl.enableVertexAttribArray(itemPrgInfo.normal);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vert), gl.STATIC_DRAW);
+      gl.vertexAttribPointer(cubePrgInfo.position, 3, gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 0);
+      gl.vertexAttribPointer(cubePrgInfo.uv, 2, gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+      gl.vertexAttribPointer(cubePrgInfo.normal, 3, gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+      gl.enableVertexAttribArray(cubePrgInfo.position);
+      gl.enableVertexAttribArray(cubePrgInfo.uv);
+      gl.enableVertexAttribArray(cubePrgInfo.normal);
 
       // IBO
       const ibo = gl.createBuffer();
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
-      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(model.index), gl.STATIC_DRAW);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(index), gl.STATIC_DRAW);
 
       gl.bindVertexArray(null);
     }
-  }
 
-
-
-  // 線/モデル作成
-  // 頂点数
-  lineModel.count = lineModel.vert.length / 6;
-
-  // VAO
-  lineModel.vao = gl.createVertexArray();
-  {
-    gl.bindVertexArray(lineModel.vao);
-
-    // VBO
-    const vbo = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lineModel.vert), gl.STATIC_DRAW);
-    gl.vertexAttribPointer(linePrgInfo.position, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-    gl.vertexAttribPointer(linePrgInfo.color, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-    gl.enableVertexAttribArray(linePrgInfo.position);
-    gl.enableVertexAttribArray(linePrgInfo.color);
-
-    gl.bindVertexArray(null);
+    itemModelList[modelName] = {count, vao};
   }
 
 
@@ -216,15 +170,15 @@ export function initItem() {
       item.loadState = "loading";
 
       // 画像読み込み
-      item.image = new Image();
-      item.image.src = `./img/${itemName}.png`;
+      const image = new Image();
+      image.src = `./img/${itemName}.png`;
 
       // 完了したらテクスチャを生成
-      item.image.addEventListener("load", () => {
+      image.addEventListener("load", () => {
         gl.activeTexture(gl.TEXTURE1);
         item.texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, item.texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, item.image);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
         item.loadState = "loaded";
@@ -235,7 +189,7 @@ export function initItem() {
       });
 
       // 失敗したらログ
-      item.image.addEventListener("error", () => {
+      image.addEventListener("error", () => {
         item.loadState = "failed";
         errorLog(`Failed to load the image ${itemName}.png.`);
       });

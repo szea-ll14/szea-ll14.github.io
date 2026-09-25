@@ -1,11 +1,9 @@
 // 行列演算
 import * as Matrix from "./matrix.js";
-// 度
-const DEG = Math.PI / 180;
-
 import {paramList} from "./param.js";
-import {canvas, gl, itemPrgInfo, linePrgInfo, viewPitch, viewYaw, viewScale} from "./canvas.js";
-import {itemModelList, lineModel, itemList, nowItemName} from "./item.js";
+import {canvas, gl, cubePrgInfo, linePrgInfo, viewPitch, viewYaw, viewScale} from "./canvas.js";
+import {itemModelList, itemList, nowItemName} from "./item.js";
+import {lineModel} from "./line.js";
 
 
 
@@ -30,61 +28,65 @@ export function render() {
 
   // 行列
   // FMBEによる変形
-  let mMat = [ // basepos
-    1, 0, 0, paramList.get("xbasepos").value / 16,
-    0, 1, 0, paramList.get("ybasepos").value / 16,
-    0, 0, 1, paramList.get("zbasepos").value / 16,
-    0, 0, 0, 1
-  ];
-  mMat = Matrix.mul([ // scale
-    paramList.get("scale").value * paramList.get("xzscale").value, 0, 0, 0,
-    0, paramList.get("scale").value * paramList.get("yscale").value, 0, 0,
-    0, 0, paramList.get("scale").value * paramList.get("xzscale").value, 0,
-    0, 0, 0, 1
-  ], mMat);
-  mMat = Matrix.mul([ // xrot
-    1, 0, 0, 0,
-    0, Math.cos(paramList.get("xrot").value * DEG), -Math.sin(paramList.get("xrot").value * DEG), 0,
-    0, Math.sin(paramList.get("xrot").value * DEG), Math.cos(paramList.get("xrot").value * DEG), 0,
-    0, 0, 0, 1
-  ], mMat);
-  mMat = Matrix.mul([ // zrot
-    Math.cos(paramList.get("zrot").value * DEG), Math.sin(paramList.get("zrot").value * DEG), 0, 0,
-    -Math.sin(paramList.get("zrot").value * DEG), Math.cos(paramList.get("zrot").value * DEG), 0, 0,
-    0, 0, 1, 0,
-    0, 0, 0, 1
-  ], mMat);
-  mMat = Matrix.mul([ // yrot
-    Math.cos(paramList.get("yrot").value * DEG), 0, -Math.sin(paramList.get("yrot").value * DEG), 0,
-    0, 1, 0, 0,
-    Math.sin(paramList.get("yrot").value * DEG), 0, Math.cos(paramList.get("yrot").value * DEG), 0,
-    0, 0, 0, 1
-  ], mMat);
-  mMat = Matrix.mul([ // pos
-    1, 0, 0, paramList.get("xpos").value / 16,
-    0, 1, 0, paramList.get("ypos").value / 16 + 0.5,
-    0, 0, 1, paramList.get("zpos").value / 16,
-    0, 0, 0, 1
-  ], mMat);
+  let mMat = Matrix.mul(
+    [ // pos
+      1, 0, 0, paramList.get("xpos").value / 16,
+      0, 1, 0, paramList.get("ypos").value / 16 + 0.5,
+      0, 0, 1, paramList.get("zpos").value / 16,
+      0, 0, 0, 1
+    ],
+    [ // yrot
+      Matrix.cos(paramList.get("yrot").value), 0, -Matrix.sin(paramList.get("yrot").value), 0,
+      0, 1, 0, 0,
+      Matrix.sin(paramList.get("yrot").value), 0, Matrix.cos(paramList.get("yrot").value), 0,
+      0, 0, 0, 1
+    ],
+    [ // zrot
+      Matrix.cos(paramList.get("zrot").value), Matrix.sin(paramList.get("zrot").value), 0, 0,
+      -Matrix.sin(paramList.get("zrot").value), Matrix.cos(paramList.get("zrot").value), 0, 0,
+      0, 0, 1, 0,
+      0, 0, 0, 1
+    ],
+    [ // xrot
+      1, 0, 0, 0,
+      0, Matrix.cos(paramList.get("xrot").value), -Matrix.sin(paramList.get("xrot").value), 0,
+      0, Matrix.sin(paramList.get("xrot").value), Matrix.cos(paramList.get("xrot").value), 0,
+      0, 0, 0, 1
+    ],
+    [ // scale
+      paramList.get("scale").value * paramList.get("xzscale").value, 0, 0, 0,
+      0, paramList.get("scale").value * paramList.get("yscale").value, 0, 0,
+      0, 0, paramList.get("scale").value * paramList.get("xzscale").value, 0,
+      0, 0, 0, 1
+    ],
+    [ // basepos
+      1, 0, 0, paramList.get("xbasepos").value / 16,
+      0, 1, 0, paramList.get("ybasepos").value / 16,
+      0, 0, 1, paramList.get("zbasepos").value / 16,
+      0, 0, 0, 1
+    ],
+  );
   // カメラの角度・透視投影
-  let vpMat = [ // viewYaw
-    Math.cos(viewYaw * DEG), 0, Math.sin(viewYaw * DEG), 0,
-    0, 1, 0, 0,
-    -Math.sin(viewYaw * DEG), 0, Math.cos(viewYaw * DEG), 0,
-    0, 0, 0, 1
-  ];
-  vpMat = Matrix.mul([ // viewPitch
-    1, 0, 0, 0,
-    0, Math.cos(viewPitch * DEG), -Math.sin(viewPitch * DEG), 0,
-    0, Math.sin(viewPitch * DEG), Math.cos(viewPitch * DEG), 0,
-    0, 0, 0, 1
-  ], vpMat);
-  vpMat = Matrix.mul([ // perspective
-    aspect * 2 ** viewScale, 0, 0, 0,
-    0, 2 ** viewScale, 0, 0,
-    0, 0, -1, 19,
-    0, 0, -1, 20
-  ], vpMat);
+  let vpMat = Matrix.mul(
+    [ // perspective
+      aspect * 2 ** viewScale, 0, 0, 0,
+      0, 2 ** viewScale, 0, 0,
+      0, 0, -1, 19,
+      0, 0, -1, 20
+    ],
+    [ // viewPitch
+      1, 0, 0, 0,
+      0, Matrix.cos(viewPitch), -Matrix.sin(viewPitch), 0,
+      0, Matrix.sin(viewPitch), Matrix.cos(viewPitch), 0,
+      0, 0, 0, 1
+    ],
+    [ // viewYaw
+      Matrix.cos(viewYaw), 0, Matrix.sin(viewYaw), 0,
+      0, 1, 0, 0,
+      -Matrix.sin(viewYaw), 0, Matrix.cos(viewYaw), 0,
+      0, 0, 0, 1
+    ],
+  );
   // [a*vS  0 0 0 [1 0 0  0 [1 0  0 0 [1 0 0   0
   //     0 vS 0 0  0 1 0  0  0 1  0 0  0 1 0   0
   //     0  0 1 0  0 0 1 -1  0 0  0 1  0 0 1 -20
@@ -100,16 +102,16 @@ export function render() {
   const item = itemList[nowItemName];
   const model = itemModelList[item.model];
 
-  gl.useProgram(itemPrgInfo.prg);
+  gl.useProgram(cubePrgInfo.prg);
   // VBO
   gl.bindVertexArray(model.vao);
   // テクスチャ
   gl.activeTexture(gl.TEXTURE1);
   gl.bindTexture(gl.TEXTURE_2D, item.texture);
-  gl.uniform1i(itemPrgInfo.tex, item.loadState === "loaded" ? 1 : 0);
+  gl.uniform1i(cubePrgInfo.tex, item.loadState === "loaded" ? 1 : 0);
   // 変形行列
-  gl.uniformMatrix4fv(itemPrgInfo.mvpMat, true, Matrix.mul(vpMat, mMat));
-  gl.uniformMatrix4fv(itemPrgInfo.mAdjMat, true, Matrix.t(Matrix.adj(mMat)));
+  gl.uniformMatrix4fv(cubePrgInfo.mvpMat, true, Matrix.mul(vpMat, mMat));
+  gl.uniformMatrix4fv(cubePrgInfo.mAdjMat, true, Matrix.t(Matrix.adj(mMat)));
   // 描画
   gl.drawElements(gl.TRIANGLES, model.count, gl.UNSIGNED_SHORT, 0);
 
