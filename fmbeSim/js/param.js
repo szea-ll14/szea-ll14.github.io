@@ -1,7 +1,7 @@
 import {toPlainDecimal} from "./to-plain-decimal.js";
 import {isNoSpace} from "./settings.js";
 import {setCmd} from "./cmdbox.js";
-import {requestOutput} from "./request-output.js";
+import {registerOutput, requestOutput} from "./output.js";
 
 // パラメーター
 export const paramList = new Map([
@@ -48,7 +48,28 @@ function set(paramName, value, {skipField = false, skipSlider = false} = {}) {
     param.slider.value = valueFixed;
   }
 
-  requestOutput({setvarCmd: true, render: true});
+  requestOutput("setvarCmd", "render");
+}
+
+
+
+// 代入コマンド出力
+function generateSetvarCmd() {
+  let molang = " ";
+  for (const [paramName, param] of paramList) {
+    if (
+      !setvarDefaults.checked &&
+      (param.value === param.init)
+    ) continue;
+    molang += `v.${paramName} = ${toPlainDecimal(param.value)}; `;
+  }
+  if (molang === " ") molang = "";
+  if (isNoSpace()) molang = molang.replaceAll(" ", "");
+
+  const selector = setvarSelector.value;
+  const controller = setvarController.value;
+
+  setCmd("cmd-setvar", `playanimation ${selector} animation.player.attack.positions _ 0 "${molang}" ${controller}`);
 }
 
 
@@ -106,33 +127,16 @@ export function initParam() {
 
   // 代入コマンド設定/変更時の反映
   setvarSelector.addEventListener("input", () => {
-    requestOutput({setvarCmd: true});
+    requestOutput("setvarCmd");
   });
   setvarDefaults.addEventListener("change", () => {
-    requestOutput({setvarCmd: true});
+    requestOutput("setvarCmd");
   });
   setvarController.addEventListener("input", () => {
-    requestOutput({setvarCmd: true});
+    requestOutput("setvarCmd");
   });
-}
 
 
 
-// 代入コマンド出力
-export function generateSetvarCmd() {
-  let molang = " ";
-  for (const [paramName, param] of paramList) {
-    if (
-      !setvarDefaults.checked &&
-      (param.value === param.init)
-    ) continue;
-    molang += `v.${paramName} = ${toPlainDecimal(param.value)}; `;
-  }
-  if (molang === " ") molang = "";
-  if (isNoSpace()) molang = molang.replaceAll(" ", "");
-
-  const selector = setvarSelector.value;
-  const controller = setvarController.value;
-
-  setCmd("cmd-setvar", `playanimation ${selector} animation.player.attack.positions _ 0 "${molang}" ${controller}`);
+  registerOutput("setvarCmd", generateSetvarCmd);
 }

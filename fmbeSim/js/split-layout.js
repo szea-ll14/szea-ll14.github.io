@@ -1,4 +1,4 @@
-import {requestOutput} from "./request-output.js";
+import {requestOutput} from "./output.js";
 
 // 分割レイアウト制御
 export function initSplitLayout() {
@@ -25,7 +25,7 @@ export function initSplitLayout() {
     let appViewRatio = (appViewSize - appViewSizeMin) / (appBodySize - appBarSize - appViewSizeMin * 2);
     appViewRatio = Math.min(Math.max(appViewRatio, 0), 1);
     root.style.setProperty("--app-view-ratio", appViewRatio);
-    requestOutput({resize: true, render: true});
+    requestOutput("resize", "render");
   }
 
   function pointerUp() { // ポインターを削除

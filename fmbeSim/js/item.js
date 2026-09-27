@@ -1,5 +1,5 @@
 import {errorLog} from "./error.js";
-import {requestOutput} from "./request-output.js";
+import {requestOutput} from "./output.js";
 import {gl, cubePrgInfo} from "./canvas.js";
 
 
@@ -184,7 +184,7 @@ export function initItem() {
         item.loadState = "loaded";
 
         if (nowItemName === itemName) {
-          requestOutput({render: true});
+          requestOutput("render");
         }
       });
 
@@ -195,7 +195,7 @@ export function initItem() {
       });
     }
 
-    requestOutput({render: true});
+    requestOutput("render");
   }
 
 

@@ -1,5 +1,5 @@
 import {errorLog} from "./error.js";
-import {requestOutput} from "./request-output.js";
+import {requestOutput} from "./output.js";
 
 // canvas
 export const canvas = document.getElementById("canvas");
@@ -119,7 +119,7 @@ export async function initCanvas() {
 
   // ウィンドウサイズ変更時
   (new ResizeObserver(() => {
-    requestOutput({resize: true, render: true});
+    requestOutput("resize", "render");
   })).observe(canvas);
 
 
@@ -152,14 +152,14 @@ export async function initCanvas() {
           viewPitch += pointer.y - pointer.preY;
           viewYaw = (viewYaw + 360) % 360;
           viewPitch = Math.min(Math.max(viewPitch, -90), 90);
-          requestOutput({render: true});
+          requestOutput("render");
           break;
         }
         case 2: { // 2本指はスケール
           let preDist = ((enableList[0].preX - enableList[1].preX) ** 2 + (enableList[0].preY - enableList[1].preY) ** 2) ** .5;
           let dist = ((enableList[0].x - enableList[1].x) ** 2 + (enableList[0].y - enableList[1].y) ** 2) ** .5;
           viewScale += (dist - preDist) / 128;
-          requestOutput({render: true});
+          requestOutput("render");
           break;
         }
       }
@@ -177,7 +177,7 @@ export async function initCanvas() {
   function wheel(e) { // ホイール回すと
     if (e.cancelable) e.preventDefault();
     viewScale -= e.deltaY / 1024; // スケール
-    requestOutput({render: true});
+    requestOutput("render");
   }
 
   canvas.addEventListener("pointerdown", pointerDown); // 押したとき

@@ -5,6 +5,7 @@ import {paramList} from "./param.js";
 import {canvas, gl, cubePrgInfo, linePrgInfo, viewPitch, viewYaw, viewScale} from "./canvas.js";
 import {itemModelList, itemList, nowItemName} from "./item.js";
 import {lineModel} from "./line.js";
+import {registerOutput} from "./request-output.js";
 
 
 
@@ -12,7 +13,7 @@ import {lineModel} from "./line.js";
 let aspect = 1;
 
 // キャンバスリサイズ
-export function resize() {
+function resize() {
   canvas.width = canvas.clientWidth * devicePixelRatio;
   canvas.height = canvas.clientHeight * devicePixelRatio;
   aspect = canvas.clientHeight / canvas.clientWidth;
@@ -24,7 +25,7 @@ export function resize() {
 
 
 // 描画
-export function render() {
+function render() {
   if (!gl) return;
 
   // 行列
@@ -124,4 +125,11 @@ export function render() {
   gl.uniformMatrix4fv(linePrgInfo.mvpMat, true, vpMat);
   // 描画
   gl.drawArrays(gl.LINES, 0, lineModel.count);
+}
+
+
+
+export function initRender() {
+  registerOutput("resize", resize);
+  registerOutput("render", render);
 }

@@ -1,4 +1,4 @@
-import {requestOutput} from "./request-output.js";
+import {requestOutput} from "./output.js";
 
 // molangに空白を含むか
 const settingNoSpace = document.getElementById("setting-no-space");
@@ -12,6 +12,6 @@ export function isNoSpace() {
 export function initSettings() {
   // 設定変更時の反映
   settingNoSpace.addEventListener("change", () => {
-    requestOutput({setvarCmd: true});
+    requestOutput("setvarCmd");
   });
 }
