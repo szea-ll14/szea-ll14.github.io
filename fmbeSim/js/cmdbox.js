@@ -1,27 +1,33 @@
 const cmdboxList = {};
 
 export function initCmdbox() {
-  for (const cmdboxRoot of document.getElementsByClassName("cmdbox")) {
-    const id = cmdboxRoot.id;
-    cmdboxList[id] = {
-      copy: cmdboxRoot.querySelector(".cmdbox-copy"),
-      count: cmdboxRoot.querySelector(".cmdbox-count"),
-      body: cmdboxRoot.querySelector(".cmdbox-body"),
-    }
+  for (const root of document.getElementsByClassName("cmdbox")) {
+    root.innerHTML = "";
 
-    const cmdbox = cmdboxList[id];
+    const head = root.appendChild(document.createElement("div"));
+    head.className = "cmdbox-head";
+    const copy = head.appendChild(document.createElement("button"));
+    copy.type = "button";
+    copy.className = "cmdbox-copy";
+    copy.textContent = "Copy";
+    const count = head.appendChild(document.createElement("span"));
+    count.className = "cmdbox-count";
+    const body = root.appendChild(document.createElement("pre"));
+    body.className = "cmdbox-body";
+
+    const cmdbox = cmdboxList[root.id] = {count, body};
 
     // コピーボタン
-    cmdbox.copy.addEventListener("click", async () => {
+    copy.addEventListener("click", async () => {
       try {
-        await navigator.clipboard.writeText(cmdbox.body.textContent);
-        cmdbox.copy.textContent = "Copied!";
+        await navigator.clipboard.writeText(body.textContent);
+        copy.textContent = "Copied!";
       } catch {
-        cmdbox.copy.textContent = "Failed";
+        copy.textContent = "Failed";
       }
       clearTimeout(cmdbox.copyTimeoutId);
       cmdbox.copyTimeoutId = setTimeout(() => {
-        cmdbox.copy.textContent = "Copy";
+        copy.textContent = "Copy";
       }, 1000);
     });
   }

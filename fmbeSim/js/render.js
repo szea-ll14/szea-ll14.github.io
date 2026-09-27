@@ -1,5 +1,6 @@
 // 行列演算
 import * as Matrix from "./matrix.js";
+import {cos, sin} from "./deg.js";
 import {paramList} from "./param.js";
 import {canvas, gl, cubePrgInfo, linePrgInfo, viewPitch, viewYaw, viewScale} from "./canvas.js";
 import {itemModelList, itemList, nowItemName} from "./item.js";
@@ -36,21 +37,21 @@ export function render() {
       0, 0, 0, 1
     ],
     [ // yrot
-      Matrix.cos(paramList.get("yrot").value), 0, -Matrix.sin(paramList.get("yrot").value), 0,
+      cos(paramList.get("yrot").value), 0, -sin(paramList.get("yrot").value), 0,
       0, 1, 0, 0,
-      Matrix.sin(paramList.get("yrot").value), 0, Matrix.cos(paramList.get("yrot").value), 0,
+      sin(paramList.get("yrot").value), 0, cos(paramList.get("yrot").value), 0,
       0, 0, 0, 1
     ],
     [ // zrot
-      Matrix.cos(paramList.get("zrot").value), Matrix.sin(paramList.get("zrot").value), 0, 0,
-      -Matrix.sin(paramList.get("zrot").value), Matrix.cos(paramList.get("zrot").value), 0, 0,
+      cos(paramList.get("zrot").value), sin(paramList.get("zrot").value), 0, 0,
+      -sin(paramList.get("zrot").value), cos(paramList.get("zrot").value), 0, 0,
       0, 0, 1, 0,
       0, 0, 0, 1
     ],
     [ // xrot
       1, 0, 0, 0,
-      0, Matrix.cos(paramList.get("xrot").value), -Matrix.sin(paramList.get("xrot").value), 0,
-      0, Matrix.sin(paramList.get("xrot").value), Matrix.cos(paramList.get("xrot").value), 0,
+      0, cos(paramList.get("xrot").value), -sin(paramList.get("xrot").value), 0,
+      0, sin(paramList.get("xrot").value), cos(paramList.get("xrot").value), 0,
       0, 0, 0, 1
     ],
     [ // scale
@@ -76,14 +77,14 @@ export function render() {
     ],
     [ // viewPitch
       1, 0, 0, 0,
-      0, Matrix.cos(viewPitch), -Matrix.sin(viewPitch), 0,
-      0, Matrix.sin(viewPitch), Matrix.cos(viewPitch), 0,
+      0, cos(viewPitch), -sin(viewPitch), 0,
+      0, sin(viewPitch), cos(viewPitch), 0,
       0, 0, 0, 1
     ],
     [ // viewYaw
-      Matrix.cos(viewYaw), 0, Matrix.sin(viewYaw), 0,
+      cos(viewYaw), 0, sin(viewYaw), 0,
       0, 1, 0, 0,
-      -Matrix.sin(viewYaw), 0, Matrix.cos(viewYaw), 0,
+      -sin(viewYaw), 0, cos(viewYaw), 0,
       0, 0, 0, 1
     ],
   );

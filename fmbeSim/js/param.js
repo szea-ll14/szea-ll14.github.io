@@ -54,6 +54,8 @@ function set(paramName, value, {skipField = false, skipSlider = false} = {}) {
 
 
 export function initParam() {
+  paramGrid.innerHTML = "";
+
   // FMBEパラメーター
   for (const [paramName, param] of paramList) {
     // 値
@@ -65,13 +67,12 @@ export function initParam() {
       : [1, 1, -1, 1];
 
     // ラベル
-    const label = document.createElement("label");
+    const label = paramGrid.appendChild(document.createElement("label"));
     label.textContent = paramName;
     label.htmlFor = `${paramName}-field`;
-    paramGrid.appendChild(label);
 
     // 入力欄
-    param.field = document.createElement("input");
+    param.field = paramGrid.appendChild(document.createElement("input"));
     param.field.id = `${paramName}-field`;
     param.field.type = "number";
     param.field.value = param.init;
@@ -82,10 +83,9 @@ export function initParam() {
     param.field.addEventListener("change", e => {
       set(paramName, e.target.value);
     });
-    paramGrid.appendChild(param.field);
 
     // スライダー
-    param.slider = document.createElement("input");
+    param.slider = paramGrid.appendChild(document.createElement("input"));
     param.slider.type = "range";
     param.slider.value = param.init;
     param.slider.step = sliderStep;
@@ -94,16 +94,14 @@ export function initParam() {
     param.slider.addEventListener("input", e => {
       set(paramName, e.target.value, {skipSlider: true});
     });
-    paramGrid.appendChild(param.slider);
 
     // リセットボタン
-    param.reset = document.createElement("button");
+    param.reset = paramGrid.appendChild(document.createElement("button"));
     param.reset.type = "button";
     param.reset.textContent = "Reset";
     param.reset.addEventListener("click", () => {
       set(paramName, param.init);
     });
-    paramGrid.appendChild(param.reset);
   }
 
   // 代入コマンド設定/変更時の反映

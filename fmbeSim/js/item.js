@@ -211,17 +211,14 @@ export function initItem() {
     const itemNameList = Object.keys(itemList).filter(itemName => itemList[itemName].category === category);
     if (itemNameList.length === 0) continue;
 
-    const optgroup = document.createElement("optgroup");
+    const optgroup = previewItem.appendChild(document.createElement("optgroup"));
     optgroup.label = category;
 
     for (const itemName of itemNameList) {
-      const option = document.createElement("option");
+      const option = optgroup.appendChild(document.createElement("option"));
       option.value = itemName;
       option.textContent = itemList[itemName].name;
-      optgroup.appendChild(option);
     }
-
-    previewItem.appendChild(optgroup);
   }
 
   previewItem.value = nowItemName;
